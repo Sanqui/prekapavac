@@ -6,7 +6,7 @@ from flask import Flask, render_template, request, flash, redirect, session, abo
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 
-from flask_login import LoginManager
+from flask_login import LoginManager, login_required, login_user, logout_user
 
 from wtforms import Form, BooleanField, TextField, TextAreaField, PasswordField, RadioField, SelectField, SelectMultipleField, BooleanField, IntegerField, HiddenField, SubmitField, validators, ValidationError, widgets
 
@@ -17,10 +17,11 @@ app.config.from_pyfile("config.py")
 
 login_manager = LoginManager()
 login_manager.init_app(app)
+login_manager.login_view = "login"
 
 @login_manager.user_loader
 def load_user(user_id):
-    return db.User.get(user_id)
+    return db.session.query(db.User).get(user_id)
 
 @app.route("/")
 def index():
@@ -43,17 +44,17 @@ class LoginForm(Form):
     password = PasswordField('Heslo', [validators.required()])
     submit = SubmitField('Přihlásit se')
 
-@app.route("/login")
+@app.route("/login", methods="GET POST".split())
 def login():
     form = LoginForm(request.form)
     failed = False
     if request.method == 'POST' and form.validate():
-        user = db.session.query(db.User).filter(db.User.login == form.name.data.lower()).scalar()
+        user = db.session.query(db.User).filter(db.User.username == form.username.data.lower()).scalar()
         if not user: failed = True
         else:
             password_matches = user.verify_password(form.password.data)
             if password_matches:
-                login_user(user)
+                login_user(user, remember=True)
                 flash("Jste přihlášeni.")
                 return redirect(url_for('index'))
             else:
@@ -61,6 +62,11 @@ def login():
     
     return render_template("login.html", form=form, failed=failed)
 
+@app.route("/logout")
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('index'))
 
 def create_admin():
     admin = Admin(app)

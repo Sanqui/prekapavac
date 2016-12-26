@@ -37,23 +37,25 @@ class User(Base):
     
     
     def verify_password(self, password):
-        if self.pass_.startswith('$2a'):
-            return bcrypt.hashpw(password.encode('utf-8'), self.password.encode('utf-8')) == self.pass_
+        if self.password.startswith('$2b'):
+            return bcrypt.hashpw(password.encode('utf-8'), self.password.encode('utf-8')) == self.password.encode('utf-8')
+        else:
+            raise ValueError("unknown password format")
     
     def set_password(self, password):
-        self.pass_ = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+        self.password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
     
     @property
-    def is_authenticated(): return True
+    def is_authenticated(self): return True
     
     @property
-    def is_active(): return self.active
+    def is_active(self): return self.active
     
     @property
-    def is_anonymous(): return False
+    def is_anonymous(self): return False
     
-    def get_id():
-        return str(id)
+    def get_id(self):
+        return str(self.id)
     
     def __str__(self):
         return self.username
