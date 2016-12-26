@@ -1,4 +1,10 @@
-table { border-collapse: collapse; }
+/*table { border-collapse: collapse; }
 
 td { border: 1px solid #aaa; padding: 2px 6px 2px 6px; }
 thead td { font-weight: bold; }
+
+*/
+
+body {padding-top: 70px;}
+td {white-space: nowrap;}
+.td-suggestions {width: 100%;}

@@ -7,7 +7,7 @@
     <h2>{{ project.name }}</h2>
     <h3>{{ category.name }}</h3>
         
-    <table>
+    <table class="table table-bordered">
         <thead>
             <tr>
                 <td>num</td>
@@ -21,7 +21,7 @@
                     <td>{{ term.number }}</td>
                     <td>{{ term.text_en }}</td>
                     <td>{{ term.text_jp }}</td>
-                    <td></td>
+                    <td class="td-suggestions"></td>
                 </td>
             {% endfor %}
         </tbody>

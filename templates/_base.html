@@ -4,33 +4,48 @@
     <meta charset="utf-8">
     <title>translator » {% block title %}{% endblock %}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap-3.3.7-dist/css/bootstrap.min.css')}}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap-3.3.7-dist/css/bootstrap-theme.min.css')}}">
     <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='style.css')}}">
+    
 
 </head>
 <body>
-    <div class="topbar">
-        {% if current_user.is_authenticated %}
-            Jste přihlášeni za {{ current_user.username }}! &bull;
-            <a href="{{ url_for('logout') }}">Odhlásit se</a>
-        {% else %}
-            <a href="{{ url_for('login') }}">Přihlásit se</a>
-        {% endif %}
-    </div>
-    
-    {% with messages = get_flashed_messages() %}
-        {% for message in messages %}
-            <div class="flash">{{ message }}</div>
-        {% endfor %}
-    {% endwith %}
+    <nav class="navbar navbar-default navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <a class="navbar-brand" href=" {{ url_for('index') }} ">Kapépří translator</a>
+            </div>
+            <div id="navbar" class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    {% if current_user.is_authenticated %}
+                        <li><a href="{{ url_for('logout') }}">
+                            Odhlásit <strong>{{ current_user.username }}</strong>
+                        </a>
+                    {% else %}
+                        <li><a href="{{ url_for('login') }}">Přihlásit se</a>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
 
-    <h1>
-        <a href="{{ url_for('index') }}">
-            kapépří translator
-        </a>
-    </h1>
-    
-    {% block content %}
-    {% endblock %}
+    <div class="container" role="main">
+        {% with messages = get_flashed_messages() %}
+            {% for message in messages %}
+                <div class="alert alert-success" role="alert">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endwith %}
+        
+        {% block content %}
+        {% endblock %}
+        
+    </div>
 
 
 </body>
