@@ -6,12 +6,21 @@ from flask import Flask, render_template, request, flash, redirect, session, abo
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 
+from flask_login import LoginManager
+
 from wtforms import Form, BooleanField, TextField, TextAreaField, PasswordField, RadioField, SelectField, SelectMultipleField, BooleanField, IntegerField, HiddenField, SubmitField, validators, ValidationError, widgets
 
 import db
 
 app = Flask('translator')
 app.config.from_pyfile("config.py")
+
+login_manager = LoginManager()
+login_manager.init_app(app)
+
+@login_manager.user_loader
+def load_user(user_id):
+    return db.User.get(user_id)
 
 @app.route("/")
 def index():
@@ -28,6 +37,30 @@ def category(project_identifier, category_identifier):
     
     
     return render_template("category.html", project=project, category=category)
+
+class LoginForm(Form):
+    username = TextField('Username', [validators.required()])
+    password = PasswordField('Heslo', [validators.required()])
+    submit = SubmitField('Přihlásit se')
+
+@app.route("/login")
+def login():
+    form = LoginForm(request.form)
+    failed = False
+    if request.method == 'POST' and form.validate():
+        user = db.session.query(db.User).filter(db.User.login == form.name.data.lower()).scalar()
+        if not user: failed = True
+        else:
+            password_matches = user.verify_password(form.password.data)
+            if password_matches:
+                login_user(user)
+                flash("Jste přihlášeni.")
+                return redirect(url_for('index'))
+            else:
+                failed = True
+    
+    return render_template("login.html", form=form, failed=failed)
+
 
 def create_admin():
     admin = Admin(app)

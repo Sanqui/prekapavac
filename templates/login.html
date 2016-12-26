@@ -1,0 +1,18 @@
+{% extends "_base.html" %}
+
+{% block title %}login{% endblock %}
+
+{% block content %}
+    <h2><a href="{{url_for('login')}}">Přihlášení</a></h2>
+    <form method="POST">
+        <dl>
+        <dt>Username:</dt>  <dd>{{form.username}}</dd>
+        <dt>Heslo:</dt>     <dd>{{form.password}}</dd>
+        </dl>
+        {{form.submit}}
+    </form>
+    {% if failed %}
+        <p class="fail">Nesprávné uživatelské jméno nebo heslo.
+    {% endif %}
+{% endblock %}
+

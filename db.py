@@ -33,6 +33,7 @@ class User(Base):
     minipic_url = Column(String(255), default='')
     profile = Column(Text, default='')
     admin = Column(Boolean, nullable=False, default=False)
+    active = Column(Boolean, nullable=False, default=True)
     
     
     def verify_password(self, password):
@@ -41,6 +42,18 @@ class User(Base):
     
     def set_password(self, password):
         self.pass_ = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+    
+    @property
+    def is_authenticated(): return True
+    
+    @property
+    def is_active(): return self.active
+    
+    @property
+    def is_anonymous(): return False
+    
+    def get_id():
+        return str(id)
     
     def __str__(self):
         return self.username
