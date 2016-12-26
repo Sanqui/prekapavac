@@ -1,0 +1,30 @@
+{% extends "_base.html" %}
+
+{% block title %} {{ project.name }} » {{ category.name }} {% endblock %}
+
+{% block content %}
+
+    <h2>{{ project.name }}</h2>
+    <h3>{{ category.name }}</h3>
+        
+    <table>
+        <thead>
+            <tr>
+                <td>num</td>
+                <td>en</td>
+                <td>jp</td>
+                <td>návrhy</td>
+            </tr>
+        <tbody>
+            {% for term in category.terms %}
+                <tr>
+                    <td>{{ term.number }}</td>
+                    <td>{{ term.text_en }}</td>
+                    <td>{{ term.text_jp }}</td>
+                    <td></td>
+                </td>
+            {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}
