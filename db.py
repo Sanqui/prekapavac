@@ -94,7 +94,7 @@ class Comment(Base):
     deleted = Column(Boolean)
     
     term_id = Column(Integer, ForeignKey('terms.id'))
-    term = relationship("Term", backref='suggestions')
+    term = relationship("Term", backref='comments')
     user_id = Column(Integer, ForeignKey('users.id'))
     user = relationship("User", backref='comments')
 
