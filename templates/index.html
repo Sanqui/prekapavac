@@ -8,8 +8,8 @@
         <h2>{{ project.name }}</h2>
         
         <ul>
-            {% for category in projects %}
-                <li>{{ category.name }}
+            {% for category in project.categories %}
+                <li><a href="{{ category.url() }}">{{ category.name }}</a> ({{ category.terms|length }} termínů)
             {% else %}
                 <li>(nejsou tu žádné kategorie...)
             {% endfor %}

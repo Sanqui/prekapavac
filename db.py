@@ -12,6 +12,11 @@ import bcrypt
 
 import config
 
+import app
+from flask import Flask, url_for
+app = Flask('translator')
+app.config.from_pyfile("config.py")
+
 engine = create_engine(config.DATABASE, encoding="utf8", echo=config.DEBUG)
 
 session = scoped_session(sessionmaker(bind=engine, autoflush=False))
@@ -36,6 +41,9 @@ class User(Base):
     
     def set_password(self, password):
         self.pass_ = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+    
+    def __str__(self):
+        return self.username
 
 class Project(Base):
     __tablename__ = 'projects'
@@ -44,6 +52,9 @@ class Project(Base):
     identifier = Column(String(255), nullable=False)
     name = Column(String(255), nullable=False)
     description = Column(Text, default='')
+    
+    def __str__(self):
+        return self.identifier
 
 class Category(Base):
     __tablename__ = 'categories'
@@ -55,6 +66,14 @@ class Category(Base):
     
     project_id = Column(Integer, ForeignKey('projects.id'))
     project = relationship("Project", backref='categories')
+    
+    def url(self):
+        return url_for('category', 
+            project_identifier=self.project.identifier,
+            category_identifier=self.identifier)
+    
+    def __str__(self):
+        return self.project.identifier + '/' + self.identifier
 
 class Term(Base):
     __tablename__ = 'terms'
@@ -68,6 +87,10 @@ class Term(Base):
     
     category_id = Column(Integer, ForeignKey('categories.id'))
     category = relationship("Category", backref='terms')
+    
+    def __str__(self):
+        return self.category.project.identifier + '/' + self.category.identifier \
+            + "/" + self.identifier
 
 class Suggestion(Base):
     __tablename__ = 'suggestions'
