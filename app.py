@@ -6,7 +6,7 @@ from flask import Flask, render_template, request, flash, redirect, session, abo
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 
-from flask_login import LoginManager, login_required, login_user, logout_user
+from flask_login import LoginManager, login_required, login_user, logout_user, current_user
 
 from wtforms import Form, BooleanField, TextField, TextAreaField, PasswordField, RadioField, SelectField, SelectMultipleField, BooleanField, IntegerField, HiddenField, SubmitField, validators, ValidationError, widgets
 
@@ -38,7 +38,13 @@ def category(project_identifier, category_identifier):
     
     return render_template("category.html", project=project, category=category)
 
-@app.route("/<project_identifier>/<category_identifier>/<term_identifier>/")
+class SuggestionForm(Form):
+    text = TextField('Návrh', [validators.required()])
+    description = TextField('Návrh', [validators.required()])
+    submit = SubmitField('Přidat návrh')
+
+@app.route("/<project_identifier>/<category_identifier>/<term_identifier>/",
+    methods="GET POST".split())
 def term(project_identifier, category_identifier, term_identifier):
     # XXX this is a horrible train, make it more concise
     project = db.Project.from_identifier(project_identifier)
@@ -48,8 +54,22 @@ def term(project_identifier, category_identifier, term_identifier):
     term = db.Term.from_identifier(term_identifier, category=category)
     if not term: abort(404)
     
+    suggestion_form = None
+    if current_user.is_authenticated:
+        suggestion_form = SuggestionForm(request.form)
+        if request.method == 'POST' and suggestion_form.validate():
+            suggestion = db.Suggestion(user=current_user, term=term,
+                created=datetime.now(), changed=datetime.now(),
+                text=suggestion_form.text.data, description=suggestion_form.description.data,
+                status="approved")
+            
+            db.session.add(suggestion)
+            db.session.commit()
+            return redirect(term)
+
     
-    return render_template("term.html", project=project, category=category, term=term)
+    return render_template("term.html", project=project, category=category, term=term,
+        suggestion_form=suggestion_form)
 
 class LoginForm(Form):
     username = TextField('Username', [validators.required()])
