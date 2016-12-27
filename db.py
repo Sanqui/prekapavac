@@ -87,8 +87,8 @@ class Category(Base, WithIdentifier):
     identifier = Column(String(255), nullable=False)
     name = Column(String(255), nullable=False)
     description = Column(Text, default='')
-    
     project_id = Column(Integer, ForeignKey('projects.id'))
+    
     project = relationship("Project", backref='categories')
     
     @property
@@ -109,8 +109,8 @@ class Term(Base, WithIdentifier):
     label = Column(String(255))
     text_en = Column(Text)
     text_jp = Column(Text)
-    
     category_id = Column(Integer, ForeignKey('categories.id'))
+    
     category = relationship("Category", backref='terms')
     
     def __str__(self):
@@ -136,8 +136,9 @@ class Suggestion(Base):
     changed = Column(DateTime)
     
     term_id = Column(Integer, ForeignKey('terms.id'))
-    term = relationship("Term", backref='suggestions')
     user_id = Column(Integer, ForeignKey('users.id'))
+    
+    term = relationship("Term", backref='suggestions')
     user = relationship("User", backref='suggestions')
 
 class Comment(Base):
@@ -149,9 +150,25 @@ class Comment(Base):
     deleted = Column(Boolean)
     
     term_id = Column(Integer, ForeignKey('terms.id'))
-    term = relationship("Term", backref='comments')
     user_id = Column(Integer, ForeignKey('users.id'))
+    
+    term = relationship("Term", backref='comments')
     user = relationship("User", backref='comments')
+
+class Vote(Base):
+    __tablename__ = 'votes'
+    
+    term_id = Column(Integer, ForeignKey('terms.id'), primary_key=True, nullable=False)
+    user_id = Column(Integer, ForeignKey('users.id'), primary_key=True, nullable=False)
+    vote = Column(Integer, nullable=False)
+    valid = Column(Boolean)
+    
+    term = relationship("Term", backref='votes')
+    user = relationship("User", backref='votes')
+    
+    changed = Column(DateTime)
+    
+    
 
 if __name__ == '__main__':
     Base.metadata.create_all(bind=engine)
