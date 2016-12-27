@@ -7,4 +7,18 @@ thead td { font-weight: bold; }
 
 body {padding-top: 70px;}
 td {white-space: nowrap;}
+thead tr {background: #eee;}
+.container-fluid {margin-left: 32px; margin-right: 32px;}
 .td-suggestions {width: 100%;}
+
+.table-terms td a {color: inherit;}
+.table-terms td a {color: inherit;}
+
+.table-terms tbody tr:hover {background: #eef;}
+
+.table-data {}
+
+.term-info {font-size: larger;}
+
+dt {}
+dd {margin-left: 32px;}

@@ -31,13 +31,25 @@ def index():
     
 @app.route("/<project_identifier>/<category_identifier>/")
 def category(project_identifier, category_identifier):
-    category = db.session.query(db.Category).filter(db.Category.identifier==category_identifier).scalar()
+    project = db.Project.from_identifier(project_identifier)
+    if not project: abort(404)
+    category = db.Category.from_identifier(category_identifier, project=project)
     if not category: abort(404)
-    project = category.project
-    if project.identifier != project_identifier: abort(404)
-    
     
     return render_template("category.html", project=project, category=category)
+
+@app.route("/<project_identifier>/<category_identifier>/<term_identifier>/")
+def term(project_identifier, category_identifier, term_identifier):
+    # XXX this is a horrible train, make it more concise
+    project = db.Project.from_identifier(project_identifier)
+    if not project: abort(404)
+    category = db.Category.from_identifier(category_identifier, project=project)
+    if not category: abort(404)
+    term = db.Term.from_identifier(term_identifier, category=category)
+    if not term: abort(404)
+    
+    
+    return render_template("term.html", project=project, category=category, term=term)
 
 class LoginForm(Form):
     username = TextField('Username', [validators.required()])

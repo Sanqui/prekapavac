@@ -23,6 +23,11 @@ session = scoped_session(sessionmaker(bind=engine, autoflush=False))
 
 Base = declarative_base(bind=engine)
 
+class WithIdentifier():
+    @classmethod
+    def from_identifier(cls, identifier, **params):
+        return session.query(cls).filter(cls.identifier==identifier).filter_by(**params).scalar()
+
 class User(Base):
     __tablename__ = 'users'
     
@@ -60,7 +65,7 @@ class User(Base):
     def __str__(self):
         return self.username
 
-class Project(Base):
+class Project(Base, WithIdentifier):
     __tablename__ = 'projects'
     
     id = Column(Integer, primary_key=True, nullable=False)
@@ -68,10 +73,14 @@ class Project(Base):
     name = Column(String(255), nullable=False)
     description = Column(Text, default='')
     
+    @property
+    def url(self):
+        return url_for('index', _anchor=self.identifier)
+    
     def __str__(self):
         return self.identifier
 
-class Category(Base):
+class Category(Base, WithIdentifier):
     __tablename__ = 'categories'
     
     id = Column(Integer, primary_key=True, nullable=False)
@@ -82,6 +91,7 @@ class Category(Base):
     project_id = Column(Integer, ForeignKey('projects.id'))
     project = relationship("Project", backref='categories')
     
+    @property
     def url(self):
         return url_for('category', 
             project_identifier=self.project.identifier,
@@ -90,7 +100,7 @@ class Category(Base):
     def __str__(self):
         return self.project.identifier + '/' + self.identifier
 
-class Term(Base):
+class Term(Base, WithIdentifier):
     __tablename__ = 'terms'
 
     id = Column(Integer, primary_key=True, nullable=False)
@@ -106,6 +116,13 @@ class Term(Base):
     def __str__(self):
         return self.category.project.identifier + '/' + self.category.identifier \
             + "/" + self.identifier
+    
+    @property
+    def url(self):
+        return url_for('term', 
+            project_identifier=self.category.project.identifier,
+            category_identifier=self.category.identifier,
+            term_identifier=self.identifier)
 
 class Suggestion(Base):
     __tablename__ = 'suggestions'

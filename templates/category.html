@@ -4,10 +4,16 @@
 
 {% block content %}
 
-    <h2>{{ project.name }}</h2>
-    <h3>{{ category.name }}</h3>
+    <ol class="breadcrumb">
+        <li><a href="{{ url_for('index') }}">Kapépří</a>
+        <li><a href="{{ project.url }}">{{ project.name }}</a>
+        <li class="active">{{ category.name }}
+    </ol>
+    <h2>{{ category.name }}</h2>
+    
+    <p> {{ category.description }}
         
-    <table class="table table-bordered">
+    <table class="table table-bordered table-terms">
         <thead>
             <tr>
                 <td>num</td>
@@ -17,12 +23,21 @@
             </tr>
         <tbody>
             {% for term in category.terms %}
-                <tr>
-                    <td>{{ term.number }}</td>
-                    <td>{{ term.text_en }}</td>
-                    <td>{{ term.text_jp }}</td>
-                    <td class="td-suggestions"></td>
-                </td>
+                    <tr>
+                        <td>
+                            <a href="{{ term.url }}">#{{ term.number }}</a>
+                        </td>
+                        <td>
+                            <a href="{{ term.url }}">{{ term.text_en }}</a>
+                        </td>
+                        <td>
+                            <a href="{{ term.url }}">{{ term.text_jp }}</a></td>
+                        <td class="td-suggestions">
+                            <a href="{{ term.url }}">
+                                
+                            </a>
+                        </td>
+                    </td>
             {% endfor %}
         </tbody>
     </table>

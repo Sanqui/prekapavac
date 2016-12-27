@@ -1,0 +1,60 @@
+{% extends "_base.html" %}
+
+{% block title %} {{ project.name }} » {{ category.name }} » {{ term.text_en }} {% endblock %}
+
+{% block content %}
+    
+    <ol class="breadcrumb">
+        <li><a href="{{ url_for('index') }}">Kapépří</a>
+        <li><a href="{{ project.url }}">{{ project.name }}</a>
+        <li><a href="{{ category.url }}">{{ category.name }}</a>
+        <li class="active">{{ term.text_en }}
+    </ol>
+    
+    <h2>{{ term.text_en }}</h2>
+    
+    <div class="row">
+        <div class="col-md-2">
+            <table class="table table-condensed table-data">
+                <tr>
+                    <th scope="row">Číslo:</th>
+                    <td>#{{ term.number }}</td>
+                </tr>
+                    <th scope="row">Identifier:</th>
+                    <td>{{ term.identifier }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Label:</th>
+                    <td>{{ term.label or "(None)" }}</td>
+                </tr>
+            </table>
+        </div>
+        <div class="col-md-4">
+            <dl class="term-info">
+                <dt>Anglicky:</dt>
+                    <dd>{{ term.text_en }}</dd>
+            </dl>
+        </div>
+        <div class="col-md-4">
+            <dl class="term-info">
+                <dt>Japonsky:</dt>
+                    <dd>{{ term.text_jp }}</dd>
+            </dl>
+        </div>
+        <div class="col-md-2">
+            
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-6">
+            <h3>Návrhy</h3>
+            
+        </div>
+        <div class="col-md-6">
+            <h3>Komentáře</h3>
+            
+        </div>
+    </div>
+    
+{% endblock %}
