@@ -19,6 +19,19 @@ thead tr {background: #eee;}
 .table-data {}
 
 .term-info {font-size: larger;}
+.term-info dd {font-size: 28px;}
 
 dt {}
 dd {margin-left: 32px;}
+
+.suggestions {margin: 0; padding: 0; list-style: none;}
+.suggestions li {margin: 0px 4px 0px 4px; padding: 0px 8px 1px 8px; border: 1px solid #ccc; display: inline-block;
+    border-radius: 10px;}
+
+.vote-buttons {float: right;}
+.vote-buttons form {display: inline;}
+
+/*
+.vote-buttons .glyphicon-star { color: #dd0; }
+.vote-buttons .glyphicon-heart { color: #e00; }
+*/

@@ -2,7 +2,7 @@ from datetime import datetime
 
 from unidecode import unidecode
 
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, func
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import scoped_session, sessionmaker, relationship, backref
 from sqlalchemy.schema import Column, ForeignKey, Table
@@ -113,6 +113,10 @@ class Term(Base, WithIdentifier):
     
     category = relationship("Category", backref='terms')
     
+    @property
+    def score(self):
+        return session.query(func.max(Score.score))
+    
     def __str__(self):
         return self.category.project.identifier + '/' + self.category.identifier \
             + "/" + self.identifier
@@ -140,6 +144,17 @@ class Suggestion(Base):
     
     term = relationship("Term", backref='suggestions')
     user = relationship("User", backref='suggestions')
+    
+    @property
+    def score(self):
+        score = session.query(
+            func.sum(Vote.vote).label('score')).filter(
+            Vote.suggestion == self and Vote.valid == True).scalar() or 0
+        return score
+    
+    @property
+    def url(self):
+        return self.term.url
 
 class Comment(Base):
     __tablename__ = 'comments'
@@ -158,15 +173,20 @@ class Comment(Base):
 class Vote(Base):
     __tablename__ = 'votes'
     
-    term_id = Column(Integer, ForeignKey('terms.id'), primary_key=True, nullable=False)
+    suggestion_id = Column(Integer, ForeignKey('suggestions.id'), primary_key=True, nullable=False)
     user_id = Column(Integer, ForeignKey('users.id'), primary_key=True, nullable=False)
     vote = Column(Integer, nullable=False)
     valid = Column(Boolean)
     
-    term = relationship("Term", backref='votes')
+    suggestion = relationship("Suggestion", backref='votes')
     user = relationship("User", backref='votes')
     
     changed = Column(DateTime)
+    
+    @classmethod
+    def from_for(cls, user, suggestion):
+        return session.query(cls).filter(cls.user == user,
+            cls.suggestion == suggestion).scalar()
     
     
 

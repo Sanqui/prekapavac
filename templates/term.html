@@ -63,7 +63,33 @@
             <ul class="list-group">
                 {% for suggestion in term.suggestions %}
                     <li class="list-group-item">
+                        <div class="vote-buttons">
+                            <form method="POST" action="{{url_for('vote')}}">
+                                <input type="hidden" name="suggestion_id" value="{{ suggestion.id }}">
+                                <div class="btn-group">
+                                    {% macro vote_button(vote, icon) %}
+                                        <button type="submit" name="vote" value="{{ vote }}" class="btn btn-default {% if vote_from_for(current_user, suggestion).vote == vote %}active{% endif %}">
+                                            <span class="glyphicon glyphicon-{{icon}}"></span>
+                                        </button>
+                                    {% endmacro %}
+                                    
+                                    {{ vote_button(0, 'star-empty') }}
+                                    {{ vote_button(1, 'star') }}
+                                    {{ vote_button(2, 'heart') }}
+                                </div>
+                            </form>
+                            <div class="btn-group dropdown">
+                                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                                    <span class="glyphicon glyphicon-option-vertical"></span>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a href="#">Vzít zpět</a></li>
+                                    <li><a href="#">Skrýt</a></li>
+                                </ul>
+                            </div>
+                        </div>
                         <h4 class="list-group-item-heading">
+                            <span class="badge">{{ suggestion.score }}</span>
                             {{ suggestion.text }}
                         </h4>
                         <p class="list-group-item-text">

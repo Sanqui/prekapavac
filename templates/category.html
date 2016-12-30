@@ -33,9 +33,11 @@
                         <td>
                             <a href="{{ term.url }}">{{ term.text_jp }}</a></td>
                         <td class="td-suggestions">
-                            <a href="{{ term.url }}">
-                                
-                            </a>
+                            <ul class="suggestions">
+                                {% for suggestion in term.suggestions %}
+                                    <li>{{ suggestion.text }}
+                                {% endfor %}
+                            </li>
                         </td>
                     </td>
             {% endfor %}

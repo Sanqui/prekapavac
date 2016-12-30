@@ -69,7 +69,29 @@ def term(project_identifier, category_identifier, term_identifier):
 
     
     return render_template("term.html", project=project, category=category, term=term,
-        suggestion_form=suggestion_form)
+        suggestion_form=suggestion_form, vote_from_for = db.Vote.from_for)
+
+@app.route("/vote", methods=["POST"])
+@login_required
+def vote():
+    suggestion = db.session.query(db.Suggestion).get(request.form['suggestion_id'])
+    if not suggestion: abort(404)
+    if suggestion.status not in ["approved"]:
+        flash("Voting for a suggestion that isn't approved isn't possible.")
+        return redirect(suggestion.url)
+    vote_num = request.form['vote']
+    if vote_num not in ["0", "1", "2"]: abort(400)
+    
+    vote = db.Vote.from_for(current_user, suggestion)
+    if vote:
+        db.session.delete(vote)
+    vote = db.Vote(suggestion=suggestion, user=current_user, vote=vote_num,
+        valid=True, changed=datetime.now())
+    db.session.add(vote)
+    db.session.commit()
+    
+    return redirect(suggestion.url)
+    
 
 class LoginForm(Form):
     username = TextField('Username', [validators.required()])
