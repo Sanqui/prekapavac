@@ -91,6 +91,7 @@ class Category(Base, WithIdentifier):
     name = Column(String(255), nullable=False)
     description = Column(Text, default='')
     position = Column(Integer)
+    hidden = Column(Boolean, nullable=False, default=False)
     project_id = Column(Integer, ForeignKey('projects.id'))
     
     project = relationship("Project", order_by=position)
@@ -126,8 +127,12 @@ class Term(Base, WithIdentifier):
             .outerjoin(Vote).group_by(Suggestion).order_by('score DESC').all()
     
     def __str__(self):
-        return self.category.project.identifier + '/' + self.category.identifier \
-            + "/" + self.identifier
+        if self.category:
+            return self.category.identifier \
+                + "/" + self.identifier
+        else:
+            return "???" \
+                + "/" + self.identifier
     
     @property
     def url(self):
