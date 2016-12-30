@@ -5,7 +5,7 @@
 {% block content %}
 
     <ol class="breadcrumb">
-        <li><a href="{{ url_for('index') }}">Kapépří</a>
+        <li><a href="{{ url_for('index') }}">{{ g.sitename }}</a>
         <li><a href="{{ project.url }}">{{ project.name }}</a>
         <li class="active">{{ category.name }}
     </ol>
@@ -34,8 +34,12 @@
                             <a href="{{ term.url }}">{{ term.text_jp }}</a></td>
                         <td class="td-suggestions">
                             <ul class="suggestions">
-                                {% for suggestion in term.suggestions %}
-                                    <li>{{ suggestion.text }}
+                                {% for suggestion, score in term.suggestions_w_score %}
+                                    <li>
+                                        {% if not g.db.Vote.from_for(current_user, suggestion) %}
+                                            <span class="glyphicon glyphicon-hand-right vote-sign"></span>
+                                        {% endif %}
+                                        {{ suggestion.text }}
                                 {% endfor %}
                             </li>
                         </td>

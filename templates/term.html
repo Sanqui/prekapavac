@@ -5,7 +5,7 @@
 {% block content %}
     
     <ol class="breadcrumb">
-        <li><a href="{{ url_for('index') }}">Kapépří</a>
+        <li><a href="{{ url_for('index') }}">{{ g.sitename }}</a>
         <li><a href="{{ project.url }}">{{ project.name }}</a>
         <li><a href="{{ category.url }}">{{ category.name }}</a>
         <li class="active">{{ term.text_en }}
@@ -61,35 +61,57 @@
         <div class="col-md-6">
             <h3>Návrhy</h3>
             <ul class="list-group">
-                {% for suggestion in term.suggestions %}
+                {% for suggestion, score in term.suggestions_w_score %}
                     <li class="list-group-item">
-                        <div class="vote-buttons">
-                            <form method="POST" action="{{url_for('vote')}}">
-                                <input type="hidden" name="suggestion_id" value="{{ suggestion.id }}">
-                                <div class="btn-group">
-                                    {% macro vote_button(vote, icon) %}
-                                        <button type="submit" name="vote" value="{{ vote }}" class="btn btn-default {% if vote_from_for(current_user, suggestion).vote == vote %}active{% endif %}">
-                                            <span class="glyphicon glyphicon-{{icon}}"></span>
+                        {% if current_user.is_authenticated %}
+                            <div class="vote-buttons">
+                                {% if not vote_from_for(current_user, suggestion) %}
+                                    <span class="glyphicon glyphicon-hand-right vote-sign"></span>
+                                {% endif %}
+                                <form method="POST" action="{{url_for('vote')}}">
+                                    <input type="hidden" name="suggestion_id" value="{{ suggestion.id }}">
+                                    <div class="btn-group">
+                                        {% macro vote_button(vote, icon) %}
+                                            <button type="submit" name="vote" value="{{ vote }}" class="btn btn-default {% if vote_from_for(current_user, suggestion).vote == vote %}active{% endif %}">
+                                                <span class="glyphicon glyphicon-{{icon}}"></span>
+                                            </button>
+                                        {% endmacro %}
+                                        
+                                        {{ vote_button(0, 'star-empty') }}
+                                        {{ vote_button(1, 'star') }}
+                                        {{ vote_button(2, 'heart') }}
+                                    </div>
+                                </form>
+                                <form method="POST" action="{{url_for('suggestion')}}">
+                                    <input type="hidden" name="suggestion_id" value="{{ suggestion.id }}">
+                                    <div class="btn-group dropdown">
+                                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                                            <span class="glyphicon glyphicon-option-vertical"></span>
                                         </button>
-                                    {% endmacro %}
-                                    
-                                    {{ vote_button(0, 'star-empty') }}
-                                    {{ vote_button(1, 'star') }}
-                                    {{ vote_button(2, 'heart') }}
-                                </div>
-                            </form>
-                            <div class="btn-group dropdown">
-                                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                                    <span class="glyphicon glyphicon-option-vertical"></span>
-                                </button>
-                                <ul class="dropdown-menu">
-                                    <li><a href="#">Vzít zpět</a></li>
-                                    <li><a href="#">Skrýt</a></li>
-                                </ul>
+                                        <ul class="dropdown-menu">
+                                            {% macro vote_dropdown_button(action, text) %}
+                                                <li>
+                                                    <button type="submit" name="action" value="{{action}}" class="btn btn-default btn-block">
+                                                        {{ text }}
+                                                    </button>
+                                            {% endmacro %}
+                                            <li>status: {{ suggestion.status }}
+                                            {% if suggestion.status != "approved" %}
+                                                {{ vote_dropdown_button('approve', "Svolit") }}
+                                            {% endif %}
+                                            {% if suggestion.status != "hidden" %}
+                                                {{ vote_dropdown_button('hide', "Skrýt") }}
+                                            {% endif %}
+                                            {% if suggestion.status != "deleted" %}
+                                                {{ vote_dropdown_button('delete', "Smazat") }}
+                                            {% endif %}
+                                        </ul>
+                                    </div>
+                                </form>
                             </div>
-                        </div>
+                        {% endif %}
                         <h4 class="list-group-item-heading">
-                            <span class="badge">{{ suggestion.score }}</span>
+                            <span class="badge">{{ score or 0 }}</span>
                             {{ suggestion.text }}
                         </h4>
                         <p class="list-group-item-text">

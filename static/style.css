@@ -30,6 +30,10 @@ dd {margin-left: 32px;}
 
 .vote-buttons {float: right;}
 .vote-buttons form {display: inline;}
+.vote-buttons .dropdown-menu {padding: 6px;}
+.vote-buttons .dropdown-menu li {margin-bottom: 6px;}
+
+.vote-sign {padding-right: 3px; color: red; }
 
 /*
 .vote-buttons .glyphicon-star { color: #dd0; }

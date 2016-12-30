@@ -19,6 +19,11 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = "login"
 
+@app.before_request
+def before_request():
+    g.sitename = app.config['SITENAME']
+    g.db = db
+
 @login_manager.user_loader
 def load_user(user_id):
     return db.session.query(db.User).get(user_id)
@@ -54,18 +59,28 @@ def term(project_identifier, category_identifier, term_identifier):
     term = db.Term.from_identifier(term_identifier, category=category)
     if not term: abort(404)
     
+    #suggestions = db.session.query(db.Suggestion, func.sum(db.Vote.vote).label("score")).join(db.Vote) \
+    #    .filter(db.Suggestion.term==term, db.Suggestion.status in "new approved final".split(),
+    #    ).order_by("score").all()
+    #suggestions = db.session.query(db.Suggestion) \
+    #    .filter(db.Suggestion.term==term, db.Suggestion.status == "approved").all()
+    
     suggestion_form = None
     if current_user.is_authenticated:
         suggestion_form = SuggestionForm(request.form)
         if request.method == 'POST' and suggestion_form.validate():
-            suggestion = db.Suggestion(user=current_user, term=term,
-                created=datetime.now(), changed=datetime.now(),
-                text=suggestion_form.text.data, description=suggestion_form.description.data,
-                status="approved")
-            
-            db.session.add(suggestion)
-            db.session.commit()
-            return redirect(term)
+            suggestion_text = suggestion_form.text.data.strip()
+            if db.session.query(db.Suggestion).filter(db.Suggestion.text == suggestion_text, db.Suggestion.term == term).all():
+                flash("Přesně tenhle návrh už existuje, mrkni se po něm!")
+            else:
+                suggestion = db.Suggestion(user=current_user, term=term,
+                    created=datetime.now(), changed=datetime.now(),
+                    text=suggestion_text, description=suggestion_form.description.data,
+                    status="approved")
+                
+                db.session.add(suggestion)
+                db.session.commit()
+                return redirect(term)
 
     
     return render_template("term.html", project=project, category=category, term=term,
@@ -92,6 +107,24 @@ def vote():
     
     return redirect(suggestion.url)
     
+@app.route("/suggestion", methods=["POST"])
+@login_required
+def suggestion():
+    suggestion = db.session.query(db.Suggestion).get(request.form['suggestion_id'])
+    if not suggestion: abort(404)
+    action = request.form['action']
+    if current_user.admin:
+        if action == 'delete':
+            suggestion.status = 'deleted'
+        elif action == 'approve':
+            suggestion.status = 'approved'
+        elif action == 'hide':
+            suggestion.status = 'hidden'
+    else:
+        abort(403)
+    
+    db.session.commit()
+    return redirect(suggestion.url)
 
 class LoginForm(Form):
     username = TextField('Username', [validators.required()])

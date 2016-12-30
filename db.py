@@ -114,8 +114,10 @@ class Term(Base, WithIdentifier):
     category = relationship("Category", backref='terms')
     
     @property
-    def score(self):
-        return session.query(func.max(Score.score))
+    def suggestions_w_score(self):
+        return session.query(Suggestion, func.sum(Vote.vote).label('score')) \
+            .filter(Suggestion.term==self, Suggestion.status == "approved") \
+            .outerjoin(Vote).group_by(Suggestion).order_by('score DESC').all()
     
     def __str__(self):
         return self.category.project.identifier + '/' + self.category.identifier \
