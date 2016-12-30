@@ -128,7 +128,7 @@ class Term(Base, WithIdentifier):
     
     def __str__(self):
         if self.category:
-            return self.category.identifier \
+            return str(self.category) \
                 + "/" + self.identifier
         else:
             return "???" \

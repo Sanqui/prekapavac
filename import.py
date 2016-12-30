@@ -32,6 +32,6 @@ with open(path) as csvfile:
             if c:
                 comment = db.Comment(text=c,
                     term=term)
-                db.session.add(term)
+                db.session.add(comment)
 
 db.session.commit()
