@@ -72,6 +72,9 @@ class Project(Base, WithIdentifier):
     identifier = Column(String(255), nullable=False)
     name = Column(String(255), nullable=False)
     description = Column(Text, default='')
+    position = Column(Integer)
+    
+    categories = relationship("Category", order_by="Category.position")
     
     @property
     def url(self):
@@ -87,9 +90,10 @@ class Category(Base, WithIdentifier):
     identifier = Column(String(255), nullable=False)
     name = Column(String(255), nullable=False)
     description = Column(Text, default='')
+    position = Column(Integer)
     project_id = Column(Integer, ForeignKey('projects.id'))
     
-    project = relationship("Project", backref='categories')
+    project = relationship("Project", order_by=position)
     
     @property
     def url(self):
@@ -112,6 +116,8 @@ class Term(Base, WithIdentifier):
     category_id = Column(Integer, ForeignKey('categories.id'))
     
     category = relationship("Category", backref='terms')
+    
+    comments = relationship("Comment", order_by="Comment.created")
     
     @property
     def suggestions_w_score(self):
@@ -169,7 +175,7 @@ class Comment(Base):
     term_id = Column(Integer, ForeignKey('terms.id'))
     user_id = Column(Integer, ForeignKey('users.id'))
     
-    term = relationship("Term", backref='comments')
+    term = relationship("Term")
     user = relationship("User", backref='comments')
 
 class Vote(Base):

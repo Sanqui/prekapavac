@@ -30,7 +30,7 @@ def load_user(user_id):
 
 @app.route("/")
 def index():
-    projects = db.session.query(db.Project).all()
+    projects = db.session.query(db.Project).order_by(db.Project.position.asc()).all()
     
     return render_template("index.html", projects=projects)
     
