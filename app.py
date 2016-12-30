@@ -157,8 +157,16 @@ def logout():
 
 def create_admin():
     admin = Admin(app)
+    
+    class RestrictedModelView(ModelView):
+        def is_accessible(self):
+            return current_user.is_authenticated and current_user.admin
+
+        def inaccessible_callback(self, name, **kwargs):
+            return redirect(url_for('login', next=request.url))
+    
     for table in (db.User, db.Project, db.Category, db.Term, db.Suggestion, db.Comment):
-        admin.add_view(ModelView(table, db.session))
+        admin.add_view(RestrictedModelView(table, db.session))
 
 
 if __name__ == "__main__":
