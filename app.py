@@ -47,6 +47,10 @@ class SuggestionForm(Form):
     text = TextField('Návrh', [validators.required()])
     description = TextField('Návrh', [validators.required()])
     submit = SubmitField('Přidat návrh')
+    
+class CommentForm(Form):
+    comment_text = TextField('Návrh', [validators.required()])
+    submit = SubmitField('Přidat komentář')
 
 @app.route("/<project_identifier>/<category_identifier>/<term_identifier>/",
     methods="GET POST".split())
@@ -66,8 +70,10 @@ def term(project_identifier, category_identifier, term_identifier):
     #    .filter(db.Suggestion.term==term, db.Suggestion.status == "approved").all()
     
     suggestion_form = None
+    comment_form = None
     if current_user.is_authenticated:
         suggestion_form = SuggestionForm(request.form)
+        comment_form = CommentForm(request.form)
         if request.method == 'POST' and suggestion_form.validate():
             suggestion_text = suggestion_form.text.data.strip()
             if db.session.query(db.Suggestion).filter(db.Suggestion.text == suggestion_text, db.Suggestion.term == term).all():
@@ -81,10 +87,20 @@ def term(project_identifier, category_identifier, term_identifier):
                 db.session.add(suggestion)
                 db.session.commit()
                 return redirect(term)
+        if request.method == 'POST' and comment_form.validate():
+            comment = db.Comment(user=current_user, term=term,
+                created=datetime.now(),
+                text=comment_form.comment_text.data,
+                deleted=False)
+            
+            db.session.add(comment)
+            db.session.commit()
+            return redirect(term)
 
     
     return render_template("term.html", project=project, category=category, term=term,
-        suggestion_form=suggestion_form, vote_from_for = db.Vote.from_for)
+        suggestion_form=suggestion_form, comment_form=comment_form,
+        vote_from_for = db.Vote.from_for)
 
 @app.route("/vote", methods=["POST"])
 @login_required

@@ -116,7 +116,7 @@
                         </h4>
                         <p class="list-group-item-text">
                             {{ suggestion.description }}
-                            — {{ suggestion.user }}
+                            — <strong>{{ suggestion.user }}</strong>
                         </p>
                         
                     </li>
@@ -144,11 +144,33 @@
                     {% endif %}
                 </div>
             </div>
-            <h4></h4>
         </div>
         <div class="col-md-6">
             <h3>Komentáře</h3>
-            
+            <div class="comments">
+                {% for comment in term.comments %}
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <strong>{{ comment.user.username }}</strong>: {{ comment.text }}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Přidat komentář</h3>
+                </div>
+                <div class="panel-body">
+                    {% if comment_form %}
+                        <form method="POST" class="comment-form">
+                            {{comment_form.comment_text}}
+                            {{comment_form.submit}}
+                        </form>
+                    {% else %}
+                        <p>Pro přidávání návrhů je potřeba se <a href="{{url_for('login')}}">přihlásit</a>.
+                    {% endif %}
+                </div>
+            </div>
         </div>
 
     </div>

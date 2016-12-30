@@ -35,6 +35,12 @@ dd {margin-left: 32px;}
 
 .vote-sign {padding-right: 3px; color: red; }
 
+.comment-form #text {width: 100%;}
+.comment-form input {display: inline-block; margin: 4px;}
+
+.comments .panel {margin-top: 2px; margin-bottom: 8px; }
+.comments .panel-body {padding: 4px 4px 4px 7px; }
+
 /*
 .vote-buttons .glyphicon-star { color: #dd0; }
 .vote-buttons .glyphicon-heart { color: #e00; }
