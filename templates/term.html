@@ -53,8 +53,9 @@
                 <dt>Anglicky:</dt>
                     <dd>{{ term.text_en }}</dd>
             </dl>
-            <a href="https://slovnik.seznam.cz/cz-en/?q={{term.term_en}}">Seznam Slovník</a>
-            &bull; <a hske="https://translate.google.com/#en/cs/{{term.term_en}}">Google Translate</a>
+            <a href="https://slovnik.seznam.cz/en-cz/?q={{term.text_en}}">Seznam Slovník</a>
+            &bull; <a href="https://translate.google.com/#en/cs/{{term.text_en}}">Google Translate</a>
+            &bull; <a href="https://www.google.com/search?q=define:{{term.text_en}}">define:</a>
         </div>
         <div class="col-md-4">
             <dl class="term-info">
@@ -64,7 +65,10 @@
             <a href="http://jisho.org/search?utf8=%E2%9C%93&keyword={{ term.text_jp }}">jisho.org</a>
         </div>
         <div class="col-md-2">
-            
+            <ul>
+                <li><a href="https://veekun.com/dex/lookup?lookup=move:{{ term.text_en }}">veekun</a>
+                <li><a href="http://bulbapedia.bulbagarden.net/wiki/{{ term.text_en }} (move)">Bulbapedia</a>
+            </ul>
         </div>
     </div>
     
