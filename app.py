@@ -179,6 +179,7 @@ def create_admin():
         admin.add_view(RestrictedModelView(table, db.session))
 
 
+create_admin()
+
 if __name__ == "__main__":
-    create_admin()
     app.run(host="", port=8004, debug=True, threaded=True)

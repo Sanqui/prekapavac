@@ -1,0 +1,7 @@
+sqlalchemy
+flask
+wtforms
+flask-login
+flask-admin
+unidecode
+bcrypt

@@ -12,7 +12,6 @@ import bcrypt
 
 import config
 
-import app
 from flask import Flask, url_for
 app = Flask('translator')
 app.config.from_pyfile("config.py")
