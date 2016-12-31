@@ -102,7 +102,10 @@ class Category(Base, WithIdentifier):
             category_identifier=self.identifier)
     
     def __str__(self):
-        return self.project.identifier + '/' + self.identifier
+        if self.project:
+            return self.project.identifier + '/' + self.identifier
+        else:
+            return "???" + '/' + self.identifier
 
 class Term(Base, WithIdentifier):
     __tablename__ = 'terms'
