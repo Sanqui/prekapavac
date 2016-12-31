@@ -12,18 +12,26 @@
     </ol>
     <ul class="pager">
         <li class="previous">
-            <a href="#">
-                <span aria-hidden="true">&larr;</span> prev
-            </a>
-        <li><strong>{{ term.text_en }}</strong>
+            {% if term.prev %}
+                <a href="{{ term.prev.url }}">
+                    <span aria-hidden="true">&larr;</span>
+                    #{{ term.prev.number }} {{ term.prev.text_en }}
+                </a>
+            {% endif %}
+        <li>
+            #{{ term.number }}
+            <strong>{{ term.text_en }}</strong>
         <li class="next">
-            <a href="#">
-                next <span aria-hidden="true">&rarr;</span>
-            </a>
+            {% if term.next %}
+                <a href="{{ term.next.url }}">
+                    #{{ term.next.number }} {{ term.next.text_en }}
+                    <span aria-hidden="true">&rarr;</span>
+                </a>
+            {% endif %}
     </ul>
-    
+    <!--
     <h2>{{ term.text_en }}</h2>
-    
+    -->
     <div class="row">
         <div class="col-md-2">
             <table class="table table-condensed table-data">

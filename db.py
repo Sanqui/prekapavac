@@ -126,6 +126,18 @@ class Term(Base, WithIdentifier):
             .filter(Suggestion.term==self, Suggestion.status == "approved") \
             .outerjoin(Vote).group_by(Suggestion).order_by('score DESC').all()
     
+    @property
+    def prev(self):
+        return session.query(Term).filter(Term.category == self.category) \
+            .filter(Term.number < self.number) \
+            .order_by(Term.number.desc()).first()
+            
+    @property
+    def next(self):
+        return session.query(Term).filter(Term.category == self.category) \
+            .filter(Term.number > self.number) \
+            .order_by(Term.number.asc()).first()
+    
     def __str__(self):
         if self.category:
             return str(self.category) \

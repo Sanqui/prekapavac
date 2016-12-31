@@ -63,12 +63,6 @@ def term(project_identifier, category_identifier, term_identifier):
     term = db.Term.from_identifier(term_identifier, category=category)
     if not term: abort(404)
     
-    #suggestions = db.session.query(db.Suggestion, func.sum(db.Vote.vote).label("score")).join(db.Vote) \
-    #    .filter(db.Suggestion.term==term, db.Suggestion.status in "new approved final".split(),
-    #    ).order_by("score").all()
-    #suggestions = db.session.query(db.Suggestion) \
-    #    .filter(db.Suggestion.term==term, db.Suggestion.status == "approved").all()
-    
     suggestion_form = None
     comment_form = None
     if current_user.is_authenticated:
