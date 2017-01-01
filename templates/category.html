@@ -36,7 +36,7 @@
                             <ul class="suggestions">
                                 {% for suggestion, score in term.suggestions_w_score %}
                                     <li>
-                                        {% if not g.db.Vote.from_for(current_user, suggestion) %}
+                                        {% if current_user.is_authenticated and not g.db.Vote.from_for(current_user, suggestion) %}
                                             <span class="glyphicon glyphicon-hand-right vote-sign"></span>
                                         {% endif %}
                                         {{ suggestion.text }}
