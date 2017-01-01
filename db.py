@@ -16,7 +16,13 @@ from flask import Flask, url_for
 app = Flask('translator')
 app.config.from_pyfile("config.py")
 
-engine = create_engine(config.DATABASE, encoding="utf8", echo=config.DEBUG)
+if 'mysql' in config.DATABASE:
+    engine = create_engine(config.DATABASE, encoding="utf8", pool_size = 100, pool_recycle=4200, echo=config.DEBUG) # XXX
+    # pool_recycle is to prevent "server has gone away"
+else:
+    engine = create_engine(config.DATABASE, encoding="utf8", echo=config.DEBUG)
+
+
 
 session = scoped_session(sessionmaker(bind=engine, autoflush=False))
 
