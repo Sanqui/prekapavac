@@ -4,6 +4,14 @@
 
 {% block content %}
     <h2><a href="{{url_for('login')}}">Přihlášení</a></h2>
+        {{ form.error }}
+    {% if form.errors %}
+        <ul>
+            {% for error in form.errors %}
+                <li>{{ error }}
+            {% endfor %}
+        </ul>
+    {% endif %}
     <form method="POST">
         <dl>
         <dt>Username:</dt>  <dd>{{form.username}}</dd>

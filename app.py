@@ -19,6 +19,15 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = "login"
 
+# inspired by http://flask.pocoo.org/snippets/12/
+def flash_errors(form):
+    for field, errors in form.errors.items():
+        for error in errors:
+            flash("Chyba u {}: {}".format(
+                getattr(form, field).label.text,
+                error
+            ), 'danger')
+
 @app.before_request
 def before_request():
     g.sitename = app.config['SITENAME']
@@ -71,7 +80,7 @@ def term(project_identifier, category_identifier, term_identifier):
         if request.method == 'POST' and suggestion_form.validate():
             suggestion_text = suggestion_form.text.data.strip()
             if db.session.query(db.Suggestion).filter(db.Suggestion.text == suggestion_text, db.Suggestion.term == term).all():
-                flash("Přesně tenhle návrh už existuje, mrkni se po něm!")
+                flash("Přesně tenhle návrh už existuje, mrkni se po něm!", 'info')
             else:
                 suggestion = db.Suggestion(user=current_user, term=term,
                     created=datetime.now(), changed=datetime.now(),
@@ -102,7 +111,7 @@ def vote():
     suggestion = db.session.query(db.Suggestion).get(request.form['suggestion_id'])
     if not suggestion: abort(404)
     if suggestion.status not in ["approved"]:
-        flash("Voting for a suggestion that isn't approved isn't possible.")
+        flash("Voting for a suggestion that isn't approved isn't possible.", 'danger')
         return redirect(suggestion.url)
     vote_num = request.form['vote']
     if vote_num not in ["0", "1", "2"]: abort(400)
@@ -152,12 +161,50 @@ def login():
             password_matches = user.verify_password(form.password.data)
             if password_matches:
                 login_user(user, remember=True)
-                flash("Jste přihlášeni.")
+                flash("Jste přihlášeni.", 'success')
                 return redirect(url_for('index'))
             else:
                 failed = True
     
     return render_template("login.html", form=form, failed=failed)
+
+class RegisterForm(Form):
+    username = TextField('Username', [validators.required()])
+    password = PasswordField('Heslo', [
+        validators.Required(),
+        validators.EqualTo('confirm_password', message='Hesla se musí shodovat')
+    ])
+    confirm_password = PasswordField('Heslo znovu', [validators.required()])
+    email = TextField('Email', [validators.required()])
+    key = TextField('Klíč', [validators.required()])
+    submit = SubmitField('Zaregistrovat se')
+
+@app.route("/register", methods="GET POST".split())
+def register():
+    form = RegisterForm(request.form)
+    failed = False
+    if request.method == 'POST' and form.validate():
+        if form.key.data != app.config["REGISTER_KEY"]:
+            flash("Zadali jste nesprávný registrační klíč.", "danger")
+        else:
+            user = db.session.query(db.User).filter(db.User.username == form.username.data.lower()).scalar()
+            if user:
+                flash("Toto uživatelské jméno je již zabrané, vyberte si, prosím, jiné.", "danger")
+            else:
+                user = db.User(username=form.username.data.lower(),
+                    email=form.email.data,
+                    active=True)
+                user.set_password(form.password.data)
+                db.session.add(user)
+                db.session.commit()
+                
+                login_user(user, remember=True)
+                flash("Registrace proběhla úspěšně.", 'success')
+                return redirect(url_for('index'))
+    else:
+        flash_errors(form)
+    
+    return render_template("register.html", form=form)
 
 @app.route("/logout")
 @login_required
