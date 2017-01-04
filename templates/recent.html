@@ -38,7 +38,7 @@
                         <strong>{{change.text}}</strong>
                     {% elif type(change) == db.Comment %}
                         <span class="label label-default">komentář</span>
-                        {{ change.text |truncate(20) }}
+                        {{ change.text |truncate(64) }}
                     {% else %}
                         <!-- should not happen :-) -->
                         {{ change }}

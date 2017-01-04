@@ -124,7 +124,7 @@ def recent():
     comments = db.session.query(db.Comment).order_by(db.Comment.created.desc()).limit(30).all()
     
     changes = [c for c in suggestions + comments if c.created]
-    changes.sort(key=lambda x: x.created)
+    changes.sort(key=lambda x: x.created, reverse=True)
     changes = changes[0:20]
     
     return render_template("recent.html", changes=changes)
