@@ -54,7 +54,7 @@ def category(project_identifier, category_identifier):
 
 class SuggestionForm(Form):
     text = TextField('Návrh', [validators.required()])
-    description = TextField('Návrh', [validators.required()])
+    description = TextField('Popis')
     submit = SubmitField('Přidat návrh')
     
 class CommentForm(Form):
