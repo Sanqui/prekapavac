@@ -1,8 +1,53 @@
 {# !!! #}
 {# remember to add an import to _base.html #}
 {# !!! #}
+
 {% macro unrated_icon(suggestion) %}
     {% if current_user.is_authenticated and not g.db.Vote.from_for(current_user, suggestion) %}
         <span class="glyphicon glyphicon-hand-right vote-sign"></span>
     {% endif %}
 {% endmacro %}
+
+{% macro ago(d) %}
+    <span title="{{d|datetime}}">
+        {% with diff = g.now - d %}
+            {% if diff.days < 0 %}
+                {% if diff.days < -6 %}
+                    {{d|datetime}}
+                {% elif diff.days < -2 or (diff.days == -2 and g.tomorrow.day != d.day) %}
+                    {% if   d.weekday() == 0 %} pondělí
+                    {% elif d.weekday() == 1 %} úterý
+                    {% elif d.weekday() == 2 %} středa
+                    {% elif d.weekday() == 3 %} čtvrtek
+                    {% elif d.weekday() == 4 %} pátek
+                    {% elif d.weekday() == 5 %} sobota
+                    {% elif d.weekday() == 6 %} neděle
+                    {% endif %}
+                    {{d|datetime("%H:%M")}}
+                {% elif diff.seconds < 60*60*24 and g.tomorrow.day == d.day %}
+                    zítra {{d|datetime("%H:%M")}}
+                {% else %}
+                    dnes {{d|datetime("%H:%M")}}
+                {% endif %}
+            {% elif diff.days == 0 %}
+                {% if   diff.seconds < 10 %}      teď
+                {% elif diff.seconds < 60 %}      před {{diff.seconds}} vteřinami
+                {% elif diff.seconds < 120 %}     před minutou
+                {% elif diff.seconds < 3600 %}    před {{diff.seconds//60}} minutami
+                {% elif diff.seconds < 7200 %}    před hodinou
+                {% elif diff.seconds < 86400 and g.now.day == d.day %}
+                    před {{diff.seconds//3600}} hodinami
+                {% else %}
+                    včera {{d|datetime("%H:%M")}}
+                {% endif %}
+            {% else %}
+                {% if diff.seconds < 86400*2 and g.yesterday.day == d.day and diff.days < 2 %}
+                    včera {{d|datetime("%H:%M")}}
+                {% else %}
+                    {{d|datetime("%d. %m. %Y %H:%M")}}
+                {% endif %}
+            {% endif %}
+        {% endwith %}
+    </span>
+{% endmacro %}
+

@@ -1,5 +1,5 @@
 from sqlalchemy import or_, and_, not_, asc, desc, func
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from flask import Flask, render_template, request, flash, redirect, session, abort, url_for, make_response, g
 
@@ -20,11 +20,18 @@ login_manager.init_app(app)
 login_manager.login_view = "login"
 
 @app.context_processor
-def example():
+def new_template_globals():
     return {
         'type': type,
         'db': db
     }
+
+@app.template_filter('datetime')
+def datetime_format(value, format='%d. %m. %Y %H:%M:%S'):
+    if not value: return "-"
+    if isinstance(value, str): return value
+    return value.strftime(format)
+
 
 #app.jinja_env.globals['type'] = type
 # XXX for some reason, doing this stops the Flask devserver from reloading
@@ -44,6 +51,9 @@ def flash_errors(form):
 def before_request():
     g.sitename = app.config['SITENAME']
     g.db = db
+    g.now = datetime.now()
+    g.yesterday = g.now - timedelta(days=1)
+    g.tomorrow = g.now + timedelta(days=1)
 
 @login_manager.user_loader
 def load_user(user_id):

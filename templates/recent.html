@@ -22,7 +22,7 @@
         <tbody>
         {% for change in changes %}
             <tr>
-                <td> {{ change.created }} </td>
+                <td> {{ ago(change.created) }} </td>
                 <td> {{ change.user }} </td>
                 <td> {{ change.term.category.project.name }} </td>
                 <td> {{ change.term.category.name }} </td>
