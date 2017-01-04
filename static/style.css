@@ -41,6 +41,8 @@ dd {margin-left: 32px;}
 .comments .panel {margin-top: 2px; margin-bottom: 8px; }
 .comments .panel-body {padding: 4px 4px 4px 7px; }
 
+.icon {vertical-align: middle;}
+
 /*
 .vote-buttons .glyphicon-star { color: #dd0; }
 .vote-buttons .glyphicon-heart { color: #e00; }

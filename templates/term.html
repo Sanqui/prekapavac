@@ -19,6 +19,9 @@
                 </a>
             {% endif %}
         <li>
+            {% if term.category.icon %}
+                <img src="{{ term.category.icon.filled_url(term) }}" class="icon">
+            {% endif %}
             #{{ term.number }}
             <strong>{{ term.text_en }}</strong>
         <li class="next">
@@ -66,8 +69,12 @@
         </div>
         <div class="col-md-2">
             <ul>
-                <li><a href="https://veekun.com/dex/lookup?lookup=move:{{ term.text_en }}">veekun</a>
-                <li><a href="http://bulbapedia.bulbagarden.net/wiki/{{ term.text_en }} (move)">Bulbapedia</a>
+                {% for outlink in term.category.link_outlinks %}
+                    <li>
+                        <a href="{{ outlink.filled_url(term) }}">
+                            {{ outlink.label }}
+                        </a>
+                {% endfor %}
             </ul>
         </div>
     </div>

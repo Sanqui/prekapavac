@@ -102,6 +102,16 @@ class Category(Base, WithIdentifier):
     project = relationship("Project", order_by=position)
     
     @property
+    def link_outlinks(self):
+        return session.query(Outlink).filter(Outlink.category==self,
+            Outlink.type == "link").all()
+        
+    @property
+    def icon(self):
+        return session.query(Outlink).filter(Outlink.category==self,
+            Outlink.type == "icon").scalar()
+    
+    @property
     def url(self):
         return url_for('category', 
             project_identifier=self.project.identifier,
@@ -221,6 +231,26 @@ class Vote(Base):
         return session.query(cls).filter(cls.user == user,
             cls.suggestion == suggestion).scalar()
     
+class Outlink(Base):
+    __tablename__ = 'outlinks'
+    id = Column(Integer, primary_key=True, nullable=False)
+    label = Column(String(255))
+    url = Column(String(255))
+    category_id = Column(Integer, ForeignKey('categories.id'))
+    type = Column(Enum("link", "image", "icon"))
+    
+    category = relationship("Category", backref='outlinks')
+    
+    def filled_url(self, term):
+        return self.url.format(**{
+            'term': term.text_en,
+            'en': term.text_en,
+            'jp': term.text_jp,
+            'num': term.number,
+            'number': term.number})
+    
+    def __str__(self):
+        return "{}/{} {}".format(self.category, self.type, self.label)
     
 
 if __name__ == '__main__':
