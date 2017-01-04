@@ -1,3 +1,4 @@
+{% from '_macros.html' import unrated_icon with context -%}
 <!doctype html>
 <html>
 <head>
@@ -22,7 +23,10 @@
             </div>
             <div id="navbar" class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    
+                    <li><a href="{{ url_for('recent') }}">Poslední změny</a>
+                    {% if current_user.is_authenticated and current_user.admin %}
+                        <li><a href="{{ url_for('admin.index') }}">Administrace</a>
+                    {% endif %}
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     {% if current_user.is_authenticated %}

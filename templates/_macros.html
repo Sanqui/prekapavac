@@ -1,0 +1,8 @@
+{# !!! #}
+{# remember to add an import to _base.html #}
+{# !!! #}
+{% macro unrated_icon(suggestion) %}
+    {% if current_user.is_authenticated and not g.db.Vote.from_for(current_user, suggestion) %}
+        <span class="glyphicon glyphicon-hand-right vote-sign"></span>
+    {% endif %}
+{% endmacro %}

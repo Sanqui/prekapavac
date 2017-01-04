@@ -1,0 +1,50 @@
+{% extends "_base.html" %}
+
+{% block title %} Poslední změny {% endblock %}
+
+{% block content %}
+
+    <ol class="breadcrumb">
+        <li><a href="{{ url_for('index') }}">{{ g.sitename }}</a>
+        <li>Poslední změny
+    </ol>
+    <h2>Poslední změny</h2>
+    <table class="table table-condensed">
+        <thead>
+            <tr>
+                <td>kdy</td>
+                <td>kdo</td>
+                <td>projekt</td>
+                <td>kategorie</td>
+                <td>termín</td>
+                <td>co</td>
+            </tr>
+        <tbody>
+        {% for change in changes %}
+            <tr>
+                <td> {{ change.created }} </td>
+                <td> {{ change.user }} </td>
+                <td> {{ change.term.category.project.name }} </td>
+                <td> {{ change.term.category.name }} </td>
+                <td>
+                    <a href=" {{change.term.url }} ">
+                        {{ change.term.text_en }} 
+                    </a>
+                </td>
+                <td class="td-suggestions">
+                    {% if type(change) == db.Suggestion %}
+                        <span class="label label-default">návrh</span>
+                        {{ unrated_icon(change) }}
+                        <strong>{{change.text}}</strong>
+                    {% elif type(change) == db.Comment %}
+                        <span class="label label-default">komentář</span>
+                        {{ change.text |truncate(20) }}
+                    {% else %}
+                        <!-- should not happen :-) -->
+                        {{ change }}
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+    </ul>
+{% endblock %}

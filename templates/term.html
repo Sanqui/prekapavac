@@ -87,9 +87,7 @@
                     <li class="list-group-item">
                         {% if current_user.is_authenticated %}
                             <div class="vote-buttons">
-                                {% if not vote_from_for(current_user, suggestion) %}
-                                    <span class="glyphicon glyphicon-hand-right vote-sign"></span>
-                                {% endif %}
+                                {{ unrated_icon(suggestion) }}
                                 <form method="POST" action="{{url_for('vote')}}">
                                     <input type="hidden" name="suggestion_id" value="{{ suggestion.id }}">
                                     <div class="btn-group">

@@ -19,6 +19,18 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = "login"
 
+@app.context_processor
+def example():
+    return {
+        'type': type,
+        'db': db
+    }
+
+#app.jinja_env.globals['type'] = type
+# XXX for some reason, doing this stops the Flask devserver from reloading
+# templates.  bug?
+#app.jinja_env.globals['db'] = db
+
 # inspired by http://flask.pocoo.org/snippets/12/
 def flash_errors(form):
     for field, errors in form.errors.items():
@@ -104,6 +116,18 @@ def term(project_identifier, category_identifier, term_identifier):
     return render_template("term.html", project=project, category=category, term=term,
         suggestion_form=suggestion_form, comment_form=comment_form,
         vote_from_for = db.Vote.from_for)
+
+@app.route("/recent")
+def recent():
+    
+    suggestions = db.session.query(db.Suggestion).order_by(db.Suggestion.created.desc()).limit(30).all()
+    comments = db.session.query(db.Comment).order_by(db.Comment.created.desc()).limit(30).all()
+    
+    changes = [c for c in suggestions + comments if c.created]
+    changes.sort(key=lambda x: x.created)
+    changes = changes[0:20]
+    
+    return render_template("recent.html", changes=changes)
 
 @app.route("/vote", methods=["POST"])
 @login_required
