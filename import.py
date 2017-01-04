@@ -14,21 +14,28 @@ db.session.add(category)
 with open(path) as csvfile:
     reader = csv.reader(csvfile)
     for row in reader:
-        num, en, jp, s1, s2, s3, s4, c1, c2 = row
+        suggestions = []
+        comments = []
+        if len(row) == 3:
+            num, en, jp = row
+        else:
+            num, en, jp, s1, s2, s3, s4, c1, c2 = row
+            suggestions += [s1, s2, s3, s4]
+            comments += [c1, c2]
         term = db.Term(number=num,
             identifier=en.lower().replace(' ', '-'),
             text_en=en, text_jp=jp,
             category=category)
         db.session.add(term)
         
-        for s in (s1, s2, s3, s4):
+        for s in suggestions:
             if s:
                 suggestion = db.Suggestion(text=s,
                     status='approved',
                     term=term)
                 db.session.add(suggestion)
         
-        for c in (c1, c2):
+        for c in comments:
             if c:
                 comment = db.Comment(text=c,
                     term=term)
