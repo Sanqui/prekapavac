@@ -132,15 +132,23 @@ def suggestion():
     suggestion = db.session.query(db.Suggestion).get(request.form['suggestion_id'])
     if not suggestion: abort(404)
     action = request.form['action']
-    if current_user.admin:
-        if action == 'delete':
-            suggestion.status = 'deleted'
-        elif action == 'approve':
-            suggestion.status = 'approved'
-        elif action == 'hide':
-            suggestion.status = 'hidden'
-    else:
-        abort(403)
+    if action in "delete approve hide".split():
+        if current_user.admin:
+            if action == 'delete':
+                suggestion.status = 'deleted'
+            elif action == 'approve':
+                suggestion.status = 'approved'
+            elif action == 'hide':
+                suggestion.status = 'hidden'
+        else:
+            abort(403)
+    
+    if action == 'withdraw' and suggestion.user == current_user:
+        if suggestion.score == 0:
+            suggestion.status = 'withdrawn'
+            flash("Návrh vzán zpět.", 'success')
+        else:
+            flash("Návrh lze vzít zpět pouze dokud má nulové skóre.", 'danger')
     
     db.session.commit()
     return redirect(suggestion.url)

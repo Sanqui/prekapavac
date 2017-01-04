@@ -99,8 +99,8 @@
                                             </button>
                                         {% endmacro %}
                                         
-                                        {{ vote_button(0, 'star-empty') }}
-                                        {{ vote_button(1, 'star') }}
+                                        {{ vote_button(0, 'thumbs-down') }}
+                                        {{ vote_button(1, 'thumbs-up') }}
                                         {{ vote_button(2, 'heart') }}
                                     </div>
                                 </form>
@@ -118,14 +118,20 @@
                                                     </button>
                                             {% endmacro %}
                                             <li>status: {{ suggestion.status }}
-                                            {% if suggestion.status != "approved" %}
-                                                {{ vote_dropdown_button('approve', "Svolit") }}
+                                            {% if suggestion.status == "approved"
+                                                and suggestion.user == current_user %}
+                                                {{ vote_dropdown_button('withdraw', "Vzít zpět") }}
                                             {% endif %}
-                                            {% if suggestion.status != "hidden" %}
-                                                {{ vote_dropdown_button('hide', "Skrýt") }}
-                                            {% endif %}
-                                            {% if suggestion.status != "deleted" %}
-                                                {{ vote_dropdown_button('delete', "Smazat") }}
+                                            {% if current_user.admin %}
+                                                {% if suggestion.status != "approved" %}
+                                                    {{ vote_dropdown_button('approve', "Svolit") }}
+                                                {% endif %}
+                                                {% if suggestion.status != "hidden" %}
+                                                    {{ vote_dropdown_button('hide', "Skrýt") }}
+                                                {% endif %}
+                                                {% if suggestion.status != "deleted" %}
+                                                    {{ vote_dropdown_button('delete', "Smazat") }}
+                                                {% endif %}
                                             {% endif %}
                                         </ul>
                                     </div>
