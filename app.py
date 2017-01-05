@@ -8,11 +8,14 @@ from flask_admin.contrib.sqla import ModelView
 
 from flask_login import LoginManager, login_required, login_user, logout_user, current_user
 
+from flaskext.markdown import Markdown
+
 from wtforms import Form, BooleanField, TextField, TextAreaField, PasswordField, RadioField, SelectField, SelectMultipleField, BooleanField, IntegerField, HiddenField, SubmitField, validators, ValidationError, widgets
 
 import db
 
 app = Flask('translator')
+Markdown(app)
 app.config.from_pyfile("config.py")
 
 login_manager = LoginManager()
