@@ -12,10 +12,6 @@ with context -%}
     <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='style.css')}}">
     <script src="{{ url_for('static', filename='jquery-3.1.1.min.js')}}"></script>
     <script src="{{ url_for('static', filename='bootstrap-3.3.7-dist/js/bootstrap.min.js')}}"></script>
-    
-    <script>
-        $('.dropdown-toggle').dropdown()
-    </script>
 </head>
 <body>
     <nav class="navbar navbar-default navbar-fixed-top">
@@ -58,6 +54,14 @@ with context -%}
         
     </div>
 
+    
+    <script>
+        $('.dropdown-toggle').dropdown();
+        
+        $('.tr-link').on("click", function() {
+            document.location = $(this).data('href');
+        });
+    </script>
 
 </body>
 </html>

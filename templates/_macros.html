@@ -9,11 +9,11 @@
 {% endmacro %}
 
 {% macro ago(d) %}
-    <span title="{{d|datetime}}">
+    <span title="{{ datetime(d) }}">
         {% with diff = g.now - d %}
             {% if diff.days < 0 %}
                 {% if diff.days < -6 %}
-                    {{d|datetime}}
+                    {{ datetime(d) }}
                 {% elif diff.days < -2 or (diff.days == -2 and g.tomorrow.day != d.day) %}
                     {% if   d.weekday() == 0 %} pondělí
                     {% elif d.weekday() == 1 %} úterý
@@ -23,11 +23,11 @@
                     {% elif d.weekday() == 5 %} sobota
                     {% elif d.weekday() == 6 %} neděle
                     {% endif %}
-                    {{d|datetime("%H:%M")}}
+                    {{ datetime(d, "%H:%M")}}
                 {% elif diff.seconds < 60*60*24 and g.tomorrow.day == d.day %}
-                    zítra {{d|datetime("%H:%M")}}
+                    zítra {{datetime(d,"%H:%M")}}
                 {% else %}
-                    dnes {{d|datetime("%H:%M")}}
+                    dnes {{datetime(d,"%H:%M")}}
                 {% endif %}
             {% elif diff.days == 0 %}
                 {% if   diff.seconds < 10 %}      teď
@@ -38,13 +38,13 @@
                 {% elif diff.seconds < 86400 and g.now.day == d.day %}
                     před {{diff.seconds//3600}} hodinami
                 {% else %}
-                    včera {{d|datetime("%H:%M")}}
+                    včera {{datetime(d,"%H:%M")}}
                 {% endif %}
             {% else %}
                 {% if diff.seconds < 86400*2 and g.yesterday.day == d.day and diff.days < 2 %}
-                    včera {{d|datetime("%H:%M")}}
+                    včera {{datetime(d,"%H:%M")}}
                 {% else %}
-                    {{d|datetime("%d. %m. %Y %H:%M")}}
+                    {{datetime(d,"%d. %m. %Y %H:%M")}}
                 {% endif %}
             {% endif %}
         {% endwith %}

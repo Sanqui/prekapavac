@@ -23,7 +23,7 @@
             </tr>
         <tbody>
             {% for term in category.terms %}
-                    <tr>
+                    <tr class="tr-link" data-href="{{ term.url }}">
                         <td>
                             <a href="{{ term.url }}">#{{ term.number }}</a>
                         </td>

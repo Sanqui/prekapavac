@@ -21,13 +21,13 @@
             </tr>
         <tbody>
         {% for change in changes %}
-            <tr>
+            <tr class="tr-link" data-href="{{ change.term.url }}">
                 <td> {{ ago(change.created) }} </td>
                 <td> {{ change.user }} </td>
                 <td> {{ change.term.category.project.name }} </td>
                 <td> {{ change.term.category.name }} </td>
                 <td>
-                    <a href=" {{change.term.url }} ">
+                    <a href=" {{ change.term.url }} ">
                         {{ change.term.text_en }} 
                     </a>
                 </td>

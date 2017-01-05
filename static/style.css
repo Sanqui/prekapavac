@@ -14,8 +14,6 @@ thead tr {background: #eee;}
 .table-terms td a {color: inherit;}
 .table-terms td a {color: inherit;}
 
-.table-terms tbody tr:hover {background: #eef;}
-
 .table-data {}
 
 .term-info {font-size: larger;}
@@ -47,3 +45,6 @@ dd {margin-left: 32px;}
 .vote-buttons .glyphicon-star { color: #dd0; }
 .vote-buttons .glyphicon-heart { color: #e00; }
 */
+
+.tr-link {cursor: pointer;}
+.tr-link:hover {background: #f2f2ff;}

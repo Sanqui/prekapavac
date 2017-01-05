@@ -21,16 +21,17 @@ login_manager.login_view = "login"
 
 @app.context_processor
 def new_template_globals():
+    def datetime_format(value, format='%d. %m. %Y %H:%M:%S'):
+        if not value: return "-"
+        if isinstance(value, str): return value
+        return value.strftime(format)
+    
     return {
         'type': type,
-        'db': db
+        'db': db,
+        'datetime': datetime_format
     }
 
-@app.template_filter('datetime')
-def datetime_format(value, format='%d. %m. %Y %H:%M:%S'):
-    if not value: return "-"
-    if isinstance(value, str): return value
-    return value.strftime(format)
 
 
 #app.jinja_env.globals['type'] = type
