@@ -14,7 +14,7 @@ db.session.add(category)
 with open(path) as csvfile:
     reader = csv.reader(csvfile)
     for row in reader:
-        if not row: continue
+        if not row[0]: continue
         suggestions = []
         comments = []
         if len(row) == 3:
