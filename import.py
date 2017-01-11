@@ -4,12 +4,20 @@ import csv
 import db
 
 path = argv[1]
-category_identifier = argv[2]
+project_identifier = argv[2]
+category_identifier = argv[3]
 
-category = db.Category(identifier=category_identifier,
-    name=category_identifier)
+project = db.Project.from_identifier(project_identifier)
+if not project:
+    print("No such project: {}".format(project_identifier))
+category = db.Category.from_identifier(category_identifier, project=project)
+if not category:
+    print("Making new category {}".format(category_identifier))
 
-db.session.add(category)
+    category = db.Category(identifier=category_identifier,
+        name=category_identifier, project=project)
+
+    db.session.add(category)
 
 with open(path) as csvfile:
     reader = csv.reader(csvfile)
@@ -23,6 +31,9 @@ with open(path) as csvfile:
             num, en, jp, s1, s2, s3, s4, c1, c2 = row
             suggestions += [s1, s2, s3, s4]
             comments += [c1, c2]
+        
+        if not en: continue
+        
         term = db.Term(number=num,
             identifier=en.lower().replace(' ', '-'),
             text_en=en, text_jp=jp,
