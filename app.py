@@ -59,6 +59,11 @@ def before_request():
     g.yesterday = g.now - timedelta(days=1)
     g.tomorrow = g.now + timedelta(days=1)
 
+@app.teardown_request
+def shutdown_session(exception=None):
+    db.session.close()
+    db.session.remove()
+
 @login_manager.user_loader
 def load_user(user_id):
     return db.session.query(db.User).get(user_id)
