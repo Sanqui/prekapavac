@@ -1,4 +1,5 @@
 from sqlalchemy import or_, and_, not_, asc, desc, func
+from sqlalchemy.orm.exc import MultipleResultsFound
 from datetime import datetime, timedelta
 
 from flask import Flask, render_template, request, flash, redirect, session, abort, url_for, make_response, g
@@ -100,7 +101,10 @@ def term(project_identifier, category_identifier, term_identifier):
     if not project: abort(404)
     category = db.Category.from_identifier(category_identifier, project=project)
     if not category: abort(404)
-    term = db.Term.from_identifier(term_identifier, category=category)
+    try:
+        term = db.Term.from_identifier(term_identifier, category=category)
+    except MultipleResultsFound:
+        return "Tomuto identifikátoru odpovídá více termínů.  Tohle je CHYBA a musí ji opravit administrátor.  Můžete pomoci tím že nahlásíte URL."
     if not term: abort(404)
     
     suggestion_form = None
