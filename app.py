@@ -82,7 +82,11 @@ def category(project_identifier, category_identifier):
     category = db.Category.from_identifier(category_identifier, project=project)
     if not category: abort(404)
     
-    return render_template("category.html", project=project, category=category)
+    terms = db.session.query(db.Term).filter(db.Term.category == category,
+        db.Term.hidden == False)
+    
+    return render_template("category.html", project=project, category=category,
+        terms=terms)
 
 class SuggestionForm(Form):
     text = TextField('Návrh', [validators.required()])
@@ -109,7 +113,7 @@ def term(project_identifier, category_identifier, term_identifier):
     
     suggestion_form = None
     comment_form = None
-    if current_user.is_authenticated:
+    if current_user.is_authenticated and not term.locked:
         suggestion_form = SuggestionForm(request.form)
         comment_form = CommentForm(request.form)
         if request.method == 'POST' and suggestion_form.validate():
@@ -169,6 +173,7 @@ def users():
 def vote():
     suggestion = db.session.query(db.Suggestion).get(request.form['suggestion_id'])
     if not suggestion: abort(404)
+    if suggestion.term.locked: abort(403)
     if suggestion.status not in ["approved"]:
         flash("Voting for a suggestion that isn't approved isn't possible.", 'danger')
         return redirect(suggestion.url)
@@ -193,6 +198,7 @@ def vote():
 def suggestion():
     suggestion = db.session.query(db.Suggestion).get(request.form['suggestion_id'])
     if not suggestion: abort(404)
+    if suggestion.term.locked: abort(403)
     action = request.form['action']
     if action in "delete approve hide".split():
         if current_user.admin:

@@ -56,10 +56,14 @@ footer {text-align: right; margin-right: 32px;}
 
 textarea {width: 100%; min-height: 6em;}
 
+.locked-info {text-align: center; padding: 32px; border-radius: 32px;
+    background: #eee; margin: 32px;}
+.locked-icon {font-size: 64px;}
 
 
 @media (max-width: 500px) {
     .suggestion-text {clear: both;}
+    .locked-info {padding: 16px;  margin: 16px;}
 }
 
 

@@ -133,6 +133,9 @@ class Term(Base, WithIdentifier):
     text_en = Column(Text)
     text_jp = Column(Text)
     category_id = Column(Integer, ForeignKey('categories.id'))
+    hidden = Column(Boolean, default=False, nullable=False)
+    locked = Column(Boolean, default=False, nullable=False)
+    lock_reason = Column(Text)
     
     category = relationship("Category", backref='terms')
     

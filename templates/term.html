@@ -90,143 +90,154 @@
         </div>
     </div>
     
-    <div class="row">
-        <div class="col-md-6">
-            <h3>Návrhy</h3>
-            <ul class="list-group">
-                {% for suggestion, score in term.suggestions_w_score %}
-                    <li class="list-group-item">
-                        {% if current_user.is_authenticated %}
-                            <div class="vote-buttons">
-                                <form method="POST" action="{{url_for('vote')}}" class="vote-form">
-                                    {{ unrated_icon(suggestion) }}
-                                    <input type="hidden" name="suggestion_id" value="{{ suggestion.id }}">
-                                    <div class="btn-group">
-                                        {% macro vote_button(vote, icon) %}
-                                            <button type="submit" name="vote" value="{{ vote }}" class="btn btn-default {% if vote_from_for(current_user, suggestion).vote == vote %}active{% endif %}" id="suggestion-{{suggestion.id}}-vote-{{vote}}">
-                                                <span class="glyphicon glyphicon-{{icon}}"></span>
-                                            </button>
-                                        {% endmacro %}
-                                        
-                                        {{ vote_button(0, 'thumbs-down') }}
-                                        {{ vote_button(1, 'thumbs-up') }}
-                                        {{ vote_button(2, 'heart') }}
-                                    </div>
-                                </form>
-                                <form method="POST" action="{{url_for('suggestion')}}">
-                                    <input type="hidden" name="suggestion_id" value="{{ suggestion.id }}">
-                                    <div class="btn-group dropdown">
-                                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                                            <span class="glyphicon glyphicon-option-vertical"></span>
-                                        </button>
-                                        <ul class="dropdown-menu">
-                                            {% macro vote_dropdown_button(action, text) %}
-                                                <li>
-                                                    <button type="submit" name="action" value="{{action}}" class="btn btn-default btn-block">
-                                                        {{ text }}
-                                                    </button>
+    {% if not term.locked %}
+        
+        <div class="row">
+            <div class="col-md-6">
+                <h3>Návrhy</h3>
+                <ul class="list-group">
+                    {% for suggestion, score in term.suggestions_w_score %}
+                        <li class="list-group-item">
+                            {% if current_user.is_authenticated %}
+                                <div class="vote-buttons">
+                                    <form method="POST" action="{{url_for('vote')}}" class="vote-form">
+                                        {{ unrated_icon(suggestion) }}
+                                        <input type="hidden" name="suggestion_id" value="{{ suggestion.id }}">
+                                        <div class="btn-group">
+                                            {% macro vote_button(vote, icon) %}
+                                                <button type="submit" name="vote" value="{{ vote }}" class="btn btn-default {% if vote_from_for(current_user, suggestion).vote == vote %}active{% endif %}" id="suggestion-{{suggestion.id}}-vote-{{vote}}">
+                                                    <span class="glyphicon glyphicon-{{icon}}"></span>
+                                                </button>
                                             {% endmacro %}
-                                            <li>{{ ago(suggestion.created) }}
-                                            <li>Stav: {{ suggestion.status }}
-                                            {% if current_user.admin %}
-                                                <li>
-                                                    <a href="{{url_for('suggestion.edit_view', id=suggestion.id)}}" class="btn btn-default btn-block">
-                                                        Upravit
-                                                    </a>
-                                                </li>
-                                            {% endif %}
-                                            {% if suggestion.status == "approved"
-                                                and suggestion.user == current_user %}
-                                                {{ vote_dropdown_button('withdraw', "Vzít zpět") }}
-                                            {% endif %}
-                                            {% if current_user.admin %}
-                                                {% if suggestion.status != "approved" %}
-                                                    {{ vote_dropdown_button('approve', "Svolit") }}
+                                            
+                                            {{ vote_button(0, 'thumbs-down') }}
+                                            {{ vote_button(1, 'thumbs-up') }}
+                                            {{ vote_button(2, 'heart') }}
+                                        </div>
+                                    </form>
+                                    <form method="POST" action="{{url_for('suggestion')}}">
+                                        <input type="hidden" name="suggestion_id" value="{{ suggestion.id }}">
+                                        <div class="btn-group dropdown">
+                                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                                                <span class="glyphicon glyphicon-option-vertical"></span>
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                {% macro vote_dropdown_button(action, text) %}
+                                                    <li>
+                                                        <button type="submit" name="action" value="{{action}}" class="btn btn-default btn-block">
+                                                            {{ text }}
+                                                        </button>
+                                                {% endmacro %}
+                                                <li>{{ ago(suggestion.created) }}
+                                                <li>Stav: {{ suggestion.status }}
+                                                {% if current_user.admin %}
+                                                    <li>
+                                                        <a href="{{url_for('suggestion.edit_view', id=suggestion.id)}}" class="btn btn-default btn-block">
+                                                            Upravit
+                                                        </a>
+                                                    </li>
                                                 {% endif %}
-                                                {% if suggestion.status != "hidden" %}
-                                                    {{ vote_dropdown_button('hide', "Skrýt") }}
+                                                {% if suggestion.status == "approved"
+                                                    and suggestion.user == current_user %}
+                                                    {{ vote_dropdown_button('withdraw', "Vzít zpět") }}
                                                 {% endif %}
-                                                {% if suggestion.status != "deleted" %}
-                                                    {{ vote_dropdown_button('delete', "Smazat") }}
+                                                {% if current_user.admin %}
+                                                    {% if suggestion.status != "approved" %}
+                                                        {{ vote_dropdown_button('approve', "Svolit") }}
+                                                    {% endif %}
+                                                    {% if suggestion.status != "hidden" %}
+                                                        {{ vote_dropdown_button('hide', "Skrýt") }}
+                                                    {% endif %}
+                                                    {% if suggestion.status != "deleted" %}
+                                                        {{ vote_dropdown_button('delete', "Smazat") }}
+                                                    {% endif %}
                                                 {% endif %}
-                                            {% endif %}
-                                        </ul>
-                                    </div>
-                                </form>
-                            </div>
-                        {% endif %}
-                        <h4 class="list-group-item-heading suggestion-text">
-                            <span class="badge">{{ score or 0 }}</span>
-                            <strong>{{ suggestion.text }}</strong>
-                        </h4>
-                        <p class="list-group-item-text">
-                            {{ suggestion.description }}
-                            <span class="suggestion-user">
-                                {% if suggestion.user %}
-                                    — {{ suggestion.user }}
-                                {% else %}
-                                    &nbsp;
-                                {% endif %}
-                            </span>
-                        </p>
-                        
-                    </li>
-                {% else %}
-                    <p>Žádné návrhy na překlad ještě nejsou...
-                {% endfor %}
-            </ul>
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">Přidat návrh</h3>
-                </div>
-                <div class="panel-body">
-                    {% if suggestion_form %}
-                        <form method="POST">
-                            <dl>
-                                <dt>Text:</dt>
-                                    <dd>{{suggestion_form.text}}</dd>
-                                <dt>Vysvětlivka:</dt>
-                                    <dd>{{suggestion_form.description}}</dd>
-                            </dl>
-                            {{suggestion_form.submit}}
-                        </form>
-                    {% else %}
-                        <p>Pro přidávání návrhů je potřeba se <a href="{{url_for('login')}}">přihlásit</a>.
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <h3>Komentáře</h3>
-            <div class="comments">
-                {% for comment in term.comments %}
-                    <div class="panel panel-default">
-                        <div class="panel-body" title="{{ datetime(comment.created) }}">
-                            {% if comment.user %}
-                                <strong>{{ comment.user.username }}</strong>:
+                                            </ul>
+                                        </div>
+                                    </form>
+                                </div>
                             {% endif %}
-                            {{ comment.text | urlize | markdown }}
-                        </div>
-                    </div>
-                {% endfor %}
-            </div>
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">Přidat komentář</h3>
-                </div>
-                <div class="panel-body">
-                    {% if comment_form %}
-                        <form method="POST" class="comment-form">
-                            {{comment_form.comment_text}}
-                            {{comment_form.submit}}
-                        </form>
+                            <h4 class="list-group-item-heading suggestion-text">
+                                <span class="badge">{{ score or 0 }}</span>
+                                <strong>{{ suggestion.text }}</strong>
+                            </h4>
+                            <p class="list-group-item-text">
+                                {{ suggestion.description }}
+                                <span class="suggestion-user">
+                                    {% if suggestion.user %}
+                                        — {{ suggestion.user }}
+                                    {% else %}
+                                        &nbsp;
+                                    {% endif %}
+                                </span>
+                            </p>
+                            
+                        </li>
                     {% else %}
-                        <p>Pro přidávání komentářů je potřeba se <a href="{{url_for('login')}}">přihlásit</a>.
-                    {% endif %}
+                        <p>Žádné návrhy na překlad ještě nejsou...
+                    {% endfor %}
+                </ul>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Přidat návrh</h3>
+                    </div>
+                    <div class="panel-body">
+                        {% if suggestion_form %}
+                            <form method="POST">
+                                <dl>
+                                    <dt>Text:</dt>
+                                        <dd>{{suggestion_form.text}}</dd>
+                                    <dt>Vysvětlivka:</dt>
+                                        <dd>{{suggestion_form.description}}</dd>
+                                </dl>
+                                {{suggestion_form.submit}}
+                            </form>
+                        {% else %}
+                            <p>Pro přidávání návrhů je potřeba se <a href="{{url_for('login')}}">přihlásit</a>.
+                        {% endif %}
+                    </div>
                 </div>
+            </div>
+            <div class="col-md-6">
+                <h3>Komentáře</h3>
+                <div class="comments">
+                    {% for comment in term.comments %}
+                        <div class="panel panel-default">
+                            <div class="panel-body" title="{{ datetime(comment.created) }}">
+                                {% if comment.user %}
+                                    <strong>{{ comment.user.username }}</strong>:
+                                {% endif %}
+                                {{ comment.text | urlize | markdown }}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Přidat komentář</h3>
+                    </div>
+                    <div class="panel-body">
+                        {% if comment_form %}
+                            <form method="POST" class="comment-form">
+                                {{comment_form.comment_text}}
+                                {{comment_form.submit}}
+                            </form>
+                        {% else %}
+                            <p>Pro přidávání komentářů je potřeba se <a href="{{url_for('login')}}">přihlásit</a>.
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    {% else %}
+        <div class="locked-info">
+            <span class="glyphicon glyphicon-lock locked-icon"></span>
+            <h3>Termín je zamčený</h3>
+            <div class="locked-text">
+                {{ term.lock_reason | urlize | markdown }}
             </div>
         </div>
-
-    </div>
+    {% endif %}
     
 {% endblock %}

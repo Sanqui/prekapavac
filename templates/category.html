@@ -22,7 +22,7 @@
                 <td>návrhy</td>
             </tr>
         <tbody>
-            {% for term in category.terms %}
+            {% for term in terms %}
                     <tr class="tr-link" data-href="{{ term.url }}">
                         <td>
                             <a href="{{ term.url }}">#{{ term.number }}</a>
@@ -33,13 +33,17 @@
                         <td>
                             <a href="{{ term.url }}">{{ term.text_jp }}</a></td>
                         <td class="td-suggestions">
-                            <ul class="suggestions">
-                                {% for suggestion, score in term.suggestions_w_score %}
-                                    <li>
-                                        {{ unrated_icon(suggestion) }}
-                                        {{ suggestion.text }}
-                                {% endfor %}
-                            </li>
+                            {% if term.locked %}
+                                <span class="glyphicon glyphicon-lock"></span>
+                            {% else %}
+                                <ul class="suggestions">
+                                    {% for suggestion, score in term.suggestions_w_score %}
+                                        <li>
+                                            {{ unrated_icon(suggestion) }}
+                                            {{ suggestion.text }}
+                                    {% endfor %}
+                                </li>
+                            {% endif %}
                         </td>
                     </td>
             {% endfor %}
