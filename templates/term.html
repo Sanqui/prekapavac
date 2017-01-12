@@ -43,12 +43,23 @@
                     <td>#{{ term.number }}</td>
                 </tr>
                     <th scope="row">Identifier</th>
-                    <td>{{ term.identifier }} ({{term.id}})</td>
+                    <td>{{ term.identifier }}</td>
                 </tr>
-                <tr>
-                    <th scope="row">Label</th>
-                    <td>{{ term.label or "(None)" }}</td>
-                </tr>
+                {% if term.label %}
+                    <tr>
+                        <th scope="row">Label</th>
+                        <td>{{ term.label or "(None)" }}</td>
+                    </tr>
+                {% endif %}
+                {% if current_user.admin %}
+                    <tr>
+                        <td colspan="2">
+                            <a href="{{url_for('term.edit_view', id=term.id)}}" class="btn btn-default btn-block">
+                                Upravit termín
+                            </a>
+                        </td>
+                    </tr>
+                {% endif %}
             </table>
         </div>
         <div class="col-md-4">
@@ -117,6 +128,13 @@
                                             {% endmacro %}
                                             <li>{{ ago(suggestion.created) }}
                                             <li>Stav: {{ suggestion.status }}
+                                            {% if current_user.admin %}
+                                                <li>
+                                                    <a href="{{url_for('suggestion.edit_view', id=suggestion.id)}}" class="btn btn-default btn-block">
+                                                        Upravit
+                                                    </a>
+                                                </li>
+                                            {% endif %}
                                             {% if suggestion.status == "approved"
                                                 and suggestion.user == current_user %}
                                                 {{ vote_dropdown_button('withdraw', "Vzít zpět") }}
