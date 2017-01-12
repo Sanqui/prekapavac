@@ -248,6 +248,7 @@ class Outlink(Base):
             'en_lower': term.text_en.lower(),
             'en_lowercase': term.text_en.lower(),
             'en_capitalized': term.text_en.capitalize(),
+            'en_title': term.text_en.title(),
             'jp': term.text_jp,
             'num': term.number,
             'number': term.number})
