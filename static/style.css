@@ -48,3 +48,5 @@ dd {margin-left: 32px;}
 
 .tr-link {cursor: pointer;}
 .tr-link:hover {background: #f2f2ff;}
+
+footer {text-align: right; margin-right: 32px;}
