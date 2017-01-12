@@ -245,6 +245,9 @@ class Outlink(Base):
         return self.url.format(**{
             'term': term.text_en,
             'en': term.text_en,
+            'en_lower': term.text_en.lower(),
+            'en_lowercase': term.text_en.lower(),
+            'en_capitalized': term.text_en.capitalize(),
             'jp': term.text_jp,
             'num': term.number,
             'number': term.number})
