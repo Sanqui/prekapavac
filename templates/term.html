@@ -87,12 +87,12 @@
                     <li class="list-group-item">
                         {% if current_user.is_authenticated %}
                             <div class="vote-buttons">
-                                {{ unrated_icon(suggestion) }}
-                                <form method="POST" action="{{url_for('vote')}}">
+                                <form method="POST" action="{{url_for('vote')}}" class="vote-form">
+                                    {{ unrated_icon(suggestion) }}
                                     <input type="hidden" name="suggestion_id" value="{{ suggestion.id }}">
                                     <div class="btn-group">
                                         {% macro vote_button(vote, icon) %}
-                                            <button type="submit" name="vote" value="{{ vote }}" class="btn btn-default {% if vote_from_for(current_user, suggestion).vote == vote %}active{% endif %}">
+                                            <button type="submit" name="vote" value="{{ vote }}" class="btn btn-default {% if vote_from_for(current_user, suggestion).vote == vote %}active{% endif %}" id="suggestion-{{suggestion.id}}-vote-{{vote}}">
                                                 <span class="glyphicon glyphicon-{{icon}}"></span>
                                             </button>
                                         {% endmacro %}

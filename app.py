@@ -2,7 +2,7 @@ from sqlalchemy import or_, and_, not_, asc, desc, func
 from sqlalchemy.orm.exc import MultipleResultsFound
 from datetime import datetime, timedelta
 
-from flask import Flask, render_template, request, flash, redirect, session, abort, url_for, make_response, g
+from flask import Flask, render_template, request, flash, redirect, session, abort, url_for, make_response, g, jsonify
 
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
@@ -177,7 +177,10 @@ def vote():
     db.session.add(vote)
     db.session.commit()
     
-    return redirect(suggestion.url)
+    if not request.is_xhr:
+        return redirect(suggestion.url)
+    else:
+        return "OK"
     
 @app.route("/suggestion", methods=["POST"])
 @login_required

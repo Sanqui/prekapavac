@@ -66,6 +66,47 @@ with context -%}
         $('.tr-link').on("click", function() {
             document.location = $(this).data('href');
         });
+        
+        // ok i really really hate jquery
+        
+        $('.vote-form').each(function(i, form) {
+            $(form).find("button").each(function(i, button) {
+                $(button).click(function(e) {
+                    suggestion_id = $(form).serializeArray()[0].value; // hopefully
+                    vote = $(button).attr('value');
+                    console.log("voting "+vote+" on " + suggestion_id);
+                    
+                    $("#unrated-icon-"+suggestion_id).hide();
+                    for (v=0; v<3; v++) {
+                        vote_btn = $("#suggestion-"+suggestion_id+"-vote-"+v);
+                        console.log(vote_btn);
+                        if (v == vote) {
+                           vote_btn.addClass("active");
+                        } else {
+                           vote_btn.removeClass("active");
+                        }
+                    }
+                    
+                    $.ajax({
+                        url: $(form).attr("action"),
+                        type: "POST",
+                        data: $(form).serialize() + "&vote=" + $(button).attr('value'),
+                        success: function(data, status, jqXHR){
+                            console.log("ok vote "+vote+" on " + suggestion_id);
+                            
+                        },
+                        error: function(jqXHR, status, error) {
+                            console.log("fail: " + error);
+                            for (v=0; v<3; v++) {
+                                vote_btn = $("#suggestion-"+suggestion_id+"-vote-"+v);
+                                vote_btn.removeClass("active");
+                            }
+                        }
+                    });
+                    e.preventDefault();
+                });
+            });
+        });
     </script>
 
 </body>
