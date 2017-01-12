@@ -114,7 +114,13 @@ def term(project_identifier, category_identifier, term_identifier):
         comment_form = CommentForm(request.form)
         if request.method == 'POST' and suggestion_form.validate():
             suggestion_text = suggestion_form.text.data.strip()
-            if db.session.query(db.Suggestion).filter(db.Suggestion.text == suggestion_text, db.Suggestion.term == term).all():
+            if db.session.query(db.Suggestion).filter(
+                db.Suggestion.text == suggestion_text,
+                db.Suggestion.term == term,
+                (db.Suggestion.status == "approved")).all():
+                # TODO this should check for "final" as well, but
+                # for some reason adding `or (db.Suggestion.status == "final")`
+                # doesn't cut it
                 flash("Přesně tenhle návrh už existuje, mrkni se po něm!", 'info')
             else:
                 suggestion = db.Suggestion(user=current_user, term=term,
