@@ -29,6 +29,7 @@ with context -%}
             <div id="navbar-collapse" class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
                     <li><a href="{{ url_for('recent') }}">Poslední změny</a>
+                    <li><a href="{{ url_for('users') }}">Seznam uživatelů</a>
                     {% if current_user.is_authenticated and current_user.admin %}
                         <li><a href="{{ url_for('admin.index') }}">Administrace</a>
                     {% endif %}

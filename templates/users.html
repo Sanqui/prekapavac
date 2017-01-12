@@ -1,0 +1,31 @@
+{% extends "_base.html" %}
+
+{% block title %} Poslední změny {% endblock %}
+
+{% block content %}
+
+    <ol class="breadcrumb">
+        <li><a href="{{ url_for('index') }}">{{ g.sitename }}</a>
+        <li>Seznam uživatelů
+    </ol>
+    <h2>Seznam uživatelů</h2>
+    <table class="table table-condensed">
+        <thead>
+            <tr>
+                <td>id</td>
+                <td>už. jméno</td>
+                <td>hlasů</td>
+                <td>datum registrace</td>
+            </tr>
+        <tbody>
+        {% for user in users %}
+            <tr>
+                <td> {{ user.id }} </td>
+                <td> {{ user.username }} </td>
+                <td> {{ user.votes | count }} </td>
+                <td> hups, to jsem zapomněl dát do databáze </td>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endblock %}

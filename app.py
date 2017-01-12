@@ -158,6 +158,12 @@ def recent():
     
     return render_template("recent.html", changes=changes)
 
+@app.route("/users")
+def users():
+    users = db.session.query(db.User).filter(db.User.active == True).all()
+    
+    return render_template("users.html", users=users)
+
 @app.route("/vote", methods=["POST"])
 @login_required
 def vote():
