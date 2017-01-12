@@ -90,7 +90,7 @@ class SuggestionForm(Form):
     submit = SubmitField('Přidat návrh')
     
 class CommentForm(Form):
-    comment_text = TextField('Návrh', [validators.required()])
+    comment_text = TextAreaField('Komentář', [validators.required()])
     submit = SubmitField('Přidat komentář')
 
 @app.route("/<project_identifier>/<category_identifier>/<term_identifier>/",

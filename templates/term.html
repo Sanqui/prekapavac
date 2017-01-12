@@ -178,7 +178,7 @@
                 {% for comment in term.comments %}
                     <div class="panel panel-default">
                         <div class="panel-body" title="{{ datetime(comment.created) }}">
-                            <strong>{{ comment.user.username }}</strong>: {{ comment.text }}
+                            <strong>{{ comment.user.username }}</strong>: {{ comment.text | urlize | markdown }}
                         </div>
                     </div>
                 {% endfor %}

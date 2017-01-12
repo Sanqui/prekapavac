@@ -50,3 +50,5 @@ dd {margin-left: 32px;}
 .tr-link:hover {background: #f2f2ff;}
 
 footer {text-align: right; margin-right: 32px;}
+
+textarea {width: 100%; min-height: 6em;}
