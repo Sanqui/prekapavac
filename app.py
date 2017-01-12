@@ -143,12 +143,12 @@ def term(project_identifier, category_identifier, term_identifier):
 @app.route("/recent")
 def recent():
     
-    suggestions = db.session.query(db.Suggestion).order_by(db.Suggestion.created.desc()).limit(30).all()
-    comments = db.session.query(db.Comment).order_by(db.Comment.created.desc()).limit(30).all()
+    suggestions = db.session.query(db.Suggestion).order_by(db.Suggestion.created.desc()).limit(100).all()
+    comments = db.session.query(db.Comment).order_by(db.Comment.created.desc()).limit(100).all()
     
     changes = [c for c in suggestions + comments if c.created]
     changes.sort(key=lambda x: x.created, reverse=True)
-    changes = changes[0:20]
+    changes = changes[0:100]
     
     return render_template("recent.html", changes=changes)
 
