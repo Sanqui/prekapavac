@@ -144,7 +144,11 @@
                         <p class="list-group-item-text">
                             {{ suggestion.description }}
                             <span class="suggestion-user">
-                                — {{ suggestion.user }}
+                                {% if suggestion.user %}
+                                    — {{ suggestion.user }}
+                                {% else %}
+                                    &nbsp;
+                                {% endif %}
                             </span>
                         </p>
                         
@@ -180,7 +184,10 @@
                 {% for comment in term.comments %}
                     <div class="panel panel-default">
                         <div class="panel-body" title="{{ datetime(comment.created) }}">
-                            <strong>{{ comment.user.username }}</strong>: {{ comment.text | urlize | markdown }}
+                            {% if comment.user %}
+                                <strong>{{ comment.user.username }}</strong>:
+                            {% endif %}
+                            {{ comment.text | urlize | markdown }}
                         </div>
                     </div>
                 {% endfor %}
