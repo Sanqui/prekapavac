@@ -137,13 +137,15 @@
                                 </form>
                             </div>
                         {% endif %}
-                        <h4 class="list-group-item-heading">
+                        <h4 class="list-group-item-heading suggestion-text">
                             <span class="badge">{{ score or 0 }}</span>
                             <strong>{{ suggestion.text }}</strong>
                         </h4>
                         <p class="list-group-item-text">
                             {{ suggestion.description }}
-                            — <strong>{{ suggestion.user }}</strong>
+                            <span class="suggestion-user">
+                                — {{ suggestion.user }}
+                            </span>
                         </p>
                         
                     </li>

@@ -33,6 +33,8 @@ dd {margin-left: 32px;}
 
 .vote-sign {padding-right: 3px; color: red; }
 
+/* .suggestion-user {float: right;} */
+
 .comment-form input {width: 100%;}
 .comment-form input {display: inline-block; margin: 4px;}
 
@@ -52,3 +54,15 @@ dd {margin-left: 32px;}
 footer {text-align: right; margin-right: 32px;}
 
 textarea {width: 100%; min-height: 6em;}
+
+
+
+@media (max-width: 500px) {
+    .suggestion-text {clear: both;}
+}
+
+
+
+
+
+
