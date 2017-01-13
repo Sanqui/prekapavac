@@ -270,7 +270,8 @@ def register():
                 user = db.User(username=form.username.data.lower(),
                     email=form.email.data,
                     active=True,
-                    registered=datetime.now())
+                    registered=datetime.now(),
+                    seen=datetime.now())
                 user.set_password(form.password.data)
                 db.session.add(user)
                 db.session.commit()
