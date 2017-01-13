@@ -83,7 +83,7 @@ def category(project_identifier, category_identifier):
     if not category: abort(404)
     
     terms = db.session.query(db.Term).filter(db.Term.category == category,
-        db.Term.hidden == False)
+        db.Term.hidden == False).order_by(db.Term.number.asc())
     
     return render_template("category.html", project=project, category=category,
         terms=terms)
