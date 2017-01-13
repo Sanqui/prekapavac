@@ -152,15 +152,27 @@ def term(project_identifier, category_identifier, term_identifier):
 
 @app.route("/recent")
 def recent():
+    skip_suggestions = request.args.get("sskip") or 0
+    skip_comments = request.args.get("cskip") or 0
     
-    suggestions = db.session.query(db.Suggestion).filter(db.Suggestion.status == "approved").order_by(db.Suggestion.created.desc()).limit(100).all()
-    comments = db.session.query(db.Comment).filter(db.Comment.deleted == False).order_by(db.Comment.created.desc()).limit(100).all()
+    suggestions = db.session.query(db.Suggestion).filter(db.Suggestion.status == "approved").order_by(db.Suggestion.created.desc()).offset(skip_suggestions).limit(100).all()
+    comments = db.session.query(db.Comment).filter(db.Comment.deleted == False).order_by(db.Comment.created.desc()).offset(skip_comments).limit(100).all()
     
     changes = [c for c in suggestions + comments if c.created]
     changes.sort(key=lambda x: x.created, reverse=True)
     changes = changes[0:100]
     
-    return render_template("recent.html", changes=changes)
+    num_suggestions = 0
+    num_comments = 0
+    for c in changes:
+        if isinstance(c, db.Suggestion):
+            num_suggestions += 1
+        elif isinstance(c, db.Comment):
+            num_comments += 1
+    
+    
+    return render_template("recent.html", changes=changes,
+        num_suggestions=num_suggestions, num_comments=num_comments)
 
 @app.route("/users")
 def users():

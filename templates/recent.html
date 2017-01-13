@@ -47,4 +47,9 @@
             </tr>
         {% endfor %}
     </table>
+    <center>
+        <a href="{{ url_for('recent', sskip=num_suggestions, cskip=num_comments) }}" class="btn btn-default">
+            další stránka
+        </a>
+    </center>
 {% endblock %}
