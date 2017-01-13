@@ -23,7 +23,13 @@
                 <td> {{ user.id }} </td>
                 <td> {{ user.username }} </td>
                 <td> {{ user.votes | count }} </td>
-                <td> hups, to jsem zapomněl dát do databáze </td>
+                <td>
+                    {% if user.registered %}
+                        {{ ago(user.registered) }}
+                    {% else %}
+                        první den
+                    {% endif %}
+                </td>
                 </td>
             </tr>
         {% endfor %}

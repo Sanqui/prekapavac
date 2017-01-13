@@ -45,6 +45,9 @@ class User(Base):
     admin = Column(Boolean, nullable=False, default=False)
     active = Column(Boolean, nullable=False, default=True)
     
+    registered = Column(DateTime)
+    seen = Column(DateTime)
+    
     
     def verify_password(self, password):
         if self.password.startswith('$2b'):

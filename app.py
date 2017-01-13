@@ -269,7 +269,8 @@ def register():
             else:
                 user = db.User(username=form.username.data.lower(),
                     email=form.email.data,
-                    active=True)
+                    active=True,
+                    registered=datetime.now())
                 user.set_password(form.password.data)
                 db.session.add(user)
                 db.session.commit()
