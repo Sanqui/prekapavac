@@ -222,6 +222,8 @@
                                 {{comment_form.comment_text}}
                                 {{comment_form.submit}}
                             </form>
+                            <p>V komentářích jde používat <a href="http://daringfireball.net/projects/markdown/basics">Markdown</a>.
+                            <p>Odkaz se dělá <tt>[takto](http://example.com)</tt>.  Nový odstavec uděláte dvojitým odřádkováním.
                         {% else %}
                             <p>Pro přidávání komentářů je potřeba se <a href="{{url_for('login')}}">přihlásit</a>.
                         {% endif %}
