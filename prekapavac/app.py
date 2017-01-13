@@ -15,7 +15,7 @@ from wtforms import Form, BooleanField, TextField, TextAreaField, PasswordField,
 
 import db
 
-app = Flask('translator')
+app = Flask(__name__)
 Markdown(app)
 app.config.from_pyfile("config.py")
 
