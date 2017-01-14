@@ -112,6 +112,9 @@ def term(project_identifier, category_identifier, term_identifier):
         return "Tomuto identifikátoru odpovídá více termínů.  Tohle je CHYBA a musí ji opravit administrátor.  Můžete pomoci tím že nahlásíte URL."
     if not term: abort(404)
     
+    comments = db.session.query(db.Comment).filter(
+        db.Comment.term == term, db.Comment.deleted == False)
+    
     suggestion_form = None
     comment_form = None
     if current_user.is_authenticated and not term.locked:
@@ -149,7 +152,7 @@ def term(project_identifier, category_identifier, term_identifier):
     
     return render_template("term.html", project=project, category=category, term=term,
         suggestion_form=suggestion_form, comment_form=comment_form,
-        vote_from_for = db.Vote.from_for)
+        vote_from_for = db.Vote.from_for, comments=comments)
 
 @app.route("/recent")
 def recent():
