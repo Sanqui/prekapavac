@@ -208,6 +208,11 @@
                                 {% if comment.created %}
                                     <div class="comment-datetime">
                                         {{ ago(comment.created) }}
+                                        {% if current_user.admin %}
+                                            <a href="{{url_for('comment.edit_view', id=comment.id)}}" class="btn btn-default btn-xs">
+                                                <span class="glyphicon glyphicon-pencil"></span>
+                                            </a>
+                                        {% endif %}
                                     </div>
                                 {% endif %}
                                 {% if comment.user %}
