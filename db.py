@@ -228,6 +228,13 @@ class Suggestion(Base):
         return score
     
     @property
+    def negative_score(self):
+        score = session.query(Vote).filter(
+            Vote.suggestion == self and Vote.valid == True,
+            Vote.vote == 0).count() or 0
+        return score
+    
+    @property
     def url(self):
         return self.term.url
 

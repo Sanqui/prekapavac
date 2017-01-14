@@ -16,8 +16,8 @@ from wtforms import Form, BooleanField, TextField, TextAreaField, PasswordField,
 import db
 
 app = Flask('translator')
-Markdown(app)
 app.config.from_pyfile("config.py")
+Markdown(app)
 
 login_manager = LoginManager()
 login_manager.init_app(app)

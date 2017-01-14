@@ -74,6 +74,9 @@ textarea {width: 100%; min-height: 6em;}
     float: left; width: 128px; margin-right: 12px;
     min-height: 26px;}
 
+.badge-negative { background: #a44; border-radius: 100% 0 0 100%; margin-right: 0;}
+.badge-positive { background: #494; border-radius: 0 100% 100% 0; margin-left: 0;}
+
 @media (max-width: 500px) {
     .container-fluid {margin-left: 16px; margin-right: 16px;}
     .suggestion-text {clear: both;}

@@ -158,7 +158,8 @@
                                 </div>
                             {% endif %}
                             <h4 class="list-group-item-heading suggestion-text">
-                                <span class="badge">{{ score or 0 }}</span>
+                                <span class="badge badge-negative">{{ suggestion.negative_score }}</span><!--
+                                --><span class="badge badge-positive">{{ score or 0 }}</span>
                                 <strong>{{ suggestion.text }}</strong>
                             </h4>
                             <p class="list-group-item-text">
