@@ -15,6 +15,7 @@ thead tr {background: #eee;}
 .suggestions { overflow: hidden; text-overflow: ellipsis;
   height: 1.5em; 
   line-height: 1.25;}
+.suggestion li {white-space: nowrap;}
 
 
 .table-terms td a {color: inherit;}
@@ -71,13 +72,20 @@ textarea {width: 100%; min-height: 6em;}
 
 .category-item .rating-completion {
     float: left; width: 128px; margin-right: 12px;
-    min-height: 32px;}
+    min-height: 26px;}
 
 @media (max-width: 500px) {
+    .container-fluid {margin-left: 16px; margin-right: 16px;}
     .suggestion-text {clear: both;}
     .locked-info {padding: 16px;  margin: 16px;}
 }
 
+@media (max-width: 400px) {
+    .container-fluid {margin-left: 4px; margin-right: 4px;}
+    .category-item .rating-completion {
+        width: 96px;
+    }
+}
 
 
 
