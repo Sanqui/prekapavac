@@ -13,24 +13,7 @@
     
     <p> {{ category.description | markdown }}
     
-    {% if current_user.is_authenticated %}
-        {% set rated = category.count_suggestions(current_user) %}
-        {% set total = category.count_suggestions() %}
-        {% if total %}
-            {% set percentage = round(rated / total * 100) %}
-            <div class="rating-completion">
-                Máš ohodnoceno: {{ rated }} / {{ total }}
-                <div class="progress">
-                    <div class="progress-bar" style="width: {{ percentage }}%;">
-                        {{ percentage }}%
-                    </div>
-                </div>
-                {% if percentage == 100 %}
-                    Dobrá práce!
-                {% endif %}
-            </div>
-        {% endif %}
-    {% endif %}
+    {{ completion_bar(category) }}
         
     <table class="table table-bordered table-terms">
         <thead>

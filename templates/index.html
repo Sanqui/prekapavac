@@ -21,7 +21,8 @@
                 <p>{{ project.description | markdown }}
                 <div class="list-group">
                     {% for category in project.categories %}
-                        <a href="{{ category.url }}" class="list-group-item">
+                        <a href="{{ category.url }}" class="list-group-item category-item">
+                            {{ completion_bar(category, bar_only=True) }}
                             <h4 class="list-group-item-heading">
                                 {{ category.name }}
                             </h4>

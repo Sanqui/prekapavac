@@ -55,3 +55,27 @@
     </span>
 {% endmacro %}
 
+{% macro completion_bar(category, bar_only=False) %}
+    {% if current_user.is_authenticated %}
+        {% set rated = category.count_suggestions(current_user) %}
+        {% set total = category.count_suggestions() %}
+        <div class="rating-completion">
+            {% if total %}
+            {% set percentage = round(rated / total * 100) %}
+                {% if not bar_only %}
+                    Máš ohodnoceno: {{ rated }} / {{ total }}
+                {% endif %}
+                <div class="progress">
+                    <div class="progress-bar" style="width: {{ percentage }}%;">
+                        {{ percentage }}%
+                    </div>
+                </div>
+                {% if not bar_only %}
+                    {% if percentage == 100 %}
+                        Dobrá práce!
+                    {% endif %}
+                {% endif %}
+            {% endif %}
+        </div>
+    {% endif %}
+{% endmacro %}
