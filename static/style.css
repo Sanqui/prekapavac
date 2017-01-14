@@ -9,7 +9,13 @@ body {padding-top: 70px;}
 td {white-space: nowrap;}
 thead tr {background: #eee;}
 .container-fluid {margin-left: 32px; margin-right: 32px;}
-.td-suggestions {width: 100%;}
+.table-terms {max-width: 100%;}
+.td-suggestions {width: 100%; overflow: hidden;
+    white-space: normal;}
+.suggestions { overflow: hidden; text-overflow: ellipsis;
+  height: 1.5em; 
+  line-height: 1.25;}
+
 
 .table-terms td a {color: inherit;}
 .table-terms td a {color: inherit;}
