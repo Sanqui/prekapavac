@@ -205,6 +205,11 @@
                     {% for comment in term.comments %}
                         <div class="panel panel-default">
                             <div class="panel-body" title="{{ datetime(comment.created) }}">
+                                {% if comment.created %}
+                                    <div class="comment-datetime">
+                                        {{ ago(comment.created) }}
+                                    </div>
+                                {% endif %}
                                 {% if comment.user %}
                                     <strong>{{ comment.user.username }}</strong>:
                                 {% endif %}
