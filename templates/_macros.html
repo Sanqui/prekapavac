@@ -62,6 +62,7 @@
         <div class="rating-completion">
             {% if total %}
             {% set percentage = round(rated / total * 100) %}
+            {% set percentage = 99 if (percentage == 100 and rated != total) else percentage %}
                 {% if not bar_only %}
                     Máš ohodnoceno: {{ rated }} / {{ total }}
                 {% endif %}
@@ -71,7 +72,7 @@
                     </div>
                 </div>
                 {% if not bar_only %}
-                    {% if percentage == 100 %}
+                    {% if rated == total %}
                         Dobrá práce!
                     {% endif %}
                 {% endif %}
