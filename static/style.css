@@ -66,6 +66,9 @@ textarea {width: 100%; min-height: 6em;}
     background: #eee; margin: 32px;}
 .locked-icon {font-size: 64px;}
 
+.rating-completion {text-align: center; width: 80%; margin: 2px auto 8px auto;}
+.rating-completion .progress {margin-top: 4px; margin-bottom: 4px !important;}
+
 
 @media (max-width: 500px) {
     .suggestion-text {clear: both;}

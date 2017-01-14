@@ -33,7 +33,8 @@ def new_template_globals():
     return {
         'type': type,
         'db': db,
-        'datetime': datetime_format
+        'datetime': datetime_format,
+        'round': round
     }
 
 

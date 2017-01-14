@@ -120,6 +120,32 @@ class Category(Base, WithIdentifier):
             project_identifier=self.project.identifier,
             category_identifier=self.identifier)
     
+    def count_suggestions(self, rated_by=None):
+        suggestion_conditions = (
+            Term.category == self,
+            Term.locked == False,
+            Term.hidden == False,
+            Suggestion.status == "approved"
+        )
+        
+        if not rated_by:
+            count = session.query(Suggestion).join(Term).filter(
+                *suggestion_conditions
+            ).count()
+        
+        else:
+            count = session.query("Vote") \
+                .select_from(Suggestion) \
+                .join("votes") \
+                .join(Term) \
+                .filter(
+                    Vote.user == rated_by,
+                    Vote.valid == True,
+                    *suggestion_conditions
+                ).count()
+        
+        return count
+    
     def __str__(self):
         if self.project:
             return self.project.identifier + '/' + self.identifier
