@@ -16,6 +16,9 @@
                 <a href="{{ term.prev.url }}">
                     <span aria-hidden="true">&larr;</span>
                     #{{ term.prev.number }} {{ term.prev.text_en }}
+                    {% if current_user.is_authenticated and term.prev.user_has_unrated(current_user) %}
+                        {{ unrated_icon(True, left=True) }}
+                    {% endif %}
                 </a>
             {% endif %}
         <li>
@@ -27,6 +30,9 @@
         <li class="next">
             {% if term.next %}
                 <a href="{{ term.next.url }}">
+                    {% if current_user.is_authenticated and term.next.user_has_unrated(current_user) %}
+                        {{ unrated_icon(True) }}
+                    {% endif %}
                     #{{ term.next.number }} {{ term.next.text_en }}
                     <span aria-hidden="true">&rarr;</span>
                 </a>

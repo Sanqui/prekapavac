@@ -18,7 +18,8 @@
     <table class="table table-bordered table-terms">
         <thead>
             <tr>
-                <td>num</td>
+                <td></td>
+                <td>#</td>
                 <td>en</td>
                 <td>jp</td>
                 <td>návrhy</td>
@@ -26,7 +27,12 @@
         <tbody>
             {% for term in terms %}
                     <tr class="tr-link" data-href="{{ term.url }}">
-                        <td>
+                        <td class="td-unrated-icon">
+                            {% if current_user.is_authenticated and term.user_has_unrated(current_user) %}
+                                {{ unrated_icon(True) }}
+                            {% endif %}
+                        </td>
+                        <td class="td-num">
                             <a href="{{ term.url }}">#{{ term.number }}</a>
                         </td>
                         <td>
@@ -36,7 +42,7 @@
                             <a href="{{ term.url }}">{{ term.text_jp }}</a></td>
                         <td class="td-suggestions">
                             {% if term.locked %}
-                                <span class="glyphicon glyphicon-lock"></span>
+                                <span class="glyphicon glyphicon-lock lock-icon"></span>
                             {% else %}
                                 <ul class="suggestions">
                                     {% for suggestion, score in term.suggestions_w_score %}

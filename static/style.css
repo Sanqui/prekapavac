@@ -17,6 +17,9 @@ thead tr {background: #eee;}
   line-height: 1.25;}
 .suggestion li {white-space: nowrap;}
 
+.td-unrated-icon {border-right: 0 !important; padding-right: 1px !important;}
+.td-num {border-left: 0 !important; padding-left: 1px !important;}
+.lock-icon {margin-left: 8px;}
 
 .table-terms td a {color: inherit;}
 .table-terms td a {color: inherit;}

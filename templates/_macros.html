@@ -2,9 +2,12 @@
 {# remember to add an import to _base.html #}
 {# !!! #}
 
-{% macro unrated_icon(suggestion) %}
-    {% if current_user.is_authenticated and not g.db.Vote.from_for(current_user, suggestion) %}
-        <span class="glyphicon glyphicon-hand-right vote-sign" id="unrated-icon-{{ suggestion.id }}"></span>
+{% macro unrated_icon(suggestion, left=False) %}
+    {% if suggestion == True or
+        (current_user.is_authenticated and not g.db.Vote.from_for(current_user, suggestion)) %}
+        <span class="glyphicon
+            {{ "glyphicon-hand-right" if not left else "glyphicon-hand-left" }}
+        vote-sign" id="unrated-icon-{{ suggestion.id }}"></span>
     {% endif %}
 {% endmacro %}
 

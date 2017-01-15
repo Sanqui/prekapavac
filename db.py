@@ -176,6 +176,12 @@ class Term(Base, WithIdentifier):
             .filter(Suggestion.term==self, Suggestion.status == "approved") \
             .outerjoin(Vote).group_by(Suggestion).order_by('score DESC').all()
     
+    def user_has_unrated(self, user):
+        for suggestion, score in self.suggestions_w_score:
+            if not Vote.from_for(user, suggestion):
+                return True
+        return False
+    
     @property
     def prev(self):
         return session.query(Term).filter(Term.category == self.category) \
