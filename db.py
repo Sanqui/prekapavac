@@ -177,6 +177,9 @@ class Term(Base, WithIdentifier):
             .outerjoin(Vote).group_by(Suggestion).order_by('score DESC').all()
     
     def user_has_unrated(self, user):
+        if self.locked:
+            # Locked Terms behave as if they had no suggestions
+            return False
         for suggestion, score in self.suggestions_w_score:
             if not Vote.from_for(user, suggestion):
                 return True
