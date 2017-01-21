@@ -291,6 +291,9 @@ def register():
                 user.set_password(form.password.data)
                 db.session.add(user)
                 db.session.commit()
+                if user.id == 1:
+                    user.admin = True
+                    db.session.commit()
                 
                 login_user(user, remember=True)
                 flash("Registrace proběhla úspěšně.", 'success')

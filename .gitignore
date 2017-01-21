@@ -4,4 +4,5 @@ __pycache__/
 config.py
 static/bootstrap-3.3.7-dist
 static/jquery-3.1.1.min.js
+static/*.zip
 env
