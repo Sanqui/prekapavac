@@ -58,9 +58,10 @@
     </span>
 {% endmacro %}
 
-{% macro completion_bar(category, bar_only=False) %}
+{% macro completion_bar(category, bar_only=False, user=None) %}
     {% if current_user.is_authenticated %}
-        {% set rated = category.count_suggestions(current_user) %}
+        {% set user = current_user if not user else user %}
+        {% set rated = category.count_suggestions(user) %}
         {% set total = category.count_suggestions() %}
         <div class="rating-completion">
             {% if total %}

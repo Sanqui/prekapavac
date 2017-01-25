@@ -84,6 +84,31 @@ class Project(Base, WithIdentifier):
     
     categories = relationship("Category", order_by="Category.position")
     
+    def count_suggestions(self, rated_by=None):
+        suggestion_conditions = (
+            Term.locked == False,
+            Term.hidden == False,
+            Suggestion.status == "approved"
+        )
+        
+        if not rated_by:
+            count = session.query(Suggestion).join(Term).filter(
+                *suggestion_conditions
+            ).count()
+        
+        else:
+            count = session.query("Vote") \
+                .select_from(Suggestion) \
+                .join("votes") \
+                .join(Term) \
+                .filter(
+                    Vote.user == rated_by,
+                    Vote.valid == True,
+                    *suggestion_conditions
+                ).count()
+        
+        return count
+    
     @property
     def url(self):
         return url_for('index', _anchor=self.identifier)

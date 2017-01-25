@@ -19,6 +19,7 @@
             </div>
             <div class="panel-body">
                 <p>{{ project.description | markdown }}
+                {{ completion_bar(project) }}
                 <div class="list-group">
                     {% for category in project.categories %}
                         <a href="{{ category.url }}" class="list-group-item category-item">

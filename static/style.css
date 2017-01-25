@@ -19,6 +19,10 @@ thead tr {background: #eee;}
 
 .td-unrated-icon {border-right: 0 !important; padding-right: 1px !important;}
 .td-num {border-left: 0 !important; padding-left: 1px !important;}
+
+.td-bar .count {display: inline-block; width: 42px;}
+.td-bar .rating-completion {display: inline-block; vertical-align: middle; margin: 0;}
+
 .lock-icon {margin-left: 8px;}
 
 .table-terms td a {color: inherit;}

@@ -181,8 +181,9 @@ def recent():
 @app.route("/users")
 def users():
     users = db.session.query(db.User).filter(db.User.active == True).all()
+    projects = db.session.query(db.Project).order_by(db.Project.position.asc()).all()
     
-    return render_template("users.html", users=users)
+    return render_template("users.html", users=users, projects=projects)
 
 @app.route("/vote", methods=["POST"])
 @login_required

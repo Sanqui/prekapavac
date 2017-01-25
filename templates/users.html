@@ -22,7 +22,14 @@
             <tr>
                 <td> {{ user.id }} </td>
                 <td> {{ user.username }} </td>
-                <td> {{ user.votes | count }} </td>
+                <td class="td-bar">
+                    {% for project in projects %}
+                        <div class="count">
+                            {{ project.count_suggestions(user) }}
+                        </div>
+                        {{ completion_bar(project, bar_only=True, user=user) }}
+                    {% endfor %}
+                </td>
                 <td>
                     {% if user.registered %}
                         {{ ago(user.registered) }}
