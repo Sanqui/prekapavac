@@ -246,6 +246,9 @@ class Suggestion(Base):
     @property
     def url(self):
         return self.term.url
+    
+    def __str__(self):
+        return "from {}, suggestion {}".format(self.user, self.text)
 
 class Comment(Base):
     __tablename__ = 'comments'
@@ -260,6 +263,9 @@ class Comment(Base):
     
     term = relationship("Term")
     user = relationship("User", backref='comments')
+    
+    def __str__(self):
+        return "from {}, comment {}".format(self.user, self.text[0:16])
 
 class Vote(Base):
     __tablename__ = 'votes'
@@ -278,6 +284,9 @@ class Vote(Base):
     def from_for(cls, user, suggestion):
         return session.query(cls).filter(cls.user == user,
             cls.suggestion == suggestion).scalar()
+    
+    def __str__(self):
+        return "on {}, {} vote from {}".format(self.suggestion.text, self.vote, self.user)
     
 class Outlink(Base):
     __tablename__ = 'outlinks'
