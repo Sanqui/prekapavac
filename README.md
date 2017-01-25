@@ -24,7 +24,7 @@ Open config.py and put the following dev config in:
     SECRET_KEY = "SECRET_KEY"
 
     DEBUG = False
-    DEBUG_RELOAD_TEMPLATES = True
+    TEMPLATES_AUTO_RELOAD = True
 
     SITENAME = "Překapávač DEV"
     REGISTER_KEY = "test"
