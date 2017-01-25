@@ -269,6 +269,14 @@ class Suggestion(Base):
         return score
     
     @property
+    def conflicts(self):
+        return session.query(Suggestion).filter(
+            Suggestion.id != self.id,
+            Suggestion.text == self.text,
+            Suggestion.status == "approved"
+        )
+    
+    @property
     def url(self):
         return self.term.url
     

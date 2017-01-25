@@ -104,8 +104,8 @@
                 <ul class="list-group">
                     {% for suggestion, score in term.suggestions_w_score %}
                         <li class="list-group-item">
-                            {% if current_user.is_authenticated %}
-                                <div class="vote-buttons">
+                            <div class="controls">
+                                {% if current_user.is_authenticated %}
                                     <form method="POST" action="{{url_for('vote')}}" class="vote-form">
                                         {{ unrated_icon(suggestion) }}
                                         <input type="hidden" name="suggestion_id" value="{{ suggestion.id }}">
@@ -161,8 +161,15 @@
                                             </ul>
                                         </div>
                                     </form>
+                                {% endif %}
+                                <div class="conflicts">
+                                    {% for conflict in suggestion.conflicts %}
+                                        <a href="{{conflict.url}}" data-toggle="tooltip" data-placement="bottom" title="{{conflict.term.category.name}}: {{conflict.term.text_en}}">
+                                            <span class="glyphicon glyphicon-exclamation-sign"></span>
+                                        </a>
+                                    {% endfor %}
                                 </div>
-                            {% endif %}
+                            </div>
                             <h4 class="list-group-item-heading suggestion-text">
                                 <span class="badge badge-negative">{{ suggestion.negative_score }}</span><!--
                                 --><span class="badge badge-positive">{{ score or 0 }}</span>

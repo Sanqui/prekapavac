@@ -40,10 +40,13 @@ dd {margin-left: 32px;}
 .suggestions li {margin: 0px 4px 0px 4px; padding: 0px 8px 1px 8px; border: 1px solid #ccc; display: inline-block;
     border-radius: 10px;}
 
-.vote-buttons {float: right;}
-.vote-buttons form {display: inline;}
-.vote-buttons .dropdown-menu {padding: 6px;}
-.vote-buttons .dropdown-menu li {margin-bottom: 6px;}
+.controls {float: right;}
+.controls form {display: inline;}
+.controls .dropdown-menu {padding: 6px;}
+.controls .dropdown-menu li {margin-bottom: 6px;}
+.conflicts {text-align: right;}
+.conflicts a {color: #500; text-decoration: none;}
+.conflicts .tooltip {white-space: nowrap; font-size: inherit;}
 
 .vote-sign {padding-right: 3px; color: red; }
 
@@ -58,10 +61,6 @@ dd {margin-left: 32px;}
 
 .icon {vertical-align: middle;}
 
-/*
-.vote-buttons .glyphicon-star { color: #dd0; }
-.vote-buttons .glyphicon-heart { color: #e00; }
-*/
 
 .tr-link {cursor: pointer;}
 .tr-link:hover {background: #f2f2ff;}
@@ -85,6 +84,7 @@ textarea {width: 100%; min-height: 6em;}
 
 .badge-negative { background: #933; border-radius: 100% 0 0 100%; margin-right: 0;}
 .badge-positive { background: #393; border-radius: 0 100% 100% 0; margin-left: 0;}
+
 
 @media (max-width: 500px) {
     .container-fluid {margin-left: 16px; margin-right: 16px;}
