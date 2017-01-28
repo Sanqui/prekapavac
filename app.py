@@ -60,6 +60,11 @@ def before_request():
     g.now = datetime.now()
     g.yesterday = g.now - timedelta(days=1)
     g.tomorrow = g.now + timedelta(days=1)
+    
+    if current_user.is_authenticated:
+        if current_user.active == False:
+            logout_user()
+            flash("Byli jste odhlášeni protože váš účet byl deaktivován.")
 
 @app.teardown_request
 def shutdown_session(exception=None):
@@ -253,9 +258,12 @@ def login():
         else:
             password_matches = user.verify_password(form.password.data)
             if password_matches:
-                login_user(user, remember=True)
-                flash("Jste přihlášeni.", 'success')
-                return redirect(url_for('index'))
+                if user.active:
+                    login_user(user, remember=True)
+                    flash("Jste přihlášeni.", 'success')
+                    return redirect(url_for('index'))
+                else:
+                    flash("Váš účet není aktivován administrátorem.")
             else:
                 failed = True
     
