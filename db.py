@@ -9,6 +9,7 @@ from sqlalchemy.orm import scoped_session, sessionmaker, relationship, backref
 from sqlalchemy.schema import Column, ForeignKey, Table
 from sqlalchemy.types import DateTime, Integer, String, Enum, Text, Boolean, TypeDecorator
 from sqlalchemy.ext.hybrid import hybrid_property, hybrid_method
+from flask_sqlalchemy import SQLAlchemy
 
 import bcrypt
 
@@ -18,17 +19,17 @@ from flask import Flask, url_for
 app = Flask('translator')
 app.config.from_pyfile("config.py")
 
-if 'mysql' in config.DATABASE:
-    engine = create_engine(config.DATABASE, encoding="utf8", pool_size = 100, pool_recycle=4200, echo=config.DEBUG) # XXX
-    # pool_recycle is to prevent "server has gone away"
-else:
-    engine = create_engine(config.DATABASE, encoding="utf8", echo=config.DEBUG)
+#if 'mysql' in config.DATABASE:
+#    engine = create_engine(config.DATABASE, encoding="utf8", pool_size = 100, pool_recycle=4200, echo=config.DEBUG) # XXX
+#    # pool_recycle is to prevent "server has gone away"
+#else:
+#    engine = create_engine(config.DATABASE, encoding="utf8", echo=config.DEBUG)
 
+db = SQLAlchemy()
 
+session = db.session # scoped_session(sessionmaker(bind=engine, autoflush=False))
 
-session = scoped_session(sessionmaker(bind=engine, autoflush=False))
-
-Base = declarative_base(bind=engine)
+Base = db.Model # declarative_base(bind=engine)
 
 class WithIdentifier():
     @classmethod

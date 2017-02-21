@@ -19,6 +19,8 @@ import db
 
 app = Flask('translator')
 app.config.from_pyfile("config.py")
+app.config['SQLALCHEMY_DATABASE_URI'] = app.config['DATABASE']
+db.db.init_app(app)
 Markdown(app)
 
 login_manager = LoginManager()
