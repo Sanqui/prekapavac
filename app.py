@@ -9,6 +9,8 @@ from flask_admin.contrib.sqla import ModelView
 
 from flask_login import LoginManager, login_required, login_user, logout_user, current_user
 
+from flask_debugtoolbar import DebugToolbarExtension
+
 from flaskext.markdown import Markdown
 
 from wtforms import Form, BooleanField, TextField, TextAreaField, PasswordField, RadioField, SelectField, SelectMultipleField, BooleanField, IntegerField, HiddenField, SubmitField, validators, ValidationError, widgets
@@ -335,4 +337,6 @@ def create_admin():
 create_admin()
 
 if __name__ == "__main__":
+    app.debug = True
+    toolbar = DebugToolbarExtension(app)
     app.run(host="", port=8004, debug=True, threaded=True)
