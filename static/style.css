@@ -85,8 +85,6 @@ textarea {width: 100%; min-height: 6em;}
 .badge-negative { background: #933; border-radius: 100% 0 0 100%; margin-right: 0;}
 .badge-positive { background: #393; border-radius: 0 100% 100% 0; margin-left: 0;}
 
-.quality {width: 12px; height: 12px; vertical-align: middle; border-radius: 8px; display: inline-block;
-    border: 1px solid #888;}
 
 @media (max-width: 500px) {
     .container-fluid {margin-left: 16px; margin-right: 16px;}

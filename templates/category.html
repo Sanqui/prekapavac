@@ -48,7 +48,6 @@
                                     {% for suggestion, score in term.suggestions_w_score %}
                                         <li>
                                             {{ unrated_icon(suggestion) }}
-                                            {{ quality_badge(suggestion) }}
                                             {{ suggestion.text }}
                                     {% endfor %}
                                 </li>
