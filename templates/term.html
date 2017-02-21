@@ -136,7 +136,13 @@
                                                 {% endmacro %}
                                                 <li>{{ ago(suggestion.created) }}
                                                 <li>Stav: {{ suggestion.status }}
-                                                <li>quality: {{ suggestion.quality }}
+                                                <li>quality:
+                                                    {% set quality = suggestion.quality %}
+                                                    {% if quality != None %}
+                                                        {{ quality_badge(suggestion) }} {{ round(suggestion.quality*100) }}%
+                                                    {% else %}
+                                                        -
+                                                    {% endif %}
                                                 {% if current_user.admin %}
                                                     <li>
                                                         <a href="{{url_for('suggestion.edit_view', id=suggestion.id)}}" class="btn btn-default btn-block">

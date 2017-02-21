@@ -19,6 +19,8 @@ from flask import Flask, url_for
 app = Flask('translator')
 app.config.from_pyfile("config.py")
 
+QUALITY_MIN = app.config.get("QUALITY_MIN", 1)
+
 #if 'mysql' in config.DATABASE:
 #    engine = create_engine(config.DATABASE, encoding="utf8", pool_size = 100, pool_recycle=4200, echo=config.DEBUG) # XXX
 #    # pool_recycle is to prevent "server has gone away"
@@ -307,6 +309,7 @@ class Suggestion(Base):
     def quality(self):
         quality = 0
         total = 0
+        people = 0
         for vote in self.votes:
             if vote.valid:
                 influence = vote.user.influence
@@ -316,8 +319,9 @@ class Suggestion(Base):
                 else:
                     quality += influence * 2
                     total += influence * 2
+                people += 1
         
-        if total:
+        if people >= QUALITY_MIN:
             return quality / total
         else:
             return None
