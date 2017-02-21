@@ -1,4 +1,5 @@
 from datetime import datetime
+import math
 
 from unidecode import unidecode
 
@@ -7,6 +8,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import scoped_session, sessionmaker, relationship, backref
 from sqlalchemy.schema import Column, ForeignKey, Table
 from sqlalchemy.types import DateTime, Integer, String, Enum, Text, Boolean, TypeDecorator
+from sqlalchemy.ext.hybrid import hybrid_property, hybrid_method
 
 import bcrypt
 
@@ -48,6 +50,29 @@ class User(Base):
     registered = Column(DateTime)
     seen = Column(DateTime)
     
+    @property
+    def influence(self):
+        suggestion_conditions = (
+            Term.locked == False,
+            Term.hidden == False,
+            Suggestion.status == "approved"
+        )
+        
+        rated_count = session.query("Vote") \
+            .select_from(Suggestion) \
+            .join("votes") \
+            .join(Term) \
+            .filter(
+                Vote.user == self,
+                Vote.valid == True,
+                *suggestion_conditions
+            ).count()
+        
+        count = session.query(Suggestion).join(Term).filter(
+            *suggestion_conditions
+        ).count()
+        
+        return rated_count / count
     
     def verify_password(self, password):
         if self.password.startswith('$2b'):
@@ -85,6 +110,7 @@ class Project(Base, WithIdentifier):
     categories = relationship("Category", order_by="Category.position")
     
     def count_suggestions(self, rated_by=None):
+        # XXX this doesn't actually check the project!! 
         suggestion_conditions = (
             Term.locked == False,
             Term.hidden == False,
@@ -275,6 +301,22 @@ class Suggestion(Base):
             Suggestion.text == self.text,
             Suggestion.status == "approved"
         )
+    
+    @property
+    def quality(self):
+        quality = 0
+        total = 0
+        for vote in self.votes:
+            if vote.valid:
+                influence = vote.user.influence
+                if vote.vote < 2:
+                    quality += influence * vote.vote
+                    total += influence
+                else:
+                    quality += influence * 2
+                    total += influence * 2
+        
+        return quality / total
     
     @property
     def url(self):
