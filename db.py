@@ -317,7 +317,10 @@ class Suggestion(Base):
                     quality += influence * 2
                     total += influence * 2
         
-        return quality / total
+        if total:
+            return quality / total
+        else:
+            return None
     
     @property
     def url(self):
