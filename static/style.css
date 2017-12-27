@@ -38,7 +38,9 @@ thead tr {background: #eee;}
 .diff ins ins {text-decoration: underline; background-color: #afa;}
 
 /*.pager-dialogue li {width: 100%; display: block;}*/
-.dialogue-suggestion-text {padding: 2px; padding-top: 4px; line-height: 1.4;}
+.dialogue-suggestion-text {padding: 2px; padding-top: 4px; line-height: 1.4; clear: both;}
+.dialogue-suggestion-diff {padding: 2px; padding-top: 4px; line-height: 1.4; clear: both;}
+.dialogue-suggestion-diff {display: none;}
 .new-revision-form #text {width: 100%; line-height: 1.4; font-size: 18px; padding: 4px;}
 
 .term-info {font-size: larger;}

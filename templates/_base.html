@@ -82,6 +82,15 @@ with context -%}
         
         // ok i really really hate jquery
         
+        $('.button-diff').each(function(i, button) {
+            var suggestion_id = $(button).data("suggestion-id");
+            $(button).click(function(){
+                console.log("diff "+suggestion_id)
+                $("#suggestion-"+suggestion_id+"-text").toggle();
+                $("#suggestion-"+suggestion_id+"-diff").toggle();
+            })
+        })
+        
         $('.vote-form').each(function(i, form) {
             $(form).find("button").each(function(i, button) {
                 $(button).click(function(e) {
