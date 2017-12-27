@@ -100,6 +100,33 @@ class User(Base):
     
     def __str__(self):
         return self.username
+    
+def count_global_suggestions(rated_by=None):
+    suggestion_conditions = (
+        Term.locked == False,
+        Term.hidden == False,
+        Suggestion.status == "approved"
+    )
+    
+    if not rated_by:
+        count = session.query(Suggestion) \
+            .join(Term) \
+            .filter(
+                *suggestion_conditions
+        ).count()
+    
+    else:
+        count = session.query("Vote") \
+            .select_from(Suggestion) \
+            .join("votes") \
+            .join(Term) \
+            .filter(
+                Vote.user == rated_by,
+                Vote.valid == True,
+                *suggestion_conditions
+            ).count()
+    
+    return count
 
 class Project(Base, WithIdentifier):
     __tablename__ = 'projects'
@@ -121,8 +148,12 @@ class Project(Base, WithIdentifier):
         )
         
         if not rated_by:
-            count = session.query(Suggestion).join(Term).filter(
-                *suggestion_conditions
+            count = session.query(Suggestion) \
+                .join(Term) \
+                .join(Category) \
+                .filter(
+                    Category.project_id == self.id,
+                    *suggestion_conditions
             ).count()
         
         else:
@@ -130,9 +161,11 @@ class Project(Base, WithIdentifier):
                 .select_from(Suggestion) \
                 .join("votes") \
                 .join(Term) \
+                .join(Category) \
                 .filter(
                     Vote.user == rated_by,
                     Vote.valid == True,
+                    Category.project_id == self.id,
                     *suggestion_conditions
                 ).count()
         

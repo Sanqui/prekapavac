@@ -58,11 +58,16 @@
     </span>
 {% endmacro %}
 
-{% macro completion_bar(category, bar_only=False, user=None) %}
+{% macro completion_bar(category=None, bar_only=False, user=None) %}
     {% if current_user.is_authenticated %}
         {% set user = current_user if not user else user %}
-        {% set rated = category.count_suggestions(user) %}
-        {% set total = category.count_suggestions() %}
+        {% if category %}
+            {% set rated = category.count_suggestions(user) %}
+            {% set total = category.count_suggestions() %}
+        {% else %}
+            {% set rated = g.db.count_global_suggestions(user) %}
+            {% set total = g.db.count_global_suggestions() %}
+        {% endif %}
         <div class="rating-completion">
             {% if total %}
             {% set percentage = round(rated / total * 100) %}

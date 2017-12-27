@@ -23,12 +23,10 @@
                 <td> {{ user.id }} </td>
                 <td> {{ user.username }} </td>
                 <td class="td-bar">
-                    {% for project in projects %}
-                        <div class="count">
-                            {{ project.count_suggestions(user) }}
-                        </div>
-                        {{ completion_bar(project, bar_only=True, user=user) }}
-                    {% endfor %}
+                    <div class="count">
+                        {{ db.count_global_suggestions(user) }}
+                    </div>
+                    {{ completion_bar(None, bar_only=True, user=user) }}
                 </td>
                 <td>
                     {% if user.registered %}
