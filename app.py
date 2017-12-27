@@ -15,6 +15,8 @@ from flaskext.markdown import Markdown
 
 from wtforms import Form, BooleanField, TextField, TextAreaField, PasswordField, RadioField, SelectField, SelectMultipleField, BooleanField, IntegerField, HiddenField, SubmitField, validators, ValidationError, widgets
 
+import diffhtml
+
 import db
 
 app = Flask('translator')
@@ -38,7 +40,8 @@ def new_template_globals():
         'type': type,
         'db': db,
         'datetime': datetime_format,
-        'round': round
+        'round': round,
+        'diffhtml': diffhtml
     }
 
 
@@ -102,6 +105,11 @@ class SuggestionForm(Form):
     text = TextField('Návrh', [validators.required()])
     description = TextField('Popis')
     submit = SubmitField('Přidat návrh')
+
+class RevisionForm(Form):
+    text = TextAreaField('Revize', [validators.required()])
+    description = None
+    submit = SubmitField('Přidat revizi')
     
 class CommentForm(Form):
     comment_text = TextAreaField('Komentář', [validators.required()])
@@ -127,7 +135,7 @@ def term(project_identifier, category_identifier, term_identifier):
     suggestion_form = None
     comment_form = None
     if current_user.is_authenticated and not term.locked:
-        suggestion_form = SuggestionForm(request.form)
+        suggestion_form = (SuggestionForm if not term.dialogue else RevisionForm)(request.form)
         comment_form = CommentForm(request.form)
         if request.method == 'POST' and suggestion_form.validate():
             suggestion_text = suggestion_form.text.data.strip()
@@ -142,12 +150,21 @@ def term(project_identifier, category_identifier, term_identifier):
             else:
                 suggestion = db.Suggestion(user=current_user, term=term,
                     created=datetime.now(), changed=datetime.now(),
-                    text=suggestion_text, description=suggestion_form.description.data,
+                    text=suggestion_text,
+                    description=suggestion_form.description.data if suggestion_form.description else None,
                     status="approved")
+                if term.dialogue:
+                    if term.latest_revision and term.latest_revision.revision:
+                        suggestion.revision = term.latest_revision.revision + 1
+                    else:
+                        suggestion.revision = 1
                 
                 db.session.add(suggestion)
                 db.session.commit()
                 return redirect(term)
+        else:
+            if term.latest_revision:
+                suggestion_form.text.data = term.latest_revision.text
         if request.method == 'POST' and comment_form.validate():
             comment = db.Comment(user=current_user, term=term,
                 created=datetime.now(),

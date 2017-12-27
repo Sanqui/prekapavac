@@ -1,6 +1,6 @@
 {% extends "_base.html" %}
 
-{% block title %} {{ project.name }} » {{ category.name }} » {{ term.text_en }} {% endblock %}
+{% block title %} {{ project.name }} » {{ category.name }} » {{ term_short(term) }} {% endblock %}
 
 {% block content %}
     
@@ -8,14 +8,14 @@
         <li><a href="{{ url_for('index') }}">{{ g.sitename }}</a>
         <li><a href="{{ project.url }}">{{ project.name }}</a>
         <li><a href="{{ category.url }}">{{ category.name }}</a>
-        <li class="active">{{ term.text_en }}
+        <li class="active">{{ term_short(term) }}
     </ol>
-    <ul class="pager">
+    <ul class="pager {% if term.dialogue %}pager-dialogue{% endif %}">
         <li class="previous">
             {% if term.prev %}
                 <a href="{{ term.prev.url }}">
                     <span aria-hidden="true">&larr;</span>
-                    #{{ term.prev.number }} {{ term.prev.text_en }}
+                    #{{ term.prev.number }} {{ term_short(term.prev) }}
                     {% if current_user.is_authenticated and term.prev.user_has_unrated(current_user) %}
                         {{ unrated_icon(True, left=True) }}
                     {% endif %}
@@ -26,14 +26,14 @@
                 <img src="{{ term.category.icon.filled_url(term) }}" class="icon">
             {% endif %}
             #{{ term.number }}
-            <strong>{{ term.text_en }}</strong>
+            <strong>{{ term_short(term) }}</strong>
         <li class="next">
             {% if term.next %}
                 <a href="{{ term.next.url }}">
                     {% if current_user.is_authenticated and term.next.user_has_unrated(current_user) %}
                         {{ unrated_icon(True) }}
                     {% endif %}
-                    #{{ term.next.number }} {{ term.next.text_en }}
+                    #{{ term.next.number }} {{ term_short(term.next) }}
                     <span aria-hidden="true">&rarr;</span>
                 </a>
             {% endif %}
@@ -68,21 +68,29 @@
                 {% endif %}
             </table>
         </div>
-        <div class="col-md-4">
-            <dl class="term-info">
-                <dt>Anglicky:</dt>
-                    <dd>{{ term.text_en }}</dd>
-            </dl>
-            <a href="https://slovnik.seznam.cz/en-cz/?q={{term.text_en}}">Seznam Slovník</a>
-            &bull; <a href="https://translate.google.com/#en/cs/{{term.text_en}}">Google Translate</a>
-            &bull; <a href="https://www.google.com/search?q=define:{{term.text_en}}">define:</a>
-        </div>
-        <div class="col-md-4">
-            <dl class="term-info">
-                <dt>Japonsky:</dt>
-                    <dd>{{ term.text_jp }}</dd>
-            </dl>
-            <a href="http://jisho.org/search?utf8=%E2%9C%93&keyword={{ term.text_jp }}">jisho.org</a>
+        <div class="col-md-8">
+            <div class="row">
+                <div class="{% if not term.dialogue %}col-md-6{% endif %}">
+                    <dl class="term-info {% if term.dialogue %}term-info-dialogue{% endif %}">
+                        <dt>Anglicky:</dt>
+                            <dd>{{ term.text_en }}</dd>
+                    </dl>
+                    {% if not term.dialogue %}
+                        <a href="https://slovnik.seznam.cz/en-cz/?q={{term.text_en}}">Seznam Slovník</a>
+                        &bull; <a href="https://translate.google.com/#en/cs/{{term.text_en}}">Google Translate</a>
+                        &bull; <a href="https://www.google.com/search?q=define:{{term.text_en}}">define:</a>
+                    {% endif %}
+                </div>
+                <div class="{% if not term.dialogue %}col-md-6{% endif %}">
+                    <dl class="term-info term-info-jp {% if term.dialogue %}term-info-dialogue{% endif %}"">
+                        <dt>Japonsky:</dt>
+                            <dd>{{ term.text_jp }}</dd>
+                    </dl>
+                    {% if not term.dialogue %}
+                        <a href="http://jisho.org/search?utf8=%E2%9C%93&keyword={{ term.text_jp }}">jisho.org</a>
+                    {% endif %}
+                </div>
+            </div>
         </div>
         <div class="col-md-2">
             <ul>
@@ -95,133 +103,188 @@
             </ul>
         </div>
     </div>
-    
+
+{% macro suggestion_controls(suggestion) %}
+    <div class="controls">
+        {% if current_user.is_authenticated %}
+            <form method="POST" action="{{url_for('vote')}}" class="vote-form">
+                {{ unrated_icon(suggestion) }}
+                <input type="hidden" name="suggestion_id" value="{{ suggestion.id }}">
+                <div class="btn-group">
+                    {% macro vote_button(vote, icon) %}
+                        <button type="submit" name="vote" value="{{ vote }}" class="btn btn-default {% if vote_from_for(current_user, suggestion).vote == vote %}active{% endif %}" id="suggestion-{{suggestion.id}}-vote-{{vote}}">
+                            <span class="glyphicon glyphicon-{{icon}}"></span>
+                        </button>
+                    {% endmacro %}
+                    
+                    {{ vote_button(0, 'thumbs-down') }}
+                    {{ vote_button(1, 'thumbs-up') }}
+                    {% if not suggestion.term.dialogue %}
+                        {{ vote_button(2, 'heart') }}
+                    {% endif %}
+                </div>
+            </form>
+            <form method="POST" action="{{url_for('suggestion')}}">
+                <input type="hidden" name="suggestion_id" value="{{ suggestion.id }}">
+                <div class="btn-group dropdown">
+                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                        <span class="glyphicon glyphicon-option-vertical"></span>
+                    </button>
+                    <ul class="dropdown-menu">
+                        {% macro vote_dropdown_button(action, text) %}
+                            <li>
+                                <button type="submit" name="action" value="{{action}}" class="btn btn-default btn-block">
+                                    {{ text }}
+                                </button>
+                        {% endmacro %}
+                        <li>{{ ago(suggestion.created) }}
+                        <li>Stav: {{ suggestion.status }}
+                        {#
+                            <li>quality:
+                                {% set quality = suggestion.quality %}
+                                {% if quality != None %}
+                                    {{ quality_badge(suggestion) }} {{ round(suggestion.quality*100) }}%
+                                {% else %}
+                                    -
+                                {% endif %}
+                        #}
+                        {% if current_user.admin %}
+                            <li>
+                                <a href="{{url_for('suggestion.edit_view', id=suggestion.id)}}" class="btn btn-default btn-block">
+                                    Upravit
+                                </a>
+                            </li>
+                        {% endif %}
+                        {% if suggestion.status == "approved"
+                            and suggestion.user == current_user %}
+                            {{ vote_dropdown_button('withdraw', "Vzít zpět") }}
+                        {% endif %}
+                        {% if current_user.admin %}
+                            {% if suggestion.status != "approved" %}
+                                {{ vote_dropdown_button('approve', "Svolit") }}
+                            {% endif %}
+                            {% if suggestion.status != "hidden" %}
+                                {{ vote_dropdown_button('hide', "Skrýt") }}
+                            {% endif %}
+                            {% if suggestion.status != "deleted" %}
+                                {{ vote_dropdown_button('delete', "Smazat") }}
+                            {% endif %}
+                        {% endif %}
+                    </ul>
+                </div>
+            </form>
+        {% endif %}
+        <div class="conflicts">
+            {% for conflict in suggestion.conflicts %}
+                <a href="{{conflict.url}}" data-toggle="tooltip" data-placement="bottom" title="{{conflict.term.category.name}}: {{conflict.term.text_en}}">
+                    <span class="glyphicon glyphicon-exclamation-sign"></span>
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+{% endmacro %}
+
     {% if not term.locked %}
         
         <div class="row">
-            <div class="col-md-6">
-                <h3>Návrhy</h3>
+            <div class="{% if not term.dialogue %} col-md-6
+                {% else %} col-md-9
+                {% endif %}">
+                <h3>
+                    {% if not term.dialogue %}
+                        Návrhy
+                    {% else %}
+                        Revize
+                    {% endif %}
+                </h3>
                 <ul class="list-group">
                     {% for suggestion, score in term.suggestions_w_score %}
                         <li class="list-group-item">
-                            <div class="controls">
-                                {% if current_user.is_authenticated %}
-                                    <form method="POST" action="{{url_for('vote')}}" class="vote-form">
-                                        {{ unrated_icon(suggestion) }}
-                                        <input type="hidden" name="suggestion_id" value="{{ suggestion.id }}">
-                                        <div class="btn-group">
-                                            {% macro vote_button(vote, icon) %}
-                                                <button type="submit" name="vote" value="{{ vote }}" class="btn btn-default {% if vote_from_for(current_user, suggestion).vote == vote %}active{% endif %}" id="suggestion-{{suggestion.id}}-vote-{{vote}}">
-                                                    <span class="glyphicon glyphicon-{{icon}}"></span>
-                                                </button>
-                                            {% endmacro %}
-                                            
-                                            {{ vote_button(0, 'thumbs-down') }}
-                                            {{ vote_button(1, 'thumbs-up') }}
-                                            {{ vote_button(2, 'heart') }}
-                                        </div>
-                                    </form>
-                                    <form method="POST" action="{{url_for('suggestion')}}">
-                                        <input type="hidden" name="suggestion_id" value="{{ suggestion.id }}">
-                                        <div class="btn-group dropdown">
-                                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                                                <span class="glyphicon glyphicon-option-vertical"></span>
-                                            </button>
-                                            <ul class="dropdown-menu">
-                                                {% macro vote_dropdown_button(action, text) %}
-                                                    <li>
-                                                        <button type="submit" name="action" value="{{action}}" class="btn btn-default btn-block">
-                                                            {{ text }}
-                                                        </button>
-                                                {% endmacro %}
-                                                <li>{{ ago(suggestion.created) }}
-                                                <li>Stav: {{ suggestion.status }}
-                                                {#
-                                                    <li>quality:
-                                                        {% set quality = suggestion.quality %}
-                                                        {% if quality != None %}
-                                                            {{ quality_badge(suggestion) }} {{ round(suggestion.quality*100) }}%
-                                                        {% else %}
-                                                            -
-                                                        {% endif %}
-                                                #}
-                                                {% if current_user.admin %}
-                                                    <li>
-                                                        <a href="{{url_for('suggestion.edit_view', id=suggestion.id)}}" class="btn btn-default btn-block">
-                                                            Upravit
-                                                        </a>
-                                                    </li>
-                                                {% endif %}
-                                                {% if suggestion.status == "approved"
-                                                    and suggestion.user == current_user %}
-                                                    {{ vote_dropdown_button('withdraw', "Vzít zpět") }}
-                                                {% endif %}
-                                                {% if current_user.admin %}
-                                                    {% if suggestion.status != "approved" %}
-                                                        {{ vote_dropdown_button('approve', "Svolit") }}
-                                                    {% endif %}
-                                                    {% if suggestion.status != "hidden" %}
-                                                        {{ vote_dropdown_button('hide', "Skrýt") }}
-                                                    {% endif %}
-                                                    {% if suggestion.status != "deleted" %}
-                                                        {{ vote_dropdown_button('delete', "Smazat") }}
-                                                    {% endif %}
-                                                {% endif %}
-                                            </ul>
-                                        </div>
-                                    </form>
-                                {% endif %}
-                                <div class="conflicts">
-                                    {% for conflict in suggestion.conflicts %}
-                                        <a href="{{conflict.url}}" data-toggle="tooltip" data-placement="bottom" title="{{conflict.term.category.name}}: {{conflict.term.text_en}}">
-                                            <span class="glyphicon glyphicon-exclamation-sign"></span>
-                                        </a>
-                                    {% endfor %}
-                                </div>
-                            </div>
+                            {{ suggestion_controls(suggestion) }}
                             <h4 class="list-group-item-heading suggestion-text">
                                 <span class="badge badge-negative">{{ suggestion.negative_score }}</span><!--
                                 --><span class="badge badge-positive">{{ score or 0 }}</span>
-                                <strong>{{ suggestion.text }}</strong>
-                            </h4>
-                            <p class="list-group-item-text">
-                                {{ suggestion.description }}
-                                <span class="suggestion-user">
-                                    {% if suggestion.user %}
-                                        — {{ suggestion.user }}
-                                    {% else %}
-                                        &nbsp;
+                                {% if not term.dialogue %}
+                                    <strong>{{ suggestion.text }}</strong>
+                                {% else %}
+                                    <strong>Revize #{{ suggestion.revision or "?" }}</strong> — {{ suggestion.user }}
+                                    <div class="clear dialogue-suggestion-text">{{ suggestion.text }}</div>
+                                    {% if loop.nextitem %}
+                                        <div class="diff dialogue-suggestion-diff">
+                                            {{ "<br>".join(diffhtml.ndiff(loop.nextitem[0].text.splitlines(), suggestion.text.splitlines(), cutoff=0.1)) | safe }}
+                                        </div>
                                     {% endif %}
-                                </span>
-                            </p>
+                                {% endif %}
+                            </h4>
+                            {% if not term.dialogue %}
+                                <p class="list-group-item-text">
+                                    {{ suggestion.description }}
+                                    <span class="suggestion-user">
+                                        {% if suggestion.user %}
+                                            — {{ suggestion.user }}
+                                        {% else %}
+                                            &nbsp;
+                                        {% endif %}
+                                    </span>
+                                </p>
+                            {% endif %}
                             
                         </li>
                     {% else %}
                         <p>Žádné návrhy na překlad ještě nejsou...
                     {% endfor %}
                 </ul>
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">Přidat návrh</h3>
+                {% if not term.dialogue %}
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Přidat návrh</h3>
+                        </div>
+                        <div class="panel-body">
+                            {% if suggestion_form %}
+                                <form method="POST">
+                                    <dl>
+                                        <dt>Text:</dt>
+                                            <dd>{{suggestion_form.text}}</dd>
+                                        <dt>Vysvětlivka:</dt>
+                                            <dd>{{suggestion_form.description}}</dd>
+                                    </dl>
+                                    {{suggestion_form.submit}}
+                                </form>
+                            {% else %}
+                                <p>Pro přidávání návrhů je potřeba se <a href="{{url_for('login')}}">přihlásit</a>.
+                            {% endif %}
+                        </div>
                     </div>
-                    <div class="panel-body">
-                        {% if suggestion_form %}
-                            <form method="POST">
-                                <dl>
-                                    <dt>Text:</dt>
-                                        <dd>{{suggestion_form.text}}</dd>
-                                    <dt>Vysvětlivka:</dt>
-                                        <dd>{{suggestion_form.description}}</dd>
-                                </dl>
-                                {{suggestion_form.submit}}
-                            </form>
-                        {% else %}
-                            <p>Pro přidávání návrhů je potřeba se <a href="{{url_for('login')}}">přihlásit</a>.
-                        {% endif %}
+                {% else %}
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">
+                                Přidat revizi
+                                {% if term.latest_revision.revision %}
+                                    #{{term.latest_revision.revision + 1}}
+                                {% else %}
+                                    #1
+                                {% endif %}</h3>
+                        </div>
+                        <div class="panel-body">
+                            {% if suggestion_form %}
+                                <form method="POST" class="new-revision-form">
+                                    <dl>
+                                        <dt>Text:</dt>
+                                            <dd>{{suggestion_form.text}}</dd>
+                                    </dl>
+                                    {{suggestion_form.submit}}
+                                </form>
+                            {% else %}
+                                <p>Pro přidávání návrhů je potřeba se <a href="{{url_for('login')}}">přihlásit</a>.
+                            {% endif %}
+                        </div>
                     </div>
-                </div>
+                {% endif %}
             </div>
-            <div class="col-md-6">
+            <div class="{% if not term.dialogue %} col-md-6
+                {% else %} col-md-3
+                {% endif %}">
                 <h3>Komentáře</h3>
                 <div class="comments">
                     {% for comment in comments %}

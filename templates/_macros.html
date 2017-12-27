@@ -102,3 +102,11 @@
             title="{{round(suggestion.quality*100)}}%"></span>
     {% endif %}
 {% endmacro %}
+
+{% macro term_short(term) %}
+    {% if term.dialogue %}
+        {{ term.text_en | truncate(32) }}
+    {% else %}
+        {{ term.text_en }}
+    {% endif %}
+{% endmacro %}

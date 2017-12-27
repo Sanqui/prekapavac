@@ -16,16 +16,16 @@ import bcrypt
 import config
 
 from flask import Flask, url_for
-app = Flask('translator')
-app.config.from_pyfile("config.py")
+#app = Flask('translator')
+#app.config.from_pyfile("config.py")
 
-QUALITY_MIN = app.config.get("QUALITY_MIN", 1)
+#QUALITY_MIN = app.config.get("QUALITY_MIN", 1)
 
-#if 'mysql' in config.DATABASE:
-#    engine = create_engine(config.DATABASE, encoding="utf8", pool_size = 100, pool_recycle=4200, echo=config.DEBUG) # XXX
-#    # pool_recycle is to prevent "server has gone away"
-#else:
-#    engine = create_engine(config.DATABASE, encoding="utf8", echo=config.DEBUG)
+if 'mysql' in config.DATABASE:
+    engine = create_engine(config.DATABASE, encoding="utf8", pool_size = 100, pool_recycle=4200, echo=config.DEBUG) # XXX
+    # pool_recycle is to prevent "server has gone away"
+else:
+    engine = create_engine(config.DATABASE, encoding="utf8", echo=config.DEBUG)
 
 db = SQLAlchemy()
 
@@ -239,6 +239,14 @@ class Category(Base, WithIdentifier):
         else:
             return "???" + '/' + self.identifier
 
+
+class Reference(Base):
+    __tablename__ = 'references'
+    
+    id = Column(Integer, primary_key=True, nullable=False)
+    term0_id = Column(Integer, ForeignKey('terms.id'))
+    term1_id = Column(Integer, ForeignKey('terms.id'))
+
 class Term(Base, WithIdentifier):
     __tablename__ = 'terms'
 
@@ -253,15 +261,36 @@ class Term(Base, WithIdentifier):
     locked = Column(Boolean, default=False, nullable=False)
     lock_reason = Column(Text)
     
+    dialogue = Column(Boolean, default=False, nullable=False)
+    
     category = relationship("Category", backref='terms')
+    
+    references = relationship("Reference", foreign_keys=[Reference.term0_id], order_by="Reference.id")
     
     comments = relationship("Comment", order_by="Comment.created")
     
+    
     @property
     def suggestions_w_score(self):
+        if self.dialogue:
+            return self.revisions_w_score.all()
         return session.query(Suggestion, func.sum(Vote.vote).label('score')) \
             .filter(Suggestion.term==self, Suggestion.status == "approved") \
             .outerjoin(Vote).group_by(Suggestion).order_by('score DESC').all()
+    
+    @property
+    def revisions_w_score(self):
+        return session.query(Suggestion, func.sum(Vote.vote).label('score')) \
+            .filter(Suggestion.term==self, Suggestion.status == "approved") \
+            .outerjoin(Vote).group_by(Suggestion).order_by('revision DESC')
+    
+    @property
+    def latest_revision(self):
+        rev = self.revisions_w_score.first()
+        if rev:
+            return rev[0]
+        else:
+            return None
     
     def user_has_unrated(self, user):
         if self.locked:
@@ -298,6 +327,7 @@ class Term(Base, WithIdentifier):
             project_identifier=self.category.project.identifier,
             category_identifier=self.category.identifier,
             term_identifier=self.identifier)
+    
 
 class Suggestion(Base):
     __tablename__ = 'suggestions'
@@ -306,6 +336,7 @@ class Suggestion(Base):
     text = Column(Text)
     description = Column(Text, default='')
     status = Column(Enum("new", "denied", "approved", "withdrawn", "final", "hidden", "deleted"))
+    revision = Column(Integer)
     
     created = Column(DateTime)
     changed = Column(DateTime)

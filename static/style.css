@@ -4,6 +4,7 @@ td { border: 1px solid #aaa; padding: 2px 6px 2px 6px; }
 thead td { font-weight: bold; }
 
 */
+.clear {clear: both;}
 
 body {padding-top: 70px;}
 td {white-space: nowrap;}
@@ -30,8 +31,21 @@ thead tr {background: #eee;}
 
 .table-data {}
 
+.diff {line-height: 1.4;}
+.diff del {text-decoration: none; background-color: #fdd;}
+.diff del del {text-decoration: line-through; background-color: #faa;}
+.diff ins {text-decoration: none; background-color: #dfd;}
+.diff ins ins {text-decoration: underline; background-color: #afa;}
+
+/*.pager-dialogue li {width: 100%; display: block;}*/
+.dialogue-suggestion-text {padding: 2px; padding-top: 4px; line-height: 1.4;}
+.new-revision-form #text {width: 100%; line-height: 1.4; font-size: 18px; padding: 4px;}
+
 .term-info {font-size: larger;}
 .term-info dd {font-size: 28px;}
+.term-info-dialogue dd {font-size: 24px;}
+.term-info-dialogue.term-info-jp dt {font-size: smaller;}
+.term-info-dialogue.term-info-jp dd {font-size: smaller;}
 
 dt {}
 dd {margin-left: 32px;}
