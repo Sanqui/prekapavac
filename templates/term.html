@@ -60,13 +60,29 @@
                 {% if current_user.admin %}
                     <tr>
                         <td colspan="2">
-                            <a href="{{url_for('term.edit_view', id=term.id)}}" class="btn btn-default btn-block">
+                            <a href="{{url_for('term.edit_view', id=term.id)}}" class="btn btn-default btn-block btn-xs">
                                 Upravit termín
                             </a>
                         </td>
                     </tr>
                 {% endif %}
             </table>
+            {% if term.references %}
+                <h4>Referencuje</h4>
+                <ul>
+                    {% for reference in term.references %}
+                        <li><a href="{{reference.term1.url}}">{{ term_short(reference.term1) }}</a>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+            {% if term.referenced %}
+                <h4>Je referencován</h4>
+                <ul>
+                    {% for reference in term.referenced %}
+                        <li><a href="{{reference.term0.url}}">{{ term_short(reference.term0) }}</a>
+                    {% endfor %}
+                </ul>
+            {% endif %}
         </div>
         <div class="col-md-8">
             <div class="row">

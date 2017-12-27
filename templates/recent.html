@@ -28,14 +28,21 @@
                 <td> {{ change.term.category.name }} </td>
                 <td>
                     <a href=" {{ change.term.url }} ">
-                        {{ change.term.text_en }} 
+                        {{ term_short(change.term) }} 
                     </a>
                 </td>
                 <td class="td-suggestions">
                     {% if type(change) == db.Suggestion %}
-                        <span class="label label-default">návrh</span>
-                        {{ unrated_icon(change) }}
-                        <strong>{{change.text}}</strong>
+                        {% if not change.term.dialogue %}
+                            <span class="label label-default">návrh</span>
+                            {{ unrated_icon(change) }}
+                            <strong>{{change.text | truncate(64)}}</strong>
+                        {% else %}
+                            <span class="label label-default">revize</span>
+                            #{{ change.revision }}
+                            {{ unrated_icon(change) }}
+                            <strong>{{change.text | truncate(64)}}</strong>
+                        {% endif %}
                     {% elif type(change) == db.Comment %}
                         <span class="label label-default">komentář</span>
                         {{ change.text |truncate(64) }}

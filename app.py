@@ -349,7 +349,7 @@ def create_admin():
         def inaccessible_callback(self, name, **kwargs):
             return redirect(url_for('login', next=request.url))
     
-    for table in (db.User, db.Project, db.Category, db.Term, db.Suggestion, db.Comment, db.Outlink):
+    for table in (db.User, db.Project, db.Category, db.Term, db.Reference, db.Suggestion, db.Comment, db.Outlink):
         admin.add_view(RestrictedModelView(table, db.session))
 
 

@@ -246,6 +246,12 @@ class Reference(Base):
     id = Column(Integer, primary_key=True, nullable=False)
     term0_id = Column(Integer, ForeignKey('terms.id'))
     term1_id = Column(Integer, ForeignKey('terms.id'))
+    
+    term0 = relationship("Term", foreign_keys=[term0_id])
+    term1 = relationship("Term", foreign_keys=[term1_id], backref='referenced')
+    
+    def __str__(self):
+        return "{} references {}".format(self.term0, self.term1)
 
 class Term(Base, WithIdentifier):
     __tablename__ = 'terms'
