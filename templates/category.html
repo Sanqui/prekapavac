@@ -15,14 +15,18 @@
     
     {{ completion_bar(category) }}
         
-    <table class="table table-bordered table-terms">
+    <table class="table table-bordered table-terms {% if category.mainly_dialogue %}table-dialogue{% endif %}">
         <thead>
             <tr>
                 <td></td>
                 <td>#</td>
                 <td>en</td>
-                <td>jp</td>
-                <td>návrhy</td>
+                {% if not category.mainly_dialogue %}
+                    <td>jp</td>
+                    <td>návrhy</td>
+                {% else %}
+                    <td>překlad</td>
+                {% endif %}
             </tr>
         <tbody>
             {% for term in terms %}
@@ -35,22 +39,29 @@
                         <td class="td-num">
                             <a href="{{ term.url }}">#{{ term.number }}</a>
                         </td>
-                        <td>
-                            <a href="{{ term.url }}">{{ term.text_en }}</a>
+                        <td class="td-en">
+                            <span><a href="{{ term.url }}">{{ term.text_en }}</a></span>
                         </td>
-                        <td>
-                            <a href="{{ term.url }}">{{ term.text_jp }}</a></td>
-                        <td class="td-suggestions">
+                        {% if not category.mainly_dialogue %}
+                            <td class="td-jp">
+                                <a href="{{ term.url }}">{{ term.text_jp }}</a>
+                            </td>
+                        {% endif %}
+                        <td class="td-suggestions {% if term.dialogue %}td-translation{%endif%}">
                             {% if term.locked %}
                                 <span class="glyphicon glyphicon-lock lock-icon"></span>
                             {% else %}
-                                <ul class="suggestions">
-                                    {% for suggestion, score in term.suggestions_w_score %}
-                                        <li class="suggestion-{{suggestion.status}}">
-                                            {{ unrated_icon(suggestion) }}
-                                            {{ suggestion.text }}
-                                    {% endfor %}
-                                </li>
+                                {% if not term.dialogue %}
+                                    <ul class="suggestions">
+                                        {% for suggestion, score in term.suggestions_w_score %}
+                                            <li class="suggestion-{{suggestion.status}}">
+                                                {{ unrated_icon(suggestion) }}
+                                                {{ suggestion.text }}
+                                        {% endfor %}
+                                    </li>
+                                {% else %}
+                                    <span>{{ term.latest_revision.text }}</span>
+                                {% endif %}
                             {% endif %}
                         </td>
                     </td>

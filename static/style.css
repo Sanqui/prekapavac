@@ -7,7 +7,7 @@ thead td { font-weight: bold; }
 .clear {clear: both;}
 
 body {padding-top: 70px;}
-td {white-space: nowrap;}
+td {/*white-space: nowrap;*/}
 thead tr {background: #eee;}
 .container-fluid {margin-left: 32px; margin-right: 32px;}
 .table-terms {max-width: 100%;}
@@ -17,6 +17,15 @@ thead tr {background: #eee;}
   height: 1.5em; 
   line-height: 1.25;}
 .suggestion li {white-space: nowrap;}
+
+.td-en, .td-jp {white-space: nowrap;}
+.table-dialogue .td-en, .table-dialogue .td-translation
+    {width: 50%; white-space: normal; overflow: hidden; text-overflow: ellipsis;
+    height: 0.5em;}
+    
+.table-dialogue .td-en > span, .table-dialogue .td-translation > span
+    {display: block; white-space: normal; overflow: hidden; text-overflow: ellipsis;
+    height: 1.5em;}
 
 .td-unrated-icon {border-right: 0 !important; padding-right: 1px !important;}
 .td-num {border-left: 0 !important; padding-left: 1px !important;}

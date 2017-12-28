@@ -103,10 +103,10 @@
     {% endif %}
 {% endmacro %}
 
-{% macro term_short(term) %}
-    {% if term.dialogue %}
+{% macro term_short(term) -%}
+    {%- if term.dialogue -%}
         {{ term.text_en | truncate(32) }}
-    {% else %}
+    {%- else -%}
         {{ term.text_en }}
-    {% endif %}
-{% endmacro %}
+    {%- endif -%}
+{%- endmacro %}

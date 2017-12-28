@@ -64,6 +64,8 @@
                             <a href="{{url_for('term.edit_view', id=term.id)}}" class="btn btn-default btn-block btn-xs">
                                 Upravit termín
                             </a>
+                            <a href="{{url_for('reference.create_view', term0_id=term.id)}}"
+                                class="btn btn-default btn-block btn-xs">Přidat referenci</a>
                         </td>
                     </tr>
                 {% endif %}
@@ -84,10 +86,6 @@
                             <a href="{{reference.term1.url}}">{{ term_short(reference.term1) }}</a>
                     {% endfor %}
                 </ul>
-            {% endif %}
-            {% if current_user.admin %}
-                <a href="{{url_for('reference.create_view', term0_id=term.id)}}"
-                    class="btn btn-default btn-xs">Přidat referenci</a>
             {% endif %}
             {% set referenced = term.referenced %}
             {% if referenced %}

@@ -206,6 +206,17 @@ class Category(Base, WithIdentifier):
             project_identifier=self.project.identifier,
             category_identifier=self.identifier)
     
+    @property
+    def mainly_dialogue(self):
+        terms = session.query(Term).filter(
+            Term.hidden == False,
+            Term.category == self)
+        
+        dialogue_terms = terms.filter(Term.dialogue == True)
+        
+        ratio = dialogue_terms.count() / terms.count()
+        return ratio >= 0.5
+    
     def count_suggestions(self, rated_by=None):
         suggestion_conditions = (
             Term.category == self,

@@ -28,11 +28,16 @@
                                 {{ category.name }}
                             </h4>
                             <p class="list-group-item-text">
-                                {% for t in category.terms[0:3] %}
-                                    {{ t.text_en }}
-                                    {%- if not loop.last -%},{%- endif -%}
+                                {% for t in category.terms[0:3] -%}
+                                    {{- term_short(t) -}}
+                                    {%- if not loop.last %}, {% endif -%}
                                 {% endfor -%}
-                                ... celkem <strong>{{ category.terms|length }}</strong> termínů
+                                ... celkem <strong>{{ category.terms|length }}</strong>
+                                {% if category.mostly_dialogue %}
+                                    dialogů
+                                {% else %}
+                                    termínů
+                                {% endif %}
                             </p>
                         </a>
                     {% endfor %}
