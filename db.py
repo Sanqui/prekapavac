@@ -320,7 +320,7 @@ class Term(Base, WithIdentifier):
             Project.id == self.category.project_id
             ).all()
         # XXX I still don't know enough SQL to do this properly.
-        for ref in self.referenced:
+        for ref in session.query(Reference).filter(Reference.term1_id == self.id):
             if ref.term0 in terms:
                 terms.remove(ref.term0)
         
