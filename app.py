@@ -264,8 +264,16 @@ def suggestion():
         "candidate": "candidate",
         "finalize": "final"
     }
+    EXCLUSIVE_ACTIONS = ("finalize",)
+    EXCLUSIVE_STATUSES = ("final",)
     if action in ALLOWED_ACTIONS:
         if current_user.admin:
+            if action in EXCLUSIVE_ACTIONS:
+                # We need to make sure there's no other final
+                for s in suggestion.term.suggestions:
+                    if s.status in EXCLUSIVE_STATUSES:
+                        s.status = "approved"
+                        
             suggestion.status = ALLOWED_ACTIONS[action]
         else:
             abort(403)

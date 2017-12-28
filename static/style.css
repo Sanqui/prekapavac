@@ -74,9 +74,11 @@ dd {margin-left: 32px;}
 
 /* .suggestion-user {float: right;} */
 
-.suggestion-approved {background: #fff;}
-.suggestion-candidate {background: #ffc; border-color: #cca !important;}
-.suggestion-final {background: #cfc; border-color: #aca !important;}
+.suggestion-approved {background: linear-gradient(to bottom, #ffffff 61%,#eeeeee 100%);}
+.suggestion-candidate {background: linear-gradient(to bottom, #ffffcc 61%,#eaedbb 100%);
+    border-color: #cca !important;}
+.suggestion-final {background: linear-gradient(to bottom, #d9ffce 61%,#c4eab9 100%);
+    border-color: #aca !important;}
 
 .badge-status-candidate {background: #883;}
 .badge-status-final {background: #383;}

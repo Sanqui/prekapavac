@@ -3,7 +3,7 @@ import math
 
 from unidecode import unidecode
 
-from sqlalchemy import create_engine, func, and_, or_
+from sqlalchemy import create_engine, func, and_, or_, case
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import scoped_session, sessionmaker, relationship, backref
 from sqlalchemy.schema import Column, ForeignKey, Table
@@ -294,7 +294,9 @@ class Term(Base, WithIdentifier):
         return session.query(Suggestion, func.sum(Vote.vote).label('score')) \
             .filter(Suggestion.term==self, \
             Suggestion.HAS_GOOD_STATUS) \
-            .outerjoin(Vote).group_by(Suggestion).order_by('score DESC').all()
+            .outerjoin(Vote).group_by(Suggestion) \
+            .order_by(case(value=Suggestion.status, whens=Suggestion.STATUS_ORDERING).desc(),
+            'score DESC').all()
     
     @property
     def revisions_w_score(self):
@@ -385,6 +387,10 @@ class Suggestion(Base):
     HAS_GOOD_STATUS = or_(status == "approved",
         status == "candidate",
         status == "final")
+    STATUS_ORDERING = {
+        "deleted": 0, "hidden": 1, "withdrawn": 1, "denied": 1, "approved": 2, "new": 2,
+        "candidate": 3, "final": 4
+    }
     
     @property
     def score(self):
