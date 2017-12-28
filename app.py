@@ -257,23 +257,26 @@ def suggestion():
     if not suggestion: abort(404)
     if suggestion.term.locked: abort(403)
     action = request.form['action']
-    if action in "delete approve hide".split():
+    ALLOWED_ACTIONS = {
+        "delete": "deleted",
+        "approve": "approved",
+        "hide": "hidden",
+        "candidate": "candidate",
+        "finalize": "final"
+    }
+    if action in ALLOWED_ACTIONS:
         if current_user.admin:
-            if action == 'delete':
-                suggestion.status = 'deleted'
-            elif action == 'approve':
-                suggestion.status = 'approved'
-            elif action == 'hide':
-                suggestion.status = 'hidden'
+            suggestion.status = ALLOWED_ACTIONS[action]
         else:
             abort(403)
-    
-    if action == 'withdraw' and suggestion.user == current_user:
+    elif action == 'withdraw' and suggestion.user == current_user:
         if suggestion.score == 0:
             suggestion.status = 'withdrawn'
             flash("Návrh vzán zpět.", 'success')
         else:
             flash("Návrh lze vzít zpět pouze dokud má nulové skóre.", 'danger')
+    else:
+        flash("Neznámá či nepovolená operace", 'danger')
     
     db.session.commit()
     return redirect(suggestion.url)

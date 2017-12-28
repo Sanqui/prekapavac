@@ -65,6 +65,7 @@ dd {margin-left: 32px;}
 .controls form {display: inline;}
 .controls .dropdown-menu {padding: 6px;}
 .controls .dropdown-menu li {margin-bottom: 6px;}
+.suggestion-status {float: right; margin-right: 6px;}
 .conflicts {text-align: right;}
 .conflicts a {color: #500; text-decoration: none;}
 .conflicts .tooltip {white-space: nowrap; font-size: inherit;}
@@ -72,6 +73,13 @@ dd {margin-left: 32px;}
 .vote-sign {padding-right: 3px; color: red; }
 
 /* .suggestion-user {float: right;} */
+
+.suggestion-approved {background: #fff;}
+.suggestion-candidate {background: #ffc; border-color: #cca !important;}
+.suggestion-final {background: #cfc; border-color: #aca !important;}
+
+.badge-status-candidate {background: #883;}
+.badge-status-final {background: #383;}
 
 .comment-form input {width: 100%;}
 .comment-form input {display: inline-block; margin: 4px;}

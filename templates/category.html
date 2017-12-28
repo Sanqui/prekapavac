@@ -46,7 +46,7 @@
                             {% else %}
                                 <ul class="suggestions">
                                     {% for suggestion, score in term.suggestions_w_score %}
-                                        <li>
+                                        <li class="suggestion-{{suggestion.status}}">
                                             {{ unrated_icon(suggestion) }}
                                             {{ suggestion.text }}
                                     {% endfor %}

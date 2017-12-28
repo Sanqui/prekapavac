@@ -3,7 +3,7 @@ import math
 
 from unidecode import unidecode
 
-from sqlalchemy import create_engine, func
+from sqlalchemy import create_engine, func, and_, or_
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import scoped_session, sessionmaker, relationship, backref
 from sqlalchemy.schema import Column, ForeignKey, Table
@@ -58,7 +58,7 @@ class User(Base):
         suggestion_conditions = (
             Term.locked == False,
             Term.hidden == False,
-            Suggestion.status == "approved"
+            Suggestion.HAS_GOOD_STATUS
         )
         
         rated_count = session.query("Vote") \
@@ -105,7 +105,7 @@ def count_global_suggestions(rated_by=None):
     suggestion_conditions = (
         Term.locked == False,
         Term.hidden == False,
-        Suggestion.status == "approved"
+        Suggestion.HAS_GOOD_STATUS
     )
     
     if not rated_by:
@@ -140,11 +140,10 @@ class Project(Base, WithIdentifier):
     categories = relationship("Category", order_by="Category.position")
     
     def count_suggestions(self, rated_by=None):
-        # XXX this doesn't actually check the project!! 
         suggestion_conditions = (
             Term.locked == False,
             Term.hidden == False,
-            Suggestion.status == "approved"
+            Suggestion.HAS_GOOD_STATUS
         )
         
         if not rated_by:
@@ -212,7 +211,7 @@ class Category(Base, WithIdentifier):
             Term.category == self,
             Term.locked == False,
             Term.hidden == False,
-            Suggestion.status == "approved"
+            Suggestion.HAS_GOOD_STATUS
         )
         
         if not rated_by:
@@ -293,13 +292,15 @@ class Term(Base, WithIdentifier):
         if self.dialogue:
             return self.revisions_w_score.all()
         return session.query(Suggestion, func.sum(Vote.vote).label('score')) \
-            .filter(Suggestion.term==self, Suggestion.status == "approved") \
+            .filter(Suggestion.term==self, \
+            Suggestion.HAS_GOOD_STATUS) \
             .outerjoin(Vote).group_by(Suggestion).order_by('score DESC').all()
     
     @property
     def revisions_w_score(self):
         return session.query(Suggestion, func.sum(Vote.vote).label('score')) \
-            .filter(Suggestion.term==self, Suggestion.status == "approved") \
+            .filter(Suggestion.term==self, \
+            Suggestion.HAS_GOOD_STATUS) \
             .outerjoin(Vote).group_by(Suggestion).order_by('revision DESC')
     
     @property
@@ -369,7 +370,7 @@ class Suggestion(Base):
     id = Column(Integer, primary_key=True, nullable=False)
     text = Column(Text)
     description = Column(Text, default='')
-    status = Column(Enum("new", "denied", "approved", "withdrawn", "final", "hidden", "deleted"))
+    status = Column(Enum("new", "denied", "approved", "withdrawn", "final", "hidden", "deleted", "candidate"))
     revision = Column(Integer)
     
     created = Column(DateTime)
@@ -380,6 +381,10 @@ class Suggestion(Base):
     
     term = relationship("Term", backref='suggestions')
     user = relationship("User", backref='suggestions')
+    
+    HAS_GOOD_STATUS = or_(status == "approved",
+        status == "candidate",
+        status == "final")
     
     @property
     def score(self):
@@ -400,7 +405,7 @@ class Suggestion(Base):
         return session.query(Suggestion).filter(
             Suggestion.id != self.id,
             Suggestion.text == self.text,
-            Suggestion.status == "approved"
+            Suggestion.HAS_GOOD_STATUS
         )
     
     @property

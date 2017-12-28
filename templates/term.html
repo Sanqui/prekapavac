@@ -185,9 +185,12 @@
                         <span class="glyphicon glyphicon-option-vertical"></span>
                     </button>
                     <ul class="dropdown-menu">
-                        {% macro vote_dropdown_button(action, text) %}
+                        {% macro vote_dropdown_button(action, text, icon) %}
                             <li>
-                                <button type="submit" name="action" value="{{action}}" class="btn btn-default btn-block">
+                                <button type="submit" name="action" value="{{action}}" class="btn btn-default btn-block btn-xs">
+                                    {% if icon %}
+                                        <span class="glyphicon glyphicon-{{icon}}"></span>
+                                    {% endif %}
                                     {{ text }}
                                 </button>
                         {% endmacro %}
@@ -205,23 +208,37 @@
                         {% if current_user.admin %}
                             <li>
                                 <a href="{{url_for('suggestion.edit_view', id=suggestion.id)}}" class="btn btn-default btn-block">
+                                    <span class="glyphicon glyphicon-pencil"></span>
                                     Upravit
                                 </a>
                             </li>
                         {% endif %}
                         {% if suggestion.status == "approved"
-                            and suggestion.user == current_user %}
+                            and suggestion.user == current_user
+                            and suggestion.score == 0 %}
                             {{ vote_dropdown_button('withdraw', "Vzít zpět") }}
                         {% endif %}
                         {% if current_user.admin %}
+                            {% if suggestion.status in ("approved", "candidate") %}
+                                {{ vote_dropdown_button('finalize', "Zfinalizovat", "ok-sign") }}
+                            {% endif %}
+                            {% if suggestion.status == "approved" %}
+                                {{ vote_dropdown_button('candidate', "Zkandidovat", "record") }}
+                            {% endif %}
                             {% if suggestion.status != "approved" %}
-                                {{ vote_dropdown_button('approve', "Svolit") }}
+                                {% if suggestion.status == "final" %}
+                                    {{ vote_dropdown_button('approve', "Odfinalizovat", "ok") }}
+                                {% elif suggestion.status == "candidate" %}
+                                    {{ vote_dropdown_button('approve', "Odkandinovat", "ok") }}
+                                {% else %}
+                                    {{ vote_dropdown_button('approve', "Svolit", "ok") }}
+                                {% endif %}
                             {% endif %}
                             {% if suggestion.status != "hidden" %}
                                 {{ vote_dropdown_button('hide', "Skrýt") }}
                             {% endif %}
                             {% if suggestion.status != "deleted" %}
-                                {{ vote_dropdown_button('delete', "Smazat") }}
+                                {{ vote_dropdown_button('delete', "Smazat", "remove") }}
                             {% endif %}
                         {% endif %}
                     </ul>
@@ -253,8 +270,16 @@
                 </h3>
                 <ul class="list-group">
                     {% for suggestion, score in term.suggestions_w_score %}
-                        <li class="list-group-item">
+                        <li class="list-group-item suggestion-{{ suggestion.status }}">
                             {{ suggestion_controls(suggestion) }}
+                            {% if suggestion.status in ("candidate", "final") %}
+                                <div class="suggestion-status">
+                                    <span class="badge badge-status-{{suggestion.status}}">
+                                        {{ {"candidate": "kandidát",
+                                            "final": "finální"}[suggestion.status] }}
+                                    </span>
+                                </div>
+                            {% endif %}
                             <h4 class="list-group-item-heading suggestion-text">
                                 <span class="badge badge-negative">{{ suggestion.negative_score }}</span><!--
                                 --><span class="badge badge-positive">{{ score or 0 }}</span>
