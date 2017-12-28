@@ -163,7 +163,7 @@ def term(project_identifier, category_identifier, term_identifier):
                 db.session.commit()
                 return redirect(term)
         else:
-            if term.latest_revision:
+            if term.dialogue and term.latest_revision:
                 suggestion_form.text.data = term.latest_revision.text
         if request.method == 'POST' and comment_form.validate():
             comment = db.Comment(user=current_user, term=term,
