@@ -235,7 +235,21 @@ def vote():
         return redirect(suggestion.url)
     else:
         return "OK"
+
+@app.route("/make_reference", methods=["POST"])
+@login_required
+def make_reference():
+    if not current_user.admin: abort(403)
+    term0 = db.session.query(db.Term).get(request.form['term0_id'])
+    term1 = db.session.query(db.Term).get(request.form['term1_id'])
+    valid = True if request.form['valid']=="1" else False
     
+    reference = db.Reference(suggestion=suggestion, user=current_user, vote=vote_num,
+        valid=True, changed=datetime.now())
+    db.session.add(vote)
+    db.session.commit()
+
+
 @app.route("/suggestion", methods=["POST"])
 @login_required
 def suggestion():

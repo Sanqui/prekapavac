@@ -68,11 +68,20 @@
                     </tr>
                 {% endif %}
             </table>
-            {% if term.references %}
+            {% set references = term.references %}
+            {% if references %}
                 <h4>Referencuje</h4>
                 <ul class="references">
-                    {% for reference in term.references %}
+                    {% for reference in references[0:3] %}
                         <li><a href="{{reference.term1.url}}">{{ term_short(reference.term1) }}</a>
+                    {% endfor %}
+                    {% if (references|length) > 3 %}
+                        <li><button class="btn btn-default btn-xs"
+                            id="all-references-button">Ukaž všech {{references|length}}</button>
+                    {% endif %}
+                    {% for reference in references[3:] %}
+                        <li class="extra-references">
+                            <a href="{{reference.term1.url}}">{{ term_short(reference.term1) }}</a>
                     {% endfor %}
                 </ul>
             {% endif %}
@@ -80,13 +89,37 @@
                 <a href="{{url_for('reference.create_view', term0_id=term.id)}}"
                     class="btn btn-default btn-xs">Přidat referenci</a>
             {% endif %}
-            {% if term.referenced %}
+            {% set referenced = term.referenced %}
+            {% if referenced %}
                 <h4>Je referencován</h4>
                 <ul class="references">
-                    {% for reference in term.referenced %}
+                    {% for reference in referenced[0:3] %}
                         <li><a href="{{reference.term0.url}}">{{ term_short(reference.term0) }}</a>
                     {% endfor %}
+                    {% if (referenced|length) > 3 %}
+                        <li><button class="btn btn-default btn-xs"
+                            id="all-referenced-button">Ukaž všech {{referenced|length}}</button>
+                    {% endif %}
+                    {% for reference in referenced[3:] %}
+                        <li class="extra-referenced">
+                            <a href="{{reference.term0.url}}">{{ term_short(reference.term0) }}</a>
+                    {% endfor %}
                 </ul>
+            {% endif %}
+            {% set potentially_referenced = term.potentially_referenced %}
+            {% if potentially_referenced %}
+                <button class="btn btn-default btn-xs"
+                  id="potentially-referenced-button">
+                      Ukaž {{potentially_referenced|length}} potenciálně referencovaných
+                </button>
+                <div id="potentially-referenced">
+                    <h4>Je potenciálně referencován</h4>
+                    <ul class="references">
+                        {% for term in term.potentially_referenced %}
+                            <li><a href="{{term.url}}">{{ term_short(term) }}</a>
+                        {% endfor %}
+                    </ul>
+                </div>
             {% endif %}
         </div>
         <div class="col-md-8">

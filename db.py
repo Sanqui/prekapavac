@@ -246,12 +246,13 @@ class Reference(Base):
     id = Column(Integer, primary_key=True, nullable=False)
     term0_id = Column(Integer, ForeignKey('terms.id'))
     term1_id = Column(Integer, ForeignKey('terms.id'))
+    valid = Column(Boolean, default=True, nullable=False)
     
     term0 = relationship("Term", foreign_keys=[term0_id])
-    term1 = relationship("Term", foreign_keys=[term1_id], backref='referenced')
+    term1 = relationship("Term", foreign_keys=[term1_id])
     
     def __str__(self):
-        return "{} references {}".format(self.term0, self.term1)
+        return "{} {} {}".format(self.term0, "references" if self.valid else "does not reference", self.term1)
 
 class Term(Base, WithIdentifier):
     __tablename__ = 'terms'
@@ -271,10 +272,21 @@ class Term(Base, WithIdentifier):
     
     category = relationship("Category", backref='terms')
     
-    references = relationship("Reference", foreign_keys=[Reference.term0_id], order_by="Reference.id")
+    #references = relationship("Reference", foreign_keys=[Reference.term0_id], order_by="Reference.id")
     
     comments = relationship("Comment", order_by="Comment.created")
     
+    @property
+    def references(self):
+        return session.query(Reference).filter( \
+            Reference.term0_id == self.id, Reference.valid == True) \
+            .order_by(Reference.id).all()
+            
+    @property
+    def referenced(self):
+        return session.query(Reference).filter( \
+            Reference.term1_id == self.id, Reference.valid == True) \
+            .order_by(Reference.id).all()
     
     @property
     def suggestions_w_score(self):
@@ -297,6 +309,22 @@ class Term(Base, WithIdentifier):
             return rev[0]
         else:
             return None
+    
+    @property
+    def potentially_referenced(self):
+        terms = session.query(Term).join(Category).join(Project).filter( \
+            Term.text_en.ilike("%"+self.text_en+"%"), \
+            Term.id != self.id, \
+            Term.hidden == False, \
+            Category.hidden == False, \
+            Project.id == self.category.project_id
+            ).all()
+        # XXX I still don't know enough SQL to do this properly.
+        for ref in self.referenced:
+            if ref.term0 in terms:
+                terms.remove(ref.term0)
+        
+        return terms
     
     def user_has_unrated(self, user):
         if self.locked:

@@ -96,6 +96,19 @@ with context -%}
             $('.table-data').show();
         })
         
+        $('#all-references-button').click(function() {
+            $('#all-references-button').parent().hide()
+            $('.extra-references').show()
+        })
+        $('#all-referenced-button').click(function() {
+            $('#all-referenced-button').parent().hide()
+            $('.extra-referenced').show()
+        })
+        $('#potentially-referenced-button').click(function() {
+            $('#potentially-referenced-button').hide()
+            $('#potentially-referenced').show()
+        })
+        
         $('.vote-form').each(function(i, form) {
             $(form).find("button").each(function(i, button) {
                 $(button).click(function(e) {
