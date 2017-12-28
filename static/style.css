@@ -52,6 +52,9 @@ thead tr {background: #eee;}
 dt {}
 dd {margin-left: 32px;}
 
+.references {padding-left: 16px; margin-bottom: 2px;}
+.table-data {display: none;}
+
 .suggestions {margin: 0; padding: 0; list-style: none;}
 .suggestions li {margin: 0px 4px 0px 4px; padding: 0px 8px 1px 8px; border: 1px solid #ccc; display: inline-block;
     border-radius: 10px;}

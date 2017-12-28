@@ -43,6 +43,7 @@
     -->
     <div class="row">
         <div class="col-md-2">
+            <button class="btn btn-default btn-sm" id="show-metadata-button">Ukaž metadata</button>
             <table class="table table-condensed table-data">
                 <tr>
                     <th scope="row">Číslo</th>
@@ -69,15 +70,19 @@
             </table>
             {% if term.references %}
                 <h4>Referencuje</h4>
-                <ul>
+                <ul class="references">
                     {% for reference in term.references %}
                         <li><a href="{{reference.term1.url}}">{{ term_short(reference.term1) }}</a>
                     {% endfor %}
                 </ul>
             {% endif %}
+            {% if current_user.admin %}
+                <a href="{{url_for('reference.create_view', term0_id=term.id)}}"
+                    class="btn btn-default btn-xs">Přidat referenci</a>
+            {% endif %}
             {% if term.referenced %}
                 <h4>Je referencován</h4>
-                <ul>
+                <ul class="references">
                     {% for reference in term.referenced %}
                         <li><a href="{{reference.term0.url}}">{{ term_short(reference.term0) }}</a>
                     {% endfor %}

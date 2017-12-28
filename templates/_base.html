@@ -91,6 +91,11 @@ with context -%}
             })
         })
         
+        $('#show-metadata-button').click(function(){
+            $('#show-metadata-button').hide();
+            $('.table-data').show();
+        })
+        
         $('.vote-form').each(function(i, form) {
             $(form).find("button").each(function(i, button) {
                 $(button).click(function(e) {
