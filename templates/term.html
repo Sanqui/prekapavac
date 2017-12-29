@@ -377,9 +377,9 @@
                                         {% endif %}
                                          — {{ suggestion.user }}
                                     <div class="dialogue-suggestion-text" id="suggestion-{{suggestion.id}}-text">
-                                        {{ suggestion.text | replace("*", "
+                                        {{- suggestion.text | replace("*", "
                                             <span class=\"glyphicon placeholder\">*</span>
-                                        "|safe) }}
+                                        ".strip()|safe) -}}
                                     </div>
                                     {% if loop.nextitem %}
                                         <div class=" diff dialogue-suggestion-diff" id="suggestion-{{suggestion.id}}-diff">
