@@ -14,14 +14,16 @@
     <p> {{ category.description | markdown }}
     
     {{ completion_bar(category) }}
-        
-    <table class="table table-bordered table-terms {% if category.mainly_dialogue %}table-dialogue{% endif %}">
+    
+    {% set mainly_dialogue = category.mainly_dialogue %}
+    
+    <table class="table table-bordered table-terms {% if mainly_dialogue %}table-dialogue{% endif %}">
         <thead>
             <tr>
                 <td></td>
                 <td>#</td>
                 <td>en</td>
-                {% if not category.mainly_dialogue %}
+                {% if not mainly_dialogue %}
                     <td>jp</td>
                     <td>návrhy</td>
                 {% else %}
@@ -42,7 +44,7 @@
                         <td class="td-en">
                             <span><a href="{{ term.url }}">{{ term.text_en }}</a></span>
                         </td>
-                        {% if not category.mainly_dialogue %}
+                        {% if not mainly_dialogue %}
                             <td class="td-jp">
                                 <a href="{{ term.url }}">{{ term.text_jp }}</a>
                             </td>

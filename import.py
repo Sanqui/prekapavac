@@ -1,6 +1,9 @@
 from sys import argv
 import csv
 
+DIALOGUE = True
+LOCKED = False
+
 import app
 db = app.db
 
@@ -37,10 +40,16 @@ with app.app.app_context():
             
             if not en: continue
             
+            identifier = en.lower().replace(' ', '-').replace('"', '')
+            if DIALOGUE:
+                identifier = str(num)
+            
             term = db.Term(number=num,
                 identifier=en.lower().replace(' ', '-'),
                 text_en=en, text_jp=jp,
-                category=category)
+                category=category,
+                dialogue=DIALOGUE,
+                locked=LOCKED)
             db.session.add(term)
             
             for s in suggestions:

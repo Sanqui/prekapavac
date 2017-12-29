@@ -256,6 +256,9 @@ class Reference(Base):
     id = Column(Integer, primary_key=True, nullable=False)
     term0_id = Column(Integer, ForeignKey('terms.id'))
     term1_id = Column(Integer, ForeignKey('terms.id'))
+    
+    type = Column(Enum("mention", "speaker", "location", "context"))
+    
     valid = Column(Boolean, default=True, nullable=False)
     
     term0 = relationship("Term", foreign_keys=[term0_id])
@@ -286,17 +289,33 @@ class Term(Base, WithIdentifier):
     
     comments = relationship("Comment", order_by="Comment.created")
     
+    def references_of_type(self, of_type=None):
+        if of_type == None:
+            of_type = or_(Reference.type == "reference", Reference.type == None)
+        else:
+            of_type = (Reference.type == of_type)
+        return session.query(Reference).filter( \
+            Reference.term0_id == self.id, Reference.valid == True,
+            of_type) \
+            .order_by(Reference.id).all()
+    
     @property
     def references(self):
-        return session.query(Reference).filter( \
-            Reference.term0_id == self.id, Reference.valid == True) \
-            .order_by(Reference.id).all()
+        return self.references_of_type()
             
+    def referenced_of_type(self, of_type=None):
+        if of_type == None:
+            of_type = or_(Reference.type == "reference", Reference.type == None)
+        else:
+            of_type = (Reference.type == of_type)
+        return session.query(Reference).filter( \
+            Reference.term1_id == self.id, Reference.valid == True,
+            of_type) \
+            .order_by(Reference.id).all()
+    
     @property
     def referenced(self):
-        return session.query(Reference).filter( \
-            Reference.term1_id == self.id, Reference.valid == True) \
-            .order_by(Reference.id).all()
+        return self.referenced_of_type()
     
     @property
     def suggestions_w_score(self):
@@ -318,11 +337,10 @@ class Term(Base, WithIdentifier):
     
     @property
     def latest_revision(self):
-        rev = self.revisions_w_score.first()
-        if rev:
-            return rev[0]
-        else:
-            return None
+        rev = session.query(Suggestion) \
+            .filter(Suggestion.term==self) \
+            .outerjoin(Vote).group_by(Suggestion).order_by('revision DESC').first()
+        return rev
     
     @property
     def potentially_referenced(self):
