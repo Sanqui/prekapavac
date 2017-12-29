@@ -22,24 +22,26 @@
                 {{ completion_bar(project) }}
                 <div class="list-group">
                     {% for category in project.categories %}
-                        <a href="{{ category.url }}" class="list-group-item category-item">
-                            {{ completion_bar(category, bar_only=True) }}
-                            <h4 class="list-group-item-heading">
-                                {{ category.name }}
-                            </h4>
-                            <p class="list-group-item-text">
-                                {% for t in category.terms[0:3] -%}
-                                    {{- term_short(t) -}}
-                                    {%- if not loop.last %}, {% endif -%}
-                                {% endfor -%}
-                                ... celkem <strong>{{ category.terms|length }}</strong>
-                                {% if category.mostly_dialogue %}
-                                    dialogů
-                                {% else %}
-                                    termínů
-                                {% endif %}
-                            </p>
-                        </a>
+                        {% if not category.hidden %}
+                            <a href="{{ category.url }}" class="list-group-item category-item">
+                                {{ completion_bar(category, bar_only=True) }}
+                                <h4 class="list-group-item-heading">
+                                    {{ category.name }}
+                                </h4>
+                                <p class="list-group-item-text">
+                                    {% for t in category.terms[0:3] -%}
+                                        {{- term_short(t) -}}
+                                        {%- if not loop.last %}, {% endif -%}
+                                    {% endfor -%}
+                                    ... celkem <strong>{{ category.terms|length }}</strong>
+                                    {% if category.mostly_dialogue %}
+                                        dialogů
+                                    {% else %}
+                                        termínů
+                                    {% endif %}
+                                </p>
+                            </a>
+                        {% endif %}
                     {% endfor %}
                 </div>
             </div>

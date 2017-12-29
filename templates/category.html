@@ -9,7 +9,11 @@
         <li><a href="{{ project.url }}">{{ project.name }}</a>
         <li class="active">{{ category.name }}
     </ol>
-    <h2>{{ category.name }}</h2>
+    <h2>{{ category.name }}
+        {% if category.hidden %}
+            <span class="badge badge-default">skrytá kategorie</span>
+        {% endif %}
+    </h2>
     
     <p> {{ category.description | markdown }}
     

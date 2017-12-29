@@ -131,7 +131,7 @@
                 <div>
                     <button class="btn btn-default btn-xs"
                       id="potentially-referenced-button">
-                          Ukaž {{potentially_referenced|length}}<br>potenciálně referencovaných
+                          Ukaž {{potentially_referenced|length}} potenciálně ref.
                     </button>
                     <div id="potentially-referenced">
                         <strong>Je potenciálně referencován</strong>
@@ -153,7 +153,7 @@
                         {% endfor %}
                         {% if (as_speaker|length) > 3 %}
                             <li><button class="btn btn-default btn-xs"
-                                id="all-as-speaker-button">Ukaž všech {{referenced|length}}</button>
+                                id="all-as-speaker-button">Ukaž všech {{as_speaker|length}}</button>
                         {% endif %}
                         {% for reference in as_speaker[3:] %}
                             <li class="extra-as-speaker">
@@ -177,12 +177,14 @@
                     {% endif %}
                 </div>
                 <div class="{% if not term.dialogue %}col-md-6{% endif %}">
-                    <dl class="term-info term-info-jp {% if term.dialogue %}term-info-dialogue{% endif %}"">
-                        <dt>Japonsky:</dt>
-                            <dd>{{ term.text_jp }}</dd>
-                    </dl>
-                    {% if not term.dialogue %}
-                        <a href="http://jisho.org/search?utf8=%E2%9C%93&keyword={{ term.text_jp }}">jisho.org</a>
+                    {% if term.text_jp %}
+                        <dl class="term-info term-info-jp {% if term.dialogue %}term-info-dialogue{% endif %}"">
+                            <dt>Japonsky:</dt>
+                                <dd>{{ term.text_jp }}</dd>
+                        </dl>
+                        {% if not term.dialogue %}
+                            <a href="http://jisho.org/search?utf8=%E2%9C%93&keyword={{ term.text_jp }}">jisho.org</a>
+                        {% endif %}
                     {% endif %}
                 </div>
             </div>
@@ -300,7 +302,9 @@
             <span class="glyphicon glyphicon-lock locked-icon"></span>
             <h3>Termín je zamčený</h3>
             <div class="locked-text">
-                {{ term.lock_reason | urlize | markdown }}
+                {% if term.lock_reason %}
+                    {{ term.lock_reason | urlize | markdown }}
+                {% endif %}
             </div>
             {% if current_user.admin %}
                 <button class="btn btn-default btn-xs"
