@@ -109,6 +109,10 @@ with context -%}
             $('#potentially-referenced').show()
         })
         
+        $('#unlock-button').click(function() {
+            $(".locked-contents").show();
+        })
+        
         $('.vote-form').each(function(i, form) {
             $(form).find("button").each(function(i, button) {
                 $(button).click(function(e) {

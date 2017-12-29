@@ -252,10 +252,24 @@
         </div>
     </div>
 {% endmacro %}
+    {% if term.locked %}
+        <div class="locked-info">
+            <span class="glyphicon glyphicon-lock locked-icon"></span>
+            <h3>Termín je zamčený</h3>
+            <div class="locked-text">
+                {{ term.lock_reason | urlize | markdown }}
+            </div>
+            {% if current_user.admin %}
+                <button class="btn btn-default btn-xs"
+                  id="unlock-button">
+                      Mě to nezajímá, já jsem admin
+                </button>
+            {% endif %}
+        </div>
+    {% endif %}
 
-    {% if not term.locked %}
-        
-        <div class="row">
+    {% if (not term.locked) or current_user.admin %}
+        <div class="row term-suggestions-dialogue {%if term.locked%}locked-contents{%endif%}">
             <div class="{% if not term.dialogue %} col-md-6
                 {% else %} col-md-9
                 {% endif %}">
@@ -408,14 +422,6 @@
                 </div>
             </div>
 
-        </div>
-    {% else %}
-        <div class="locked-info">
-            <span class="glyphicon glyphicon-lock locked-icon"></span>
-            <h3>Termín je zamčený</h3>
-            <div class="locked-text">
-                {{ term.lock_reason | urlize | markdown }}
-            </div>
         </div>
     {% endif %}
     

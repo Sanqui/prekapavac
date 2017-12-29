@@ -134,7 +134,7 @@ def term(project_identifier, category_identifier, term_identifier):
     
     suggestion_form = None
     comment_form = None
-    if current_user.is_authenticated and not term.locked:
+    if current_user.is_authenticated and (not term.locked or current_user.admin):
         suggestion_form = (SuggestionForm if not term.dialogue else RevisionForm)(request.form)
         comment_form = CommentForm(request.form)
         if request.method == 'POST' and suggestion_form.validate():

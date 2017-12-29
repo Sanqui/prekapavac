@@ -40,6 +40,8 @@ thead tr {background: #eee;}
 
 .table-data th, td {padding: 2px !important;}
 
+.locked-contents {display: none;}
+
 .diff {line-height: 1.4;}
 .diff del {text-decoration: none; background-color: #fdd;}
 .diff del del {text-decoration: line-through; background-color: #faa;}
