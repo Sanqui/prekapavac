@@ -376,7 +376,11 @@
                                             <button class="btn btn-default btn-xs button-diff" data-suggestion-id="{{suggestion.id}}">diff</button>
                                         {% endif %}
                                          — {{ suggestion.user }}
-                                    <div class="dialogue-suggestion-text" id="suggestion-{{suggestion.id}}-text">{{ suggestion.text }}</div>
+                                    <div class="dialogue-suggestion-text" id="suggestion-{{suggestion.id}}-text">
+                                        {{ suggestion.text | replace("*", "
+                                            <span class=\"glyphicon placeholder\">*</span>
+                                        "|safe) }}
+                                    </div>
                                     {% if loop.nextitem %}
                                         <div class=" diff dialogue-suggestion-diff" id="suggestion-{{suggestion.id}}-diff">
                                             {{ "<br>".join(diffhtml.ndiff(loop.nextitem[0].text.splitlines(), suggestion.text.splitlines(), cutoff=0.1)) | safe }}
