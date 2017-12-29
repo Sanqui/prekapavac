@@ -345,7 +345,8 @@ class Term(Base, WithIdentifier):
     @property
     def potentially_referenced(self):
         terms = session.query(Term).join(Category).join(Project).filter( \
-            Term.text_en.ilike("%"+self.text_en+"%"), \
+            func.replace(Term.text_en, "\n", " ")\
+                .ilike("%"+self.text_en+"%"), \
             Term.id != self.id, \
             Term.hidden == False, \
             Category.hidden == False, \
