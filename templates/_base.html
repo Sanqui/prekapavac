@@ -112,6 +112,10 @@ with context -%}
             $('#potentially-referenced-button').hide()
             $('#potentially-referenced').show()
         })
+        $('#show-original-text-button').click(function() {
+            $('#dd-text-en').toggleClass("game-text")
+            $('#dd-text-jp').toggleClass("game-text")
+        })
         
         $('#unlock-button').click(function() {
             $(".locked-contents").show();

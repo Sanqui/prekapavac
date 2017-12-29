@@ -177,10 +177,18 @@
         </div>
         <div class="col-md-8">
             <div class="row">
+                {% if term.dialogue %}
+                    <div class="text-controls">
+                        <button id="show-original-text-button"
+                            class="btn btn-default">
+                            <span class="glyphicon glyphicon-text-width"></span>
+                        </button>
+                    </div>
+                {% endif %}
                 <div class="{% if not term.dialogue %}col-md-6{% endif %}">
                     <dl class="term-info {% if term.dialogue %}term-info-dialogue{% endif %}">
                         <dt>Anglicky:</dt>
-                            <dd>{{ term.text_en }}</dd>
+                            <dd id="dd-text-en">{{ term.text_en }}</dd>
                     </dl>
                     {% if not term.dialogue %}
                         <a href="https://slovnik.seznam.cz/en-cz/?q={{term.text_en}}">Seznam Slovník</a>
@@ -192,7 +200,7 @@
                     {% if term.text_jp %}
                         <dl class="term-info term-info-jp {% if term.dialogue %}term-info-dialogue{% endif %}"">
                             <dt>Japonsky:</dt>
-                                <dd>{{ term.text_jp }}</dd>
+                                <dd id="dd-text-jp">{{ term.text_jp }}</dd>
                         </dl>
                         {% if not term.dialogue %}
                             <a href="http://jisho.org/search?utf8=%E2%9C%93&keyword={{ term.text_jp }}">jisho.org</a>

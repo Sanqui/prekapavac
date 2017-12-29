@@ -69,6 +69,15 @@ dd {margin-left: 32px;}
 .extra-referenced, .extra-references, .extra-as-speaker {display: none;}
 #potentially-referenced {display: none;}
 
+@font-face {
+    font-family: "Zelda DX TT BRK Regular";
+    src: url("/static/zeldadxt.ttf");
+}
+
+.text-controls {float: right;}
+.game-text {white-space: pre; font-family: "Zelda DX TT BRK Regular", monospace;}
+#dd-text-en.game-text {font-size: 35px;}
+
 .suggestions {margin: 0; padding: 0; list-style: none;}
 .suggestions li {margin: 0px 4px 0px 4px; padding: 0px 8px 1px 8px; border: 1px solid #ccc; display: inline-block;
     border-radius: 10px;}
