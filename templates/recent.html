@@ -27,6 +27,9 @@
                 <!--<td> {{ change.term.category.project.name }} </td>-->
                 <td class="td-nowrap"> {{ change.term.category.name }} </td>
                 <td class="td-nowrap">
+                    {% if change.term.locked %}
+                        <span class="glyphicon glyphicon-lock"></span>
+                    {% endif %}
                     <a href=" {{ change.term.url }} ">
                         {{ term_short(change.term) }} 
                     </a>
