@@ -351,9 +351,39 @@
                         Návrhy
                     {% else %}
                         Revize
+                        <button class="btn btn-default btn-sm"
+                          id="new-revision-button">
+                              Nová revize
+                        </button>
                     {% endif %}
                 </h3>
-                <ul class="list-group">
+                {% if term.dialogue %}
+                    <div class="panel panel-default new-revision-panel">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">
+                                Přidat revizi
+                                {% if term.latest_revision.revision %}
+                                    #{{term.latest_revision.revision + 1}}
+                                {% else %}
+                                    #1
+                                {% endif %}</h3>
+                        </div>
+                        <div class="panel-body">
+                            {% if suggestion_form %}
+                                <form method="POST" class="new-revision-form">
+                                    <dl>
+                                        <dt>Text:</dt>
+                                            <dd>{{suggestion_form.text}}</dd>
+                                    </dl>
+                                    {{suggestion_form.submit}}
+                                </form>
+                            {% else %}
+                                <p>Pro přidávání návrhů je potřeba se <a href="{{url_for('login')}}">přihlásit</a>.
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endif %}
+                <ul class="list-group list-suggestions">
                     {% for suggestion, score in term.suggestions_w_score %}
                         <li class="list-group-item suggestion-{{ suggestion.status }}">
                             {{ suggestion_controls(suggestion) }}
@@ -419,31 +449,6 @@
                                             <dd>{{suggestion_form.text}}</dd>
                                         <dt>Vysvětlivka:</dt>
                                             <dd>{{suggestion_form.description}}</dd>
-                                    </dl>
-                                    {{suggestion_form.submit}}
-                                </form>
-                            {% else %}
-                                <p>Pro přidávání návrhů je potřeba se <a href="{{url_for('login')}}">přihlásit</a>.
-                            {% endif %}
-                        </div>
-                    </div>
-                {% else %}
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <h3 class="panel-title">
-                                Přidat revizi
-                                {% if term.latest_revision.revision %}
-                                    #{{term.latest_revision.revision + 1}}
-                                {% else %}
-                                    #1
-                                {% endif %}</h3>
-                        </div>
-                        <div class="panel-body">
-                            {% if suggestion_form %}
-                                <form method="POST" class="new-revision-form">
-                                    <dl>
-                                        <dt>Text:</dt>
-                                            <dd>{{suggestion_form.text}}</dd>
                                     </dl>
                                     {{suggestion_form.submit}}
                                 </form>

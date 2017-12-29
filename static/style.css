@@ -78,6 +78,8 @@ dd {margin-left: 32px;}
 .game-text {white-space: pre; font-family: "Zelda DX TT BRK Regular", monospace;}
 #dd-text-en.game-text {font-size: 35px;}
 
+.list-suggestions {margin-top: 6px;}
+.new-revision-panel {display: none;}
 .dialogue-suggestion-text {white-space: pre-wrap;}
 .placeholder {}
 
