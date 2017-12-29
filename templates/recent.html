@@ -22,11 +22,11 @@
         <tbody>
         {% for change in changes %}
             <tr class="tr-link" data-href="{{ change.term.url }}">
-                <td> {{ ago(change.created) }} </td>
-                <td> {{ change.user }} </td>
+                <td class="td-nowrap"> {{ ago(change.created) }} </td>
+                <td class="td-nowrap"> {{ change.user }} </td>
                 <!--<td> {{ change.term.category.project.name }} </td>-->
-                <td> {{ change.term.category.name }} </td>
-                <td>
+                <td class="td-nowrap"> {{ change.term.category.name }} </td>
+                <td class="td-nowrap">
                     <a href=" {{ change.term.url }} ">
                         {{ term_short(change.term) }} 
                     </a>
@@ -36,16 +36,16 @@
                         {% if not change.term.dialogue %}
                             <span class="label label-default">návrh</span>
                             {{ unrated_icon(change) }}
-                            <strong>{{change.text | truncate(64)}}</strong>
+                            <strong>{{change.text | truncate(100)}}</strong>
                         {% else %}
                             <span class="label label-default">revize</span>
                             #{{ change.revision }}
                             {{ unrated_icon(change) }}
-                            <strong>{{change.text | truncate(64)}}</strong>
+                            <strong>{{change.text | truncate(100)}}</strong>
                         {% endif %}
                     {% elif type(change) == db.Comment %}
                         <span class="label label-default">komentář</span>
-                        {{ change.text |truncate(64) }}
+                        {{ change.text |truncate(100) }}
                     {% else %}
                         <!-- should not happen :-) -->
                         {{ change }}

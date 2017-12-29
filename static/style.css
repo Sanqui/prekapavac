@@ -19,6 +19,7 @@ thead tr {background: #eee;}
 .suggestion li {white-space: nowrap;}
 
 .td-en, .td-jp {white-space: nowrap;}
+.td-nowrap {white-space: nowrap;}
 .table-dialogue .td-en, .table-dialogue .td-translation
     {width: 50%; white-space: normal; overflow: hidden; text-overflow: ellipsis;
     height: 0.5em;}
