@@ -132,8 +132,21 @@ def term(project_identifier, category_identifier, term_identifier):
     comments = db.session.query(db.Comment).filter(
         db.Comment.term == term, db.Comment.deleted == False)
     
+    if request.method == 'POST':
+        if 'action' in request.form:
+            if not current_user.admin: abort(403)
+            action = request.form['action']
+            if action == 'unlock':
+                term.locked = False
+            elif action == 'lock':
+                term.locked = True
+            else:
+                flash("Neznámá akce {}".format(action), "error")
+            db.session.commit()
+    
     suggestion_form = None
     comment_form = None
+    
     if current_user.is_authenticated and (not term.locked or current_user.admin):
         suggestion_form = (SuggestionForm if not term.dialogue else RevisionForm)(request.form)
         comment_form = CommentForm(request.form)

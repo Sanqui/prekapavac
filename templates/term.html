@@ -61,9 +61,21 @@
                 {% if current_user.admin %}
                     <tr>
                         <td colspan="2">
-                            <a href="{{url_for('term.edit_view', id=term.id)}}" class="btn btn-default btn-block btn-xs">
-                                Upravit termín
-                            </a>
+                            <div class="row">
+                                <div class="col-md-2">
+                                    <form method="POST">
+                                        <input type="hidden" name="action" value="lock">
+                                        <button type="submit" class="btn btn-default btn-sm">
+                                            <span class="glyphicon glyphicon-lock"></span>
+                                        </button>
+                                    </form>
+                                </div>
+                                <div class="col-md-10">
+                                    <a href="{{url_for('term.edit_view', id=term.id)}}" class="btn btn-default btn-block btn-sm">
+                                        <span class="glyphicon glyphicon-edit"></span>
+                                    </a>
+                                </div>
+                            </div>
                             <a href="{{url_for('reference.create_view', term0_id=term.id)}}"
                                 class="btn btn-default btn-block btn-xs">Přidat referenci</a>
                         </td>
@@ -307,8 +319,14 @@
                 {% endif %}
             </div>
             {% if current_user.admin %}
+                <form method="POST">
+                    <input type="hidden" name="action" value="unlock">
+                    <button type="submit" class="btn btn-default btn-sm">
+                        Odemknout
+                    </button>
+                </form>
                 <button class="btn btn-default btn-xs"
-                  id="unlock-button">
+                  id="unlock-button" style="margin-top: 8px;">
                       Mě to nezajímá, já jsem admin
                 </button>
             {% endif %}

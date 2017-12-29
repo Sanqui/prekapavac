@@ -2,8 +2,8 @@ from sys import argv
 import csv
 
 DIALOGUE = True
-LOCKED = False
-COMMIT = True
+LOCKED = True
+COMMIT = False
 SPEAKER_CATEGORY = "_speakers"
 
 import app
