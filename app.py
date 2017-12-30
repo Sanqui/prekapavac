@@ -198,6 +198,8 @@ def term(project_identifier, category_identifier, term_identifier):
 def recent():
     skip_suggestions = request.args.get("sskip") or 0
     skip_comments = request.args.get("cskip") or 0
+    skip_suggestions = int(skip_suggestions)
+    skip_comments = int(skip_comments)
     
     suggestions = db.session.query(db.Suggestion).filter(db.Suggestion.status == "approved").order_by(db.Suggestion.created.desc()).offset(skip_suggestions).limit(100).all()
     comments = db.session.query(db.Comment).filter(db.Comment.deleted == False).order_by(db.Comment.created.desc()).offset(skip_comments).limit(100).all()
