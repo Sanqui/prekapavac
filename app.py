@@ -216,6 +216,7 @@ def recent():
     
     
     return render_template("recent.html", changes=changes,
+        sskip=skip_suggestions, cskip=skip_comments,
         num_suggestions=num_suggestions, num_comments=num_comments)
 
 @app.route("/users")

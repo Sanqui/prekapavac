@@ -42,6 +42,8 @@ thead tr {background: #eee;}
 .table-terms td a {color: inherit;}
 .table-terms td a {color: inherit;}
 
+/*.label-suggestion {background-color: #779;}*/
+
 .table-data th, td {padding: 2px !important;}
 
 .locked-contents {display: none;}
