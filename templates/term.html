@@ -43,6 +43,9 @@
     -->
     <div class="row">
         <div class="col-md-2">
+            {% if term.hidden %}
+                <span class="badge badge-default badge-hidden-term">skrytý termín</span>
+            {% endif %}
             <button class="btn btn-default btn-sm" id="show-metadata-button">Ukaž metadata</button>
             <table class="table table-condensed table-data">
                 <tr>
@@ -65,7 +68,7 @@
                                 <div class="col-md-2">
                                     <form method="POST">
                                         <input type="hidden" name="action" value="lock">
-                                        <button type="submit" class="btn btn-default btn-sm">
+                                        <button type="submit" class="btn btn-default btn-block btn-sm">
                                             <span class="glyphicon glyphicon-lock"></span>
                                         </button>
                                     </form>

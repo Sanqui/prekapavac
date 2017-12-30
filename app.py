@@ -41,7 +41,8 @@ def new_template_globals():
         'db': db,
         'datetime': datetime_format,
         'round': round,
-        'diffhtml': diffhtml
+        'diffhtml': diffhtml,
+        'PRODUCTION': app.config['PRODUCTION'],
     }
 
 

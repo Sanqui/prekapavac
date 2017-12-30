@@ -7,6 +7,9 @@ thead td { font-weight: bold; }
 .clear {clear: both;}
 
 body {padding-top: 70px;}
+
+.brand-dev {color: #b44 !important;}
+
 td {/*white-space: nowrap;*/}
 thead tr {background: #eee;}
 .container-fluid {margin-left: 32px; margin-right: 32px;}
@@ -77,6 +80,8 @@ dd {margin-left: 32px;}
 .text-controls {float: right;}
 .game-text {white-space: pre; font-family: "Zelda DX TT BRK Regular", monospace;}
 #dd-text-en.game-text {font-size: 35px;}
+
+.badge-hidden-term {margin-bottom: 4px;}
 
 .list-suggestions {margin-top: 6px;}
 .new-revision-panel {display: none;}

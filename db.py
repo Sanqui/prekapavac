@@ -371,13 +371,15 @@ class Term(Base, WithIdentifier):
     @property
     def prev(self):
         return session.query(Term).filter(Term.category == self.category) \
-            .filter(Term.number < self.number) \
+            .filter(Term.number < self.number,
+            Term.hidden == False) \
             .order_by(Term.number.desc()).first()
             
     @property
     def next(self):
         return session.query(Term).filter(Term.category == self.category) \
-            .filter(Term.number > self.number) \
+            .filter(Term.number > self.number,
+            Term.hidden == False) \
             .order_by(Term.number.asc()).first()
     
     def __str__(self):

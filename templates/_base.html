@@ -18,7 +18,7 @@ with context -%}
     <nav class="navbar navbar-default navbar-fixed-top">
         <div class="container">
             <div class="navbar-header">
-                <a class="navbar-brand" href=" {{ url_for('index') }} ">{{ g.sitename }}</a>
+                <a class="navbar-brand {% if not g.PRODUCTION %}brand-dev{% endif %}" href=" {{ url_for('index') }} ">{{ g.sitename }}</a>
                 <button type="button" class="navbar-toggle collapsed"
                   data-toggle="collapse" data-target="#navbar-collapse">
                     <span class="sr-only">Toggle navigation</span>
