@@ -42,7 +42,6 @@ def new_template_globals():
         'datetime': datetime_format,
         'round': round,
         'diffhtml': diffhtml,
-        'PRODUCTION': app.config['PRODUCTION'],
     }
 
 
@@ -64,6 +63,7 @@ def flash_errors(form):
 @app.before_request
 def before_request():
     g.sitename = app.config['SITENAME']
+    g.PRODUCTION = app.config['PRODUCTION']
     g.db = db
     g.now = datetime.now()
     g.yesterday = g.now - timedelta(days=1)
