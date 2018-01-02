@@ -416,6 +416,7 @@ class Suggestion(Base):
     term = relationship("Term", backref='suggestions')
     user = relationship("User", backref='suggestions')
     
+    GOOD_STATUSES = ["approved", "candidate", "final"]
     HAS_GOOD_STATUS = or_(status == "approved",
         status == "candidate",
         status == "final")

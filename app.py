@@ -234,11 +234,13 @@ def vote():
     suggestion = db.session.query(db.Suggestion).get(request.form['suggestion_id'])
     if not suggestion: abort(404)
     if suggestion.term.locked: abort(403)
-    if suggestion.status not in ["approved"]:
+    if suggestion.status not in db.Suggestion.GOOD_STATUSES:
         flash("Voting for a suggestion that isn't approved isn't possible.", 'danger')
+        abort(403)
         return redirect(suggestion.url)
     vote_num = request.form['vote']
     if vote_num not in ["0", "1", "2"]: abort(400)
+    if suggestion.term.dialogue and vote_num == "2": abort(400)
     
     vote = db.Vote.from_for(current_user, suggestion)
     if vote:
