@@ -336,6 +336,12 @@ class Term(Base, WithIdentifier):
             .outerjoin(Vote).group_by(Suggestion).order_by('revision DESC')
     
     @property
+    def final_suggestion(self):
+        s = session.query(Suggestion) \
+            .filter(Suggestion.term==self, Suggestion.status=="final").first()
+        return s
+    
+    @property
     def latest_revision(self):
         rev = session.query(Suggestion) \
             .filter(Suggestion.term==self) \

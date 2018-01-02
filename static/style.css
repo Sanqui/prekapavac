@@ -70,6 +70,13 @@ dt {}
 dd {margin-left: 32px;}
 
 .references {padding-left: 16px; margin-bottom: 2px;}
+.references li .reference-trunctate {
+  width: 100%;
+  white-space: nowrap;
+  overflow-x: hidden;
+  text-overflow: ellipsis;
+}
+.references .final {color: #383;}
 .table-data {display: none;}
 .extra-referenced, .extra-references, .extra-as-speaker {display: none;}
 #potentially-referenced {display: none;}

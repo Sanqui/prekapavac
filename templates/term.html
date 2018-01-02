@@ -98,13 +98,23 @@
             {% macro reference_lis(references, direction, id, extra=False) %}
                 {% for reference in references %}
                     {% set term = reference.term1 if direction else reference.term0 %}
-                    <li {% if extra %}class="extra-{{id}}"{% endif %}>
-                        <a href="{{term.url}}"
-                            {% if term.dialogue %}
-                                data-toggle="tooltip" data-placement="top"
-                                title="{{term.text_en}}"
-                            {% endif %}
-                        >{{ term_short(term) }}</a>
+                    <li {% if extra %}class="extra-{{id}}"{% endif %}
+                        {% if term.dialogue %}
+                            data-toggle="tooltip" data-placement="top"
+                            title="{{term.text_en}}"
+                        {% endif %}
+                    >
+                        <div class="reference-trunctate">
+                            {% set final_suggestion = term.final_suggestion %}
+                            <a href="{{term.url}}"
+                              class="{% if final_suggestion %}final{% endif %}">
+                                {% if final_suggestion %}
+                                    {{ final_suggestion.text }}
+                                {% else %}
+                                    {{term.text_en}}
+                                {% endif %}
+                            </a>
+                        </div>
                 {% endfor %}
             {% endmacro %}
             {% macro list_of_references(references, direction, id, label) %}
