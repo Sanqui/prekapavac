@@ -391,15 +391,20 @@
                     </div>
                 {% endif %}
                 <ul class="list-group list-suggestions">
-                    {% for suggestion, score in term.suggestions_w_score %}
+                    {% for suggestion, score in suggestions_w_score %}
                         <li class="list-group-item suggestion-{{ suggestion.status }}"
                           id="suggestion-{{suggestion.id}}">
                             {{ suggestion_controls(suggestion) }}
-                            {% if suggestion.status in ("candidate", "final") %}
+                            {% set suggestion_labels = {"candidate": "kandidát",
+                                                        "final": "finální",
+                                                        "withdrawn": "vzán zpět",
+                                                        "hidden": "skryt",
+                                                        "deleted": "smazán",
+                                                        "new": "nový"} %}
+                            {% if suggestion.status in suggestion_labels.keys() %}
                                 <div class="suggestion-status">
                                     <span class="badge badge-status-{{suggestion.status}}">
-                                        {{ {"candidate": "kandidát",
-                                            "final": "finální"}[suggestion.status] }}
+                                        {{ suggestion_labels[suggestion.status] }}
                                     </span>
                                 </div>
                             {% endif %}

@@ -317,16 +317,23 @@ class Term(Base, WithIdentifier):
     def referenced(self):
         return self.referenced_of_type()
     
-    @property
-    def suggestions_w_score(self):
+    def suggestions_w_score_by_status(self, has_good=True):
         if self.dialogue:
             return self.revisions_w_score.all()
         return session.query(Suggestion, func.sum(Vote.vote).label('score')) \
             .filter(Suggestion.term==self, \
-            Suggestion.HAS_GOOD_STATUS) \
+            Suggestion.HAS_GOOD_STATUS if has_good else "") \
             .outerjoin(Vote).group_by(Suggestion) \
             .order_by(case(value=Suggestion.status, whens=Suggestion.STATUS_ORDERING).desc(),
             'score DESC').all()
+    
+    @property
+    def suggestions_w_score(self):
+        return self.suggestions_w_score_by_status(True)
+        
+    @property
+    def all_suggestions_w_score(self):
+        return self.suggestions_w_score_by_status(False)
     
     @property
     def revisions_w_score(self):
