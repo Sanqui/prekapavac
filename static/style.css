@@ -95,7 +95,8 @@ dd {margin-left: 32px;}
 .badge-hidden-term {margin-bottom: 4px;}
 
 .list-suggestions {margin-top: 6px;}
-.new-revision-panel {display: none;}
+.new-suggestion-panel {display: none;}
+.new-comment-panel {display: none;}
 .dialogue-suggestion-text {white-space: pre-wrap;}
 .placeholder {}
 

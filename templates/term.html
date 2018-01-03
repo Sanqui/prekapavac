@@ -336,14 +336,14 @@
                         Návrhy
                     {% else %}
                         Revize
-                        <button class="btn btn-default btn-sm"
-                          id="new-revision-button">
-                              Nová revize
-                        </button>
                     {% endif %}
+                    <button class="btn btn-default btn-sm"
+                      id="new-suggestion-button">
+                          {{ glyphicon("plus") }}
+                    </button>
                 </h3>
                 {% if term.dialogue %}
-                    <div class="panel panel-default new-revision-panel">
+                    <div class="panel panel-default new-suggestion-panel">
                         <div class="panel-heading">
                             <h3 class="panel-title">
                                 Přidat revizi
@@ -359,6 +359,28 @@
                                     <dl>
                                         <dt>Text:</dt>
                                             <dd>{{suggestion_form.text}}</dd>
+                                    </dl>
+                                    {{suggestion_form.submit}}
+                                </form>
+                            {% else %}
+                                <p>Pro přidávání návrhů je potřeba se <a href="{{url_for('login')}}">přihlásit</a>.
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endif %}
+                {% if not term.dialogue %}
+                    <div class="panel panel-default new-suggestion-panel">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Přidat návrh</h3>
+                        </div>
+                        <div class="panel-body">
+                            {% if suggestion_form %}
+                                <form method="POST">
+                                    <dl>
+                                        <dt>Text:</dt>
+                                            <dd>{{suggestion_form.text}}</dd>
+                                        <dt>Vysvětlivka:</dt>
+                                            <dd>{{suggestion_form.description}}</dd>
                                     </dl>
                                     {{suggestion_form.submit}}
                                 </form>
@@ -422,40 +444,40 @@
                         <p>Žádné návrhy na překlad ještě nejsou...
                     {% endfor %}
                 </ul>
-                {% if not term.dialogue %}
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <h3 class="panel-title">Přidat návrh</h3>
-                        </div>
-                        <div class="panel-body">
-                            {% if suggestion_form %}
-                                <form method="POST">
-                                    <dl>
-                                        <dt>Text:</dt>
-                                            <dd>{{suggestion_form.text}}</dd>
-                                        <dt>Vysvětlivka:</dt>
-                                            <dd>{{suggestion_form.description}}</dd>
-                                    </dl>
-                                    {{suggestion_form.submit}}
-                                </form>
-                            {% else %}
-                                <p>Pro přidávání návrhů je potřeba se <a href="{{url_for('login')}}">přihlásit</a>.
-                            {% endif %}
-                        </div>
-                    </div>
-                {% endif %}
             </div>
             <div class="{% if not term.dialogue %} col-md-6
                 {% else %} col-md-3
                 {% endif %}">
-                <h3>Komentáře
+                <h3>
+                    Komentáře
                     <span 
                         data-toggle="tooltip" data-placement="top"
                         title="Komentáře jsou nyní řazeny reverzně chronologicky."
                     >
                         {{ glyphicon("chevron-up") }}
                     </span>
+                    <button class="btn btn-default btn-sm"
+                      id="new-comment-button">
+                          {{ glyphicon("plus") }}
+                    </button>
                 </h3>
+                <div class="panel panel-default new-comment-panel">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Přidat komentář</h3>
+                    </div>
+                    <div class="panel-body">
+                        {% if comment_form %}
+                            <form method="POST" class="comment-form">
+                                {{comment_form.comment_text}}
+                                {{comment_form.submit}}
+                            </form>
+                            <p>V komentářích jde používat <a href="http://daringfireball.net/projects/markdown/basics">Markdown</a>.
+                            <p>Odkaz se dělá <tt>[takto](http://example.com)</tt>.  Nový odstavec uděláte dvojitým odřádkováním.
+                        {% else %}
+                            <p>Pro přidávání komentářů je potřeba se <a href="{{url_for('login')}}">přihlásit</a>.
+                        {% endif %}
+                    </div>
+                </div>
                 <div class="comments">
                     {% for comment in comments %}
                         {% if type(comment) == db.Comment %}
@@ -496,23 +518,6 @@
                             </div>
                         {% endif %}
                     {% endfor %}
-                </div>
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">Přidat komentář</h3>
-                    </div>
-                    <div class="panel-body">
-                        {% if comment_form %}
-                            <form method="POST" class="comment-form">
-                                {{comment_form.comment_text}}
-                                {{comment_form.submit}}
-                            </form>
-                            <p>V komentářích jde používat <a href="http://daringfireball.net/projects/markdown/basics">Markdown</a>.
-                            <p>Odkaz se dělá <tt>[takto](http://example.com)</tt>.  Nový odstavec uděláte dvojitým odřádkováním.
-                        {% else %}
-                            <p>Pro přidávání komentářů je potřeba se <a href="{{url_for('login')}}">přihlásit</a>.
-                        {% endif %}
-                    </div>
                 </div>
             </div>
 
