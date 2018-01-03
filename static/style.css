@@ -104,6 +104,11 @@ dd {margin-left: 32px;}
 .suggestions li {margin: 0px 4px 0px 4px; padding: 0px 8px 1px 8px; border: 1px solid #ccc; display: inline-block;
     border-radius: 10px;}
 
+.vote-pill {cursor: default; }
+.tooltip-votes {text-align: left; margin-left: 0px; padding-left: 0px; list-style: none;}
+.tooltip-votes .glyphicon {margin-right: 4px;}
+.tooltip-votes .vote-self {border-bottom: 1px solid rgba(255, 255, 255, 0.5);}
+
 .controls {float: right;}
 .controls form {display: inline;}
 .controls .dropdown-menu {padding: 6px;}

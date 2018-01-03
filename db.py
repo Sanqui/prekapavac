@@ -432,6 +432,18 @@ class Suggestion(Base):
     }
     
     @property
+    def votes(self):
+        votes = session.query(Vote) \
+            .filter(Vote.suggestion == self,
+                Vote.valid == True) \
+            .order_by(
+                case(value=Vote.user_id, whens={self.user_id: 1}).desc(),
+                Vote.vote.desc(),
+                Vote.changed.desc()
+            ).all()
+        return votes
+    
+    @property
     def score(self):
         score = session.query(
             func.sum(Vote.vote).label('score')).filter(
