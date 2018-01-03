@@ -432,7 +432,7 @@ class Suggestion(Base):
     }
     
     @property
-    def votes(self):
+    def sorted_votes(self):
         votes = session.query(Vote) \
             .filter(Vote.suggestion == self,
                 Vote.valid == True) \

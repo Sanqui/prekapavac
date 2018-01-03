@@ -406,22 +406,25 @@
                             <h4 class="list-group-item-heading suggestion-text">
                                 <span
                                     class="vote-pill"
-                                    data-toggle="tooltip" data-placement="top"
-                                    data-html="true"
-                                    title="
-                                        <ul class='tooltip-votes'>
-                                            {% for vote in suggestion.votes %}
-                                                <li class='{% if vote.user == suggestion.user %}vote-self{%endif%}'>
-                                                    {{ glyphicon(
-                                                         ('thumbs-down', 'thumbs-up', 'heart')
-                                                         [vote.vote]
-                                                       )
-                                                    }}
-                                                    {{vote.user}}
-                                                </li>
-                                            {% endfor %}
-                                        </ul>
-                                    "
+                                    {% set votes = suggestion.sorted_votes %}
+                                    {% if votes %}
+                                        data-toggle="tooltip" data-placement="top"
+                                        data-html="true"
+                                        title="
+                                            <ul class='tooltip-votes'>
+                                                {% for vote in votes %}
+                                                    <li class='{% if vote.user == suggestion.user %}vote-self{%endif%}'>
+                                                        {{ glyphicon(
+                                                             ('thumbs-down', 'thumbs-up', 'heart')
+                                                             [vote.vote]
+                                                           )
+                                                        }}
+                                                        {{vote.user}}
+                                                    </li>
+                                                {% endfor %}
+                                            </ul>
+                                        "
+                                    {% endif %}
                                 >
                                     <span class="badge badge-negative">{{ suggestion.negative_score }}</span><!--
                                     --><span class="badge badge-positive">{{ score or 0 }}</span>

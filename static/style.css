@@ -131,6 +131,7 @@ dd {margin-left: 32px;}
 
 .suggestion-highlight {box-shadow: 0px 0px 10px yellow; z-index: 100;}
 
+.badge {cursor: default;}
 .badge-status-candidate {background: #883;}
 .badge-status-final {background: #383;}
 
