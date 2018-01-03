@@ -131,7 +131,13 @@ def term(project_identifier, category_identifier, term_identifier):
     if not term: abort(404)
     
     comments = db.session.query(db.Comment).filter(
-        db.Comment.term == term, db.Comment.deleted == False)
+        db.Comment.term == term, db.Comment.deleted == False) \
+        .order_by(db.Comment.created.desc()).all()
+    
+    if term.dialogue:
+        comments_revs = comments + [r[0] for r in term.revisions_w_score]
+        comments_revs.sort(key=lambda x: x.created, reverse=True)
+        comments = comments_revs
     
     if request.method == 'POST':
         if 'action' in request.form:

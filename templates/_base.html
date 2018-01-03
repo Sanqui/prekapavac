@@ -1,6 +1,6 @@
 {% from '_macros.html' import
     unrated_icon, ago, completion_bar, quality_color, quality_badge,
-    term_short
+    term_short, glyphicon
 with context -%}
 <!doctype html>
 <html>
@@ -124,6 +124,15 @@ with context -%}
         $('#unlock-button').click(function() {
             $(".locked-contents").show();
         })
+        
+        $('.comment-revision-link').hover(
+            function() {
+                $("#suggestion-"+$(this).attr('data-suggestion-id')).toggleClass('suggestion-highlight') 
+            },
+            function() { 
+                $("#suggestion-"+$(this).attr('data-suggestion-id')).toggleClass('suggestion-highlight') 
+            }
+        );
         
         $('.vote-form').each(function(i, form) {
             $(form).find("button").each(function(i, button) {

@@ -88,7 +88,7 @@
             {% macro short_list_of_references(references, label) %}
                 {% if references %}
                     <div>
-                        <strong>{{label}}:</strong>
+                        <strong class="references-heading">{{label}}:</strong>
                         {% for reference in references %}
                             <a href="{{reference.term1.url}}">{{ term_short(reference.term1) }}</a>
                         {% endfor %}
@@ -120,7 +120,7 @@
             {% macro list_of_references(references, direction, id, label) %}
                 {% if references %}
                     <div>
-                        <strong>{{ label }}</strong>
+                        <strong class="references-heading">{{ label }}</strong>
                         <ul class="references">
                             {{ reference_lis(references[0:3], direction, id, False) }}
                             {% if (references|length) > 3 %}
@@ -370,7 +370,8 @@
                 {% endif %}
                 <ul class="list-group list-suggestions">
                     {% for suggestion, score in term.suggestions_w_score %}
-                        <li class="list-group-item suggestion-{{ suggestion.status }}">
+                        <li class="list-group-item suggestion-{{ suggestion.status }}"
+                          id="suggestion-{{suggestion.id}}">
                             {{ suggestion_controls(suggestion) }}
                             {% if suggestion.status in ("candidate", "final") %}
                                 <div class="suggestion-status">
@@ -447,27 +448,53 @@
             <div class="{% if not term.dialogue %} col-md-6
                 {% else %} col-md-3
                 {% endif %}">
-                <h3>Komentáře</h3>
+                <h3>Komentáře
+                    <span 
+                        data-toggle="tooltip" data-placement="top"
+                        title="Komentáře jsou nyní řazeny reverzně chronologicky."
+                    >
+                        {{ glyphicon("chevron-up") }}
+                    </span>
+                </h3>
                 <div class="comments">
                     {% for comment in comments %}
-                        <div class="panel panel-default">
-                            <div class="panel-body" title="{{ datetime(comment.created) }}">
-                                {% if comment.created %}
-                                    <div class="comment-datetime">
-                                        {{ ago(comment.created) }}
-                                        {% if current_user.admin %}
-                                            <a href="{{url_for('comment.edit_view', id=comment.id)}}" class="btn btn-default btn-xs">
-                                                <span class="glyphicon glyphicon-pencil"></span>
-                                            </a>
-                                        {% endif %}
-                                    </div>
-                                {% endif %}
-                                {% if comment.user %}
-                                    <strong>{{ comment.user.username }}</strong>:
-                                {% endif %}
-                                {{ comment.text | urlize | markdown }}
+                        {% if type(comment) == db.Comment %}
+                            <div class="panel panel-default">
+                                <div class="panel-body" title="{{ datetime(comment.created) }}">
+                                    {% if comment.created %}
+                                        <div class="comment-datetime">
+                                            {{ ago(comment.created) }}
+                                            {% if current_user.admin %}
+                                                <a href="{{url_for('comment.edit_view', id=comment.id)}}" class="btn btn-default btn-xs">
+                                                    <span class="glyphicon glyphicon-pencil"></span>
+                                                </a>
+                                            {% endif %}
+                                        </div>
+                                    {% endif %}
+                                    {% if comment.user %}
+                                        <strong>{{ comment.user.username }}</strong>:
+                                    {% endif %}
+                                    {{ comment.text | urlize | markdown }}
+                                </div>
                             </div>
-                        </div>
+                        {% elif type(comment) == db.Suggestion %}
+                            {% set revision = comment %}
+                            <div class="comment-revision-link"
+                              data-suggestion-id="{{revision.id}}">
+                                <div class="comment-datetime">
+                                    {{ ago(revision.created) }}
+                                    {% if current_user.admin %}
+                                        <span style="margin-right: 25px;">&nbsp;</span>
+                                    {% endif %}
+                                </div>
+                                {{ glyphicon("file") }}
+                                Revize #{{revision.revision}}
+                            </div>
+                        {% else %}
+                            <div>
+                                Neznámá položka: {{comment}}
+                            </div>
+                        {% endif %}
                     {% endfor %}
                 </div>
                 <div class="panel panel-default">

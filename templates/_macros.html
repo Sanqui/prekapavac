@@ -110,3 +110,7 @@
         {{ term.text_en }}
     {%- endif -%}
 {%- endmacro %}
+
+{% macro glyphicon(name, title) -%}
+    <span class="glyphicon glyphicon-{{name}}" title="{{title}}"></span>
+{%- endmacro %}

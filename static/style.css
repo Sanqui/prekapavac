@@ -61,6 +61,7 @@ thead tr {background: #eee;}
 .new-revision-form #text {width: 100%; line-height: 1.4; font-size: 18px; padding: 4px;}
 
 .term-info {font-size: larger;}
+.term-info dt {font-variant: small-caps;}
 .term-info dd {font-size: 28px;}
 .term-info-dialogue dd {font-size: 24px;}
 .term-info-dialogue.term-info-jp dt {font-size: smaller;}
@@ -70,6 +71,7 @@ dt {}
 dd {margin-left: 32px;}
 
 .references {padding-left: 16px; margin-bottom: 2px;}
+.references-heading {font-variant: small-caps;}
 .references li .reference-trunctate {
   width: 100%;
   white-space: nowrap;
@@ -114,11 +116,14 @@ dd {margin-left: 32px;}
 
 /* .suggestion-user {float: right;} */
 
+.list-suggestions li { transition: all 0.25s ease;}
 .suggestion-approved {background: linear-gradient(to bottom, #ffffff 61%,#eeeeee 100%);}
 .suggestion-candidate {background: linear-gradient(to bottom, #ffffcc 61%,#eaedbb 100%);
     border-color: #cca !important;}
 .suggestion-final {background: linear-gradient(to bottom, #d9ffce 61%,#c4eab9 100%);
     border-color: #aca !important;}
+
+.suggestion-highlight {box-shadow: 0px 0px 10px yellow; z-index: 100;}
 
 .badge-status-candidate {background: #883;}
 .badge-status-final {background: #383;}
@@ -129,6 +134,7 @@ dd {margin-left: 32px;}
 .comments .panel {margin-top: 4px; margin-bottom: 5px; }
 .comments .panel-body {padding: 3px 4px 0px 7px; }
 .comments .panel-body p {text-indent: 8px;}
+.comment-revision-link {margin-left: 12px; cursor: default; margin-bottom: 2px;}
 
 .icon {vertical-align: middle;}
 
