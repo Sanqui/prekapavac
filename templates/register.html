@@ -1,22 +1,22 @@
 {% extends "_base.html" %}
 
-{% block title %}Registrace{% endblock %}
+{% block title %}Registration{% endblock %}
 
 {% block content %}
-    <h2>Registrace</h2>
-    <p>K registraci je potřeba znát klíč který se můžete dozvědět např. od administrátora webu.
+    <h2>Registration</h2>
+    <p>To register, it's necessary to know the key, which you can learn e.g. from the website administrator.
     <form method="POST">
         <dl>
-        <dt>Username:</dt>   <dd>{{form.username}}</dd>
-        <dt>Heslo:</dt>      <dd>{{form.password}}</dd>
-        <dt>Heslo znovu:</dt><dd>{{form.confirm_password}}</dd>
-        <dt>Email:</dt>      <dd>{{form.email}}</dd>
-        <dt>Klíč:</dt>       <dd>{{form.key}}</dd>
+        <dt>Username:</dt>      <dd>{{form.username}}</dd>
+        <dt>Password:</dt>      <dd>{{form.password}}</dd>
+        <dt>Password again:</dt><dd>{{form.confirm_password}}</dd>
+        <dt>Email:</dt>         <dd>{{form.email}}</dd>
+        <dt>Key:</dt>          <dd>{{form.key}}</dd>
         </dl>
         {{form.submit}}
     </form>
     {% if failed %}
-        <p class="fail">Nesprávné uživatelské jméno nebo heslo.
+        <p class="fail">Wrong username or password.
     {% endif %}
 {% endblock %}
 

@@ -55,7 +55,7 @@ def new_template_globals():
 def flash_errors(form):
     for field, errors in form.errors.items():
         for error in errors:
-            flash("Chyba u {}: {}".format(
+            flash("Password at {}: {}".format(
                 getattr(form, field).label.text,
                 error
             ), 'danger')
@@ -72,7 +72,7 @@ def before_request():
     if current_user.is_authenticated:
         if current_user.active == False:
             logout_user()
-            flash("Byli jste odhlášeni protože váš účet byl deaktivován.")
+            flash("You were logged out since your account was deactivated.")
 
 @app.teardown_request
 def shutdown_session(exception=None):
@@ -156,7 +156,7 @@ def term(project_identifier, category_identifier, term_identifier):
             elif action == 'lock':
                 term.locked = True
             else:
-                flash("Neznámá akce {}".format(action), "error")
+                flash("Unknown action {}".format(action), "error")
             db.session.commit()
     
     suggestion_form = None
@@ -174,7 +174,7 @@ def term(project_identifier, category_identifier, term_identifier):
                 # TODO this should check for "final" as well, but
                 # for some reason adding `or (db.Suggestion.status == "final")`
                 # doesn't cut it
-                flash("Přesně tenhle návrh už existuje, mrkni se po něm!", 'info')
+                flash("Exactly this proposal is already there, look for it!", 'info')
             else:
                 suggestion = db.Suggestion(user=current_user, term=term,
                     created=datetime.now(), changed=datetime.now(),
@@ -314,19 +314,19 @@ def suggestion():
     elif action == 'withdraw' and suggestion.user == current_user:
         if suggestion.score == 0:
             suggestion.status = 'withdrawn'
-            flash("Návrh vzán zpět.", 'success')
+            flash("Proposal withdrawn.", 'success')
         else:
-            flash("Návrh lze vzít zpět pouze dokud má nulové skóre.", 'danger')
+            flash("A proposal may only be withdrawn as long as it has a zero score.", 'danger')
     else:
-        flash("Neznámá či nepovolená operace", 'danger')
+        flash("Unknown or disallowed operation.", 'danger')
     
     db.session.commit()
     return redirect(suggestion.url)
 
 class LoginForm(Form):
     username = TextField('Username', [validators.required()])
-    password = PasswordField('Heslo', [validators.required()])
-    submit = SubmitField('Přihlásit se')
+    password = PasswordField('Password', [validators.required()])
+    submit = SubmitField('Log in')
 
 @app.route("/login", methods="GET POST".split())
 def login():
@@ -340,10 +340,10 @@ def login():
             if password_matches:
                 if user.active:
                     login_user(user, remember=True)
-                    flash("Jste přihlášeni.", 'success')
+                    flash("You are logged in.", 'success')
                     return redirect(url_for('index'))
                 else:
-                    flash("Váš účet není aktivován administrátorem.")
+                    flash("Your account is not enabled by the administrator.")
             else:
                 failed = True
     
@@ -353,7 +353,7 @@ class RegisterForm(Form):
     username = TextField('Username', [validators.required()])
     password = PasswordField('Heslo', [
         validators.Required(),
-        validators.EqualTo('confirm_password', message='Hesla se musí shodovat')
+        validators.EqualTo('confirm_password', message='Passwords must match')
     ])
     confirm_password = PasswordField('Heslo znovu', [validators.required()])
     email = TextField('Email', [validators.required()])
@@ -366,11 +366,11 @@ def register():
     failed = False
     if request.method == 'POST' and form.validate():
         if form.key.data != app.config["REGISTER_KEY"]:
-            flash("Zadali jste nesprávný registrační klíč.", "danger")
+            flash("You have entered an incorrect registration key.", "danger")
         else:
             user = db.session.query(db.User).filter(db.User.username == form.username.data.lower()).scalar()
             if user:
-                flash("Toto uživatelské jméno je již zabrané, vyberte si, prosím, jiné.", "danger")
+                flash("This username is already taken, please choose a different one.", "danger")
             else:
                 user = db.User(username=form.username.data.lower(),
                     email=form.email.data,
@@ -385,7 +385,7 @@ def register():
                     db.session.commit()
                 
                 login_user(user, remember=True)
-                flash("Registrace proběhla úspěšně.", 'success')
+                flash("Registration was successful.", 'success')
                 return redirect(url_for('index'))
     else:
         flash_errors(form)

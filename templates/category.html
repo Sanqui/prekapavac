@@ -11,7 +11,7 @@
     </ol>
     <h2>{{ category.name }}
         {% if category.hidden %}
-            <span class="badge badge-default">skrytá kategorie</span>
+            <span class="badge badge-default">hidden category</span>
         {% endif %}
         {% if current_user.admin %}
             <a href="{{url_for('category.edit_view', id=category.id, url=category.url)}}" class="btn btn-default btn-sm">
@@ -34,9 +34,9 @@
                 <td>en</td>
                 {% if not mainly_dialogue %}
                     <td>jp</td>
-                    <td>návrhy</td>
+                    <td>proposals</td>
                 {% else %}
-                    <td>překlad</td>
+                    <td>translation</td>
                 {% endif %}
             </tr>
         <tbody>

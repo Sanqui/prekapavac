@@ -1,21 +1,21 @@
 {% extends "_base.html" %}
 
-{% block title %} Poslední změny {% endblock %}
+{% block title %} List of users {% endblock %}
 
 {% block content %}
 
     <ol class="breadcrumb">
         <li><a href="{{ url_for('index') }}">{{ g.sitename }}</a>
-        <li>Seznam uživatelů
+        <li>List of users
     </ol>
-    <h2>Seznam uživatelů</h2>
+    <h2>List of users</h2>
     <table class="table table-condensed">
         <thead>
             <tr>
                 <td>id</td>
-                <td>už. jméno</td>
-                <td>hlasů</td>
-                <td>datum registrace</td>
+                <td>username</td>
+                <td>votes</td>
+                <td>date of registration</td>
             </tr>
         <tbody>
         {% for user in users %}
@@ -32,7 +32,7 @@
                     {% if user.registered %}
                         {{ ago(user.registered) }}
                     {% else %}
-                        první den
+                        first day
                     {% endif %}
                 </td>
                 </td>

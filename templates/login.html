@@ -1,9 +1,9 @@
 {% extends "_base.html" %}
 
-{% block title %}login{% endblock %}
+{% block title %}Login{% endblock %}
 
 {% block content %}
-    <h2><a href="{{url_for('login')}}">Přihlášení</a></h2>
+    <h2><a href="{{url_for('login')}}">Login</a></h2>
         {{ form.error }}
     {% if form.errors %}
         <ul>
@@ -15,12 +15,12 @@
     <form method="POST">
         <dl>
         <dt>Username:</dt>  <dd>{{form.username}}</dd>
-        <dt>Heslo:</dt>     <dd>{{form.password}}</dd>
+        <dt>Password:</dt>     <dd>{{form.password}}</dd>
         </dl>
         {{form.submit}}
     </form>
     {% if failed %}
-        <p class="fail">Nesprávné uživatelské jméno nebo heslo.
+        <p class="fail">Wrong username or password.
     {% endif %}
 {% endblock %}
 

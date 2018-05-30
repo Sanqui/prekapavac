@@ -19,36 +19,36 @@
                     {% if diff.days < -6 %}
                         {{ datetime(d) }}
                     {% elif diff.days < -2 or (diff.days == -2 and g.tomorrow.day != d.day) %}
-                        {% if   d.weekday() == 0 %} pondělí
-                        {% elif d.weekday() == 1 %} úterý
-                        {% elif d.weekday() == 2 %} středa
-                        {% elif d.weekday() == 3 %} čtvrtek
-                        {% elif d.weekday() == 4 %} pátek
-                        {% elif d.weekday() == 5 %} sobota
-                        {% elif d.weekday() == 6 %} neděle
+                        {% if   d.weekday() == 0 %} monday
+                        {% elif d.weekday() == 1 %} tuesday
+                        {% elif d.weekday() == 2 %} wednesday
+                        {% elif d.weekday() == 3 %} thursday
+                        {% elif d.weekday() == 4 %} friday
+                        {% elif d.weekday() == 5 %} saturday
+                        {% elif d.weekday() == 6 %} sunday
                         {% endif %}
                         {{ datetime(d, "%H:%M")}}
                     {% elif diff.seconds < 60*60*24 and g.tomorrow.day == d.day %}
-                        zítra {{datetime(d,"%H:%M")}}
+                        tomorrow {{datetime(d,"%H:%M")}}
                     {% else %}
-                        dnes {{datetime(d,"%H:%M")}}
+                        today {{datetime(d,"%H:%M")}}
                     {% endif %}
                 {% elif diff.days == 0 %}
-                    {% if   diff.seconds < 10 %}      teď
-                    {% elif diff.seconds < 60 %}      před {{diff.seconds}} vteřinami
-                    {% elif diff.seconds < 120 %}     před minutou
-                    {% elif diff.seconds < 3600 %}    před {{diff.seconds//60}} minutami
-                    {% elif diff.seconds < 7200 %}    před hodinou
+                    {% if   diff.seconds < 10 %}      now
+                    {% elif diff.seconds < 60 %}      {{diff.seconds}} seconds ago
+                    {% elif diff.seconds < 120 %}     a minute ago
+                    {% elif diff.seconds < 3600 %}    {{diff.seconds//60}} minutes ago
+                    {% elif diff.seconds < 7200 %}    an hour ago
                     {% elif diff.seconds < 86400 and g.now.day == d.day %}
-                        před {{diff.seconds//3600}} hodinami
+                        {{diff.seconds//3600}} hours ago
                     {% else %}
-                        včera {{datetime(d,"%H:%M")}}
+                        yesterday {{datetime(d,"%H:%M")}}
                     {% endif %}
                 {% else %}
                     {% if diff.seconds < 86400*2 and g.yesterday.day == d.day and diff.days < 2 %}
-                        včera {{datetime(d,"%H:%M")}}
+                        yesterday {{datetime(d,"%H:%M")}}
                     {% else %}
-                        {{datetime(d,"%d. %m. %Y %H:%M")}}
+                        {{datetime(d,"%Y-%m-%d  %H:%M")}}
                     {% endif %}
                 {% endif %}
             {% endwith %}
@@ -73,7 +73,7 @@
             {% set percentage = round(rated / total * 100) %}
             {% set percentage = 99 if (percentage == 100 and rated != total) else percentage %}
                 {% if not bar_only %}
-                    Máš ohodnoceno: {{ rated }} / {{ total }}
+                    You've rated: {{ rated }} / {{ total }}
                 {% endif %}
                 <div class="progress">
                     <div class="progress-bar" style="width: {{ percentage }}%;">
@@ -82,7 +82,7 @@
                 </div>
                 {% if not bar_only %}
                     {% if rated == total %}
-                        Dobrá práce!
+                        Good job!
                     {% endif %}
                 {% endif %}
             {% endif %}

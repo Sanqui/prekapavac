@@ -1,6 +1,6 @@
 {% extends "_base.html" %}
 
-{% block title %} Poslední změny {% endblock %}
+{% block title %} Recent changes {% endblock %}
 
 {% block content %}
 
@@ -12,12 +12,12 @@
     <table class="table table-condensed">
         <thead>
             <tr>
-                <td>kdy</td>
-                <td>kdo</td>
+                <td>who</td>
+                <td>when</td>
                 <!--<td>projekt</td>-->
-                <td>kategorie</td>
-                <td>termín</td>
-                <td>co</td>
+                <td>category</td>
+                <td>term</td>
+                <td>what</td>
             </tr>
         <tbody>
         {% for change in changes %}
@@ -37,14 +37,14 @@
                 <td class="td-suggestions">
                     {% if type(change) == db.Suggestion %}
                         {% if not change.term.dialogue %}
-                            <span class="glyphicon glyphicon-leaf" title="návrh"></span>
+                            <span class="glyphicon glyphicon-leaf" title="proposal"></span>
                             <!--
                                 <span class="label label-default label-suggestion">návrh</span>
                             -->
                             {{ unrated_icon(change) }}
                             <strong>{{change.text | truncate(100)}}</strong>
                         {% else %}
-                            <span class="glyphicon glyphicon-file" title="revize"></span>
+                            <span class="glyphicon glyphicon-file" title="revision"></span>
                             <!--
                                 <span class="label label-default label-revision">revize</span>
                             -->
@@ -53,7 +53,7 @@
                             <strong>{{change.text | truncate(100)}}</strong>
                         {% endif %}
                     {% elif type(change) == db.Comment %}
-                        <span class="glyphicon glyphicon-comment" title="komentář"></span>
+                        <span class="glyphicon glyphicon-comment" title="comment"></span>
                         <!--
                             <span class="label label-default label-comment">komentář</span>
                         -->
@@ -68,7 +68,7 @@
     </table>
     <center>
         <a href="{{ url_for('recent', sskip=sskip+num_suggestions, cskip=cskip+num_comments) }}" class="btn btn-default">
-            další stránka
+            next page
         </a>
     </center>
 {% endblock %}
