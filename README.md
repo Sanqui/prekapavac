@@ -10,9 +10,7 @@ Here's a quick way to set up Překapávač.
 
 ```
     git clone https://github.com/Sanqui/prekapavac
-    virtualenv --python=python3 env
-    source env/bin/activate
-    pip install -r requirements.txt
+    pipenv shell
     ./download_static.sh
 ```
 
@@ -23,7 +21,8 @@ Open config.py and put the following dev config in:
 
     SECRET_KEY = "SECRET_KEY"
 
-    DEBUG = False
+    PRODUCTION = False
+    DEBUG = True
     TEMPLATES_AUTO_RELOAD = True
 
     SITENAME = "Překapávač DEV"
