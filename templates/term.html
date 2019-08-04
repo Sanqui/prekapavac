@@ -243,7 +243,7 @@
                                 </button>
                         {% endmacro %}
                         <li>{{ ago(suggestion.created) }}
-                        <li>Stav: {{ suggestion.status }}
+                        <li>Stav: {{ suggestion.status.name }}
                         {#
                             <li>quality:
                                 {% set quality = suggestion.quality %}
@@ -261,31 +261,32 @@
                                 </a>
                             </li>
                         {% endif %}
-                        {% if suggestion.status == "approved"
+                        {% set SS = db.SuggestionStatus %}
+                        {% if suggestion.status == SS.approved
                             and suggestion.user == current_user
                             and suggestion.score == 0 %}
                             {{ vote_dropdown_button('withdraw', "Vzít zpět") }}
                         {% endif %}
                         {% if current_user.admin %}
-                            {% if suggestion.status in ("approved", "candidate") %}
+                            {% if suggestion.status in (SS.approved, SS.candidate) %}
                                 {{ vote_dropdown_button('finalize', "Zfinalizovat", "ok-sign") }}
                             {% endif %}
-                            {% if suggestion.status == "approved" %}
+                            {% if suggestion.status == SS.approved %}
                                 {{ vote_dropdown_button('candidate', "Zkandidovat", "record") }}
                             {% endif %}
-                            {% if suggestion.status != "approved" %}
-                                {% if suggestion.status == "final" %}
+                            {% if suggestion.status != SS.approved %}
+                                {% if suggestion.status == SS.final %}
                                     {{ vote_dropdown_button('approve', "Odfinalizovat", "ok") }}
-                                {% elif suggestion.status == "candidate" %}
+                                {% elif suggestion.status == SS.candidate %}
                                     {{ vote_dropdown_button('approve', "Odkandinovat", "ok") }}
                                 {% else %}
                                     {{ vote_dropdown_button('approve', "Svolit", "ok") }}
                                 {% endif %}
                             {% endif %}
-                            {% if suggestion.status != "hidden" %}
+                            {% if suggestion.status != SS.hidden %}
                                 {{ vote_dropdown_button('hide', "Skrýt") }}
                             {% endif %}
-                            {% if suggestion.status != "deleted" %}
+                            {% if suggestion.status != SS.deleted %}
                                 {{ vote_dropdown_button('delete', "Smazat", "remove") }}
                             {% endif %}
                         {% endif %}
@@ -392,18 +393,19 @@
                 {% endif %}
                 <ul class="list-group list-suggestions">
                     {% for suggestion, score in suggestions_w_score %}
-                        <li class="list-group-item suggestion-{{ suggestion.status }}"
+                        <li class="list-group-item suggestion-{{ suggestion.status.name }}"
                           id="suggestion-{{suggestion.id}}">
                             {{ suggestion_controls(suggestion) }}
-                            {% set suggestion_labels = {"candidate": "kandidát",
-                                                        "final": "finální",
-                                                        "withdrawn": "vzán zpět",
-                                                        "hidden": "skryt",
-                                                        "deleted": "smazán",
-                                                        "new": "nový"} %}
+                            {% set SS = db.SuggestionStatus %}
+                            {% set suggestion_labels = {SS.candidate: "kandidát",
+                                                        SS.final: "finální",
+                                                        SS.withdrawn: "vzán zpět",
+                                                        SS.hidden: "skryt",
+                                                        SS.deleted: "smazán",
+                                                        SS.new: "nový"} %}
                             {% if suggestion.status in suggestion_labels.keys() %}
                                 <div class="suggestion-status">
-                                    <span class="badge badge-status-{{suggestion.status}}">
+                                    <span class="badge badge-status-{{suggestion.status.name}}">
                                         {{ suggestion_labels[suggestion.status] }}
                                     </span>
                                 </div>

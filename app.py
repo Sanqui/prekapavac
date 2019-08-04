@@ -170,7 +170,8 @@ def term(project_identifier, category_identifier, term_identifier):
             if db.session.query(db.Suggestion).filter(
                 db.Suggestion.text == suggestion_text,
                 db.Suggestion.term == term,
-                (db.Suggestion.status == "approved")).all():
+                (db.Suggestion.status == db.SuggestionStatus.approved) \
+                or (db.Suggestion.status == db.SuggestionStatus.final) ).all():
                 # TODO this should check for "final" as well, but
                 # for some reason adding `or (db.Suggestion.status == "final")`
                 # doesn't cut it
@@ -180,7 +181,7 @@ def term(project_identifier, category_identifier, term_identifier):
                     created=datetime.now(), changed=datetime.now(),
                     text=suggestion_text,
                     description=suggestion_form.description.data if suggestion_form.description else None,
-                    status="approved")
+                    status=db.SuggestionStatus.approved)
                 if term.dialogue:
                     if term.latest_revision and term.latest_revision.revision:
                         suggestion.revision = term.latest_revision.revision + 1
@@ -216,10 +217,14 @@ def recent():
     skip_suggestions = int(skip_suggestions)
     skip_comments = int(skip_comments)
     
-    suggestions = db.session.query(db.Suggestion).filter(db.Suggestion.status == "approved").order_by(db.Suggestion.created.desc()).offset(skip_suggestions).limit(100).all()
-    comments = db.session.query(db.Comment).filter(db.Comment.deleted == False).order_by(db.Comment.created.desc()).offset(skip_comments).limit(100).all()
+    suggestions = db.session.query(db.Suggestion) \
+        .filter(db.Suggestion.created != None) \
+        .order_by(db.Suggestion.created.desc()).offset(skip_suggestions).limit(100).all()
+    comments = db.session.query(db.Comment) \
+        .filter(db.Comment.deleted == False, db.Comment.created != None) \
+        .order_by(db.Comment.created.desc()).offset(skip_comments).limit(100).all()
     
-    changes = [c for c in suggestions + comments if c.created]
+    changes = [c for c in suggestions + comments]
     changes.sort(key=lambda x: x.created, reverse=True)
     changes = changes[0:100]
     
@@ -292,11 +297,11 @@ def suggestion():
     if suggestion.term.locked: abort(403)
     action = request.form['action']
     ALLOWED_ACTIONS = {
-        "delete": "deleted",
-        "approve": "approved",
-        "hide": "hidden",
-        "candidate": "candidate",
-        "finalize": "final"
+        "delete": db.SuggestionStatus.deleted,
+        "approve": db.SuggestionStatus.approved,
+        "hide": db.SuggestionStatus.hidden,
+        "candidate": db.SuggestionStatus.candidate,
+        "finalize": db.SuggestionStatus.final
     }
     EXCLUSIVE_ACTIONS = ("finalize",)
     EXCLUSIVE_STATUSES = ("final",)
@@ -306,14 +311,14 @@ def suggestion():
                 # We need to make sure there's no other final
                 for s in suggestion.term.suggestions:
                     if s.status in EXCLUSIVE_STATUSES:
-                        s.status = "approved"
+                        s.status = db.SuggestionStatus.approved
                         
             suggestion.status = ALLOWED_ACTIONS[action]
         else:
             abort(403)
     elif action == 'withdraw' and suggestion.user == current_user:
         if suggestion.score == 0:
-            suggestion.status = 'withdrawn'
+            suggestion.status = db.SuggestionStatus.withdrawn
             flash("Návrh vzán zpět.", 'success')
         else:
             flash("Návrh lze vzít zpět pouze dokud má nulové skóre.", 'danger')

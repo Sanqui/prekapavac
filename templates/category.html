@@ -65,7 +65,7 @@
                                 {% if not term.dialogue %}
                                     <ul class="suggestions">
                                         {% for suggestion, score in term.suggestions_w_score %}
-                                            <li class="suggestion-{{suggestion.status}}">
+                                            <li class="suggestion-{{suggestion.status.name}}">
                                                 {{ unrated_icon(suggestion) }}
                                                 {{ suggestion.text }}
                                         {% endfor %}

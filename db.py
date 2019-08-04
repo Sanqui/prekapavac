@@ -1,9 +1,10 @@
 from datetime import datetime
 import math
+import enum
 
 from unidecode import unidecode
 
-from sqlalchemy import create_engine, func, and_, or_, case
+from sqlalchemy import create_engine, func, and_, or_, case, text
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import scoped_session, sessionmaker, relationship, backref
 from sqlalchemy.schema import Column, ForeignKey, Table
@@ -249,6 +250,11 @@ class Category(Base, WithIdentifier):
         else:
             return "???" + '/' + self.identifier
 
+class ReferenceType(enum.Enum):
+    mention = 1
+    speaker = 2
+    location = 3
+    context = 4
 
 class Reference(Base):
     __tablename__ = 'references'
@@ -257,7 +263,7 @@ class Reference(Base):
     term0_id = Column(Integer, ForeignKey('terms.id'))
     term1_id = Column(Integer, ForeignKey('terms.id'))
     
-    type = Column(Enum("mention", "speaker", "location", "context"))
+    type = Column(Enum(ReferenceType, name="reference_type"))
     
     valid = Column(Boolean, default=True, nullable=False)
     
@@ -291,9 +297,9 @@ class Term(Base, WithIdentifier):
     
     def references_of_type(self, of_type=None):
         if of_type == None:
-            of_type = or_(Reference.type == "reference", Reference.type == None)
+            of_type = or_(Reference.type == ReferenceType.reference, Reference.type == None)
         else:
-            of_type = (Reference.type == of_type)
+            of_type = (Reference.type == getattr(ReferenceType, of_type))
         return session.query(Reference).filter( \
             Reference.term0_id == self.id, Reference.valid == True,
             of_type) \
@@ -305,9 +311,9 @@ class Term(Base, WithIdentifier):
             
     def referenced_of_type(self, of_type=None):
         if of_type == None:
-            of_type = or_(Reference.type == "reference", Reference.type == None)
+            of_type = or_(Reference.type == ReferenceType.reference, Reference.type == None)
         else:
-            of_type = (Reference.type == of_type)
+            of_type = (Reference.type == getattr(ReferenceType, of_type))
         return session.query(Reference).filter( \
             Reference.term1_id == self.id, Reference.valid == True,
             of_type) \
@@ -325,7 +331,7 @@ class Term(Base, WithIdentifier):
             Suggestion.HAS_GOOD_STATUS if has_good else "") \
             .outerjoin(Vote).group_by(Suggestion) \
             .order_by(case(value=Suggestion.status, whens=Suggestion.STATUS_ORDERING).desc(),
-            'score DESC').all()
+            text('score DESC')).all()
     
     @property
     def suggestions_w_score(self):
@@ -340,7 +346,7 @@ class Term(Base, WithIdentifier):
         return session.query(Suggestion, func.sum(Vote.vote).label('score')) \
             .filter(Suggestion.term==self, \
             Suggestion.HAS_GOOD_STATUS) \
-            .outerjoin(Vote).group_by(Suggestion).order_by('revision DESC')
+            .outerjoin(Vote).group_by(Suggestion).order_by(text('revision DESC'))
     
     @property
     def final_suggestion(self):
@@ -352,7 +358,7 @@ class Term(Base, WithIdentifier):
     def latest_revision(self):
         rev = session.query(Suggestion) \
             .filter(Suggestion.term==self) \
-            .outerjoin(Vote).group_by(Suggestion).order_by('revision DESC').first()
+            .outerjoin(Vote).group_by(Suggestion).order_by(text('revision DESC')).first()
         return rev
     
     @property
@@ -410,6 +416,15 @@ class Term(Base, WithIdentifier):
             category_identifier=self.category.identifier,
             term_identifier=self.identifier)
     
+class SuggestionStatus(enum.Enum):
+    new = 1
+    denied = 2
+    approved = 3
+    withdrawn = 4
+    final = 5
+    hidden = 6
+    deleted = 7
+    candidate = 8
 
 class Suggestion(Base):
     __tablename__ = 'suggestions'
@@ -417,7 +432,7 @@ class Suggestion(Base):
     id = Column(Integer, primary_key=True, nullable=False)
     text = Column(Text)
     description = Column(Text, default='')
-    status = Column(Enum("new", "denied", "approved", "withdrawn", "final", "hidden", "deleted", "candidate"))
+    status = Column(Enum(SuggestionStatus, name="suggestion_status"))
     revision = Column(Integer)
     
     created = Column(DateTime)
@@ -429,13 +444,17 @@ class Suggestion(Base):
     term = relationship("Term", backref='suggestions')
     user = relationship("User", backref='suggestions')
     
-    GOOD_STATUSES = ["approved", "candidate", "final"]
-    HAS_GOOD_STATUS = or_(status == "approved",
-        status == "candidate",
-        status == "final")
+    GOOD_STATUSES = [SuggestionStatus.approved, SuggestionStatus.candidate, SuggestionStatus.final]
+    HAS_GOOD_STATUS = or_(status == SuggestionStatus.approved,
+        status == SuggestionStatus.candidate,
+        status == SuggestionStatus.final)
     STATUS_ORDERING = {
-        "deleted": 0, "hidden": 1, "withdrawn": 1, "denied": 1, "approved": 2, "new": 2,
-        "candidate": 3, "final": 4
+        'deleted': 0, 
+        'hidden': 1, 'withdrawn': 1,
+        'denied': 1,
+        'approved': 2, 'new': 2,
+        'candidate': 3,
+        'final': 4
     }
     
     @property
@@ -544,7 +563,7 @@ class Outlink(Base):
     label = Column(String(255))
     url = Column(String(255))
     category_id = Column(Integer, ForeignKey('categories.id'))
-    type = Column(Enum("link", "image", "icon"))
+    type = Column(Enum("link", "image", "icon", name="outlink_type"))
     
     category = relationship("Category", backref='outlinks')
     

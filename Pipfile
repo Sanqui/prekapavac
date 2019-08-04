@@ -14,6 +14,8 @@ diffhtml = "*"
 unidecode = "*"
 flask-sqlalchemy = "*"
 flask-bcrypt = "*"
+psycopg2 = "*"
+gunicorn = "*"
 
 [dev-packages]
 
