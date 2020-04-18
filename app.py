@@ -190,7 +190,7 @@ def term(project_identifier, category_identifier, term_identifier):
                 
                 db.session.add(suggestion)
                 db.session.commit()
-                return redirect(term)
+                return redirect(term.url)
         else:
             if term.dialogue and term.latest_revision:
                 suggestion_form.text.data = term.latest_revision.text
@@ -202,7 +202,7 @@ def term(project_identifier, category_identifier, term_identifier):
             
             db.session.add(comment)
             db.session.commit()
-            return redirect(term)
+            return redirect(term.url)
 
     
     return render_template("term.html", project=project, category=category, term=term,
