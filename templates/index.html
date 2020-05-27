@@ -34,7 +34,7 @@
                                         {%- if not loop.last %}, {% endif -%}
                                     {% endfor -%}
                                     ... celkem <strong>{{ category.terms|length }}</strong>
-                                    {% if category.mostly_dialogue %}
+                                    {% if category.mainly_dialogue %}
                                         dialogů
                                     {% else %}
                                         termínů

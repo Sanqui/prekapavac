@@ -213,8 +213,9 @@
                 {{ unrated_icon(suggestion) }}
                 <input type="hidden" name="suggestion_id" value="{{ suggestion.id }}">
                 <div class="btn-group">
+                    {% set our_vote = vote_from_for(current_user, suggestion) %}
                     {% macro vote_button(vote, icon) %}
-                        <button type="submit" name="vote" value="{{ vote }}" class="btn btn-default {% if vote_from_for(current_user, suggestion).vote == vote %}active{% endif %}" id="suggestion-{{suggestion.id}}-vote-{{vote}}">
+                        <button type="submit" name="vote" value="{{ vote }}" class="btn btn-default {% if our_vote  and our_vote.vote == vote %}active{% endif %}" id="suggestion-{{suggestion.id}}-vote-{{vote}}">
                             <span class="glyphicon glyphicon-{{icon}}"></span>
                         </button>
                     {% endmacro %}
@@ -233,7 +234,7 @@
                         <span class="glyphicon glyphicon-option-vertical"></span>
                     </button>
                     <ul class="dropdown-menu">
-                        {% macro vote_dropdown_button(action, text, icon) %}
+                        {% macro vote_dropdown_button(action, text, icon=None) %}
                             <li>
                                 <button type="submit" name="action" value="{{action}}" class="btn btn-default btn-block btn-xs">
                                     {% if icon %}

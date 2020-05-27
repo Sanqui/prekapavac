@@ -7,7 +7,7 @@
         (current_user.is_authenticated and not g.db.Vote.from_for(current_user, suggestion)) %}
         <span class="glyphicon
             {{ "glyphicon-hand-right" if not left else "glyphicon-hand-left" }}
-        vote-sign" id="unrated-icon-{{ suggestion.id }}"></span>
+        vote-sign" {% if suggestion != True %}id="unrated-icon-{{ suggestion.id }}"{% endif %}></span>
     {% endif %}
 {% endmacro %}
 
@@ -111,6 +111,6 @@
     {%- endif -%}
 {%- endmacro %}
 
-{% macro glyphicon(name, title) -%}
+{% macro glyphicon(name, title=None) -%}
     <span class='glyphicon glyphicon-{{name}}' title='{{title}}'></span>
 {%- endmacro %}

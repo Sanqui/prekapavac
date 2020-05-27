@@ -11,6 +11,7 @@ from flask_login import LoginManager, login_required, login_user, logout_user, c
 
 from flask_debugtoolbar import DebugToolbarExtension
 
+import jinja2
 from flaskext.markdown import Markdown
 
 from wtforms import Form, BooleanField, TextField, TextAreaField, PasswordField, RadioField, SelectField, SelectMultipleField, BooleanField, IntegerField, HiddenField, SubmitField, validators, ValidationError, widgets
@@ -22,6 +23,7 @@ import db
 app = Flask('translator')
 app.config.from_pyfile("config.py")
 app.config['SQLALCHEMY_DATABASE_URI'] = app.config['DATABASE']
+app.jinja_env.undefined = jinja2.StrictUndefined
 db.db.init_app(app)
 Markdown(app)
 
@@ -73,6 +75,13 @@ def before_request():
         if current_user.active == False:
             logout_user()
             flash("Byli jste odhlášeni protože váš účet byl deaktivován.")
+    
+    # flask-admin sucks
+    print(request.path)
+    if request.path.startswith('/admin'):
+        app.jinja_env.undefined = jinja2.Undefined
+    else:
+        app.jinja_env.undefined = jinja2.StrictUndefined
 
 @app.teardown_request
 def shutdown_session(exception=None):
@@ -103,17 +112,17 @@ def category(project_identifier, category_identifier):
         terms=terms)
 
 class SuggestionForm(Form):
-    text = TextField('Návrh', required=True)
+    text = TextField('Návrh', [validators.DataRequired()])
     description = TextField('Popis')
     submit = SubmitField('Přidat návrh')
 
 class RevisionForm(Form):
-    text = TextAreaField('Revize', required=True)
+    text = TextAreaField('Revize', [validators.DataRequired()])
     description = None
     submit = SubmitField('Přidat revizi')
     
 class CommentForm(Form):
-    comment_text = TextAreaField('Komentář', required=True)
+    comment_text = TextAreaField('Komentář', [validators.DataRequired()])
     submit = SubmitField('Přidat komentář')
 
 @app.route("/<project_identifier>/<category_identifier>/<term_identifier>/",
@@ -329,8 +338,8 @@ def suggestion():
     return redirect(suggestion.url)
 
 class LoginForm(Form):
-    username = TextField('Username', required=True)
-    password = PasswordField('Heslo', required=True)
+    username = TextField('Username', [validators.DataRequired()])
+    password = PasswordField('Heslo', [validators.DataRequired()])
     submit = SubmitField('Přihlásit se')
 
 @app.route("/login", methods="GET POST".split())
@@ -355,14 +364,14 @@ def login():
     return render_template("login.html", form=form, failed=failed)
 
 class RegisterForm(Form):
-    username = TextField('Username', required=True)
+    username = TextField('Username', [validators.DataRequired()])
     password = PasswordField('Heslo', [
         validators.DataRequired(),
         validators.EqualTo('confirm_password', message='Hesla se musí shodovat')
     ])
-    confirm_password = PasswordField('Heslo znovu', required=True)
-    email = TextField('Email', required=True)
-    key = TextField('Klíč', required=True)
+    confirm_password = PasswordField('Heslo znovu', [validators.DataRequired()])
+    email = TextField('Email', [validators.DataRequired()])
+    key = TextField('Klíč', [validators.DataRequired()])
     submit = SubmitField('Zaregistrovat se')
 
 @app.route("/register", methods="GET POST".split())
@@ -405,7 +414,7 @@ def logout():
 
 def create_admin():
     admin = Admin(app)
-    
+
     class RestrictedModelView(ModelView):
         def is_accessible(self):
             return current_user.is_authenticated and current_user.admin
