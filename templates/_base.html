@@ -52,7 +52,7 @@ with context -%}
     <div class="container-fluid" role="main">
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% for category, message in messages %}
-                <div class="alert alert-{{message.category or 'info'}}" role="alert">
+                <div class="alert alert-{{category or 'info'}}" role="alert">
                     {{ message }}
                 </div>
             {% endfor %}

@@ -77,7 +77,6 @@ def before_request():
             flash("Byli jste odhlášeni protože váš účet byl deaktivován.")
     
     # flask-admin sucks
-    print(request.path)
     if request.path.startswith('/admin'):
         app.jinja_env.undefined = jinja2.Undefined
     else:
@@ -422,7 +421,21 @@ def create_admin():
         def inaccessible_callback(self, name, **kwargs):
             return redirect(url_for('login', next=request.url))
     
-    for table in (db.User, db.Project, db.Category, db.Term, db.Reference, db.Suggestion, db.Comment, db.Outlink):
+    class UserView(RestrictedModelView):
+        form_excluded_fields = ['password']
+        form_extra_fields = {
+            'new_password': TextField('New password')
+        }
+
+        def on_model_change(self, form, model, is_created):
+            if form.new_password.data:
+                model.set_password(form.new_password.data)
+
+
+    
+    admin.add_view(UserView(db.User, db.session))
+
+    for table in (db.Project, db.Category, db.Term, db.Reference, db.Suggestion, db.Comment, db.Outlink):
         admin.add_view(RestrictedModelView(table, db.session))
 
 
