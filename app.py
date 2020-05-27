@@ -103,17 +103,17 @@ def category(project_identifier, category_identifier):
         terms=terms)
 
 class SuggestionForm(Form):
-    text = TextField('Návrh', [validators.required()])
+    text = TextField('Návrh', required=True)
     description = TextField('Popis')
     submit = SubmitField('Přidat návrh')
 
 class RevisionForm(Form):
-    text = TextAreaField('Revize', [validators.required()])
+    text = TextAreaField('Revize', required=True)
     description = None
     submit = SubmitField('Přidat revizi')
     
 class CommentForm(Form):
-    comment_text = TextAreaField('Komentář', [validators.required()])
+    comment_text = TextAreaField('Komentář', required=True)
     submit = SubmitField('Přidat komentář')
 
 @app.route("/<project_identifier>/<category_identifier>/<term_identifier>/",
@@ -329,8 +329,8 @@ def suggestion():
     return redirect(suggestion.url)
 
 class LoginForm(Form):
-    username = TextField('Username', [validators.required()])
-    password = PasswordField('Heslo', [validators.required()])
+    username = TextField('Username', required=True)
+    password = PasswordField('Heslo', required=True)
     submit = SubmitField('Přihlásit se')
 
 @app.route("/login", methods="GET POST".split())
@@ -355,14 +355,14 @@ def login():
     return render_template("login.html", form=form, failed=failed)
 
 class RegisterForm(Form):
-    username = TextField('Username', [validators.required()])
+    username = TextField('Username', required=True)
     password = PasswordField('Heslo', [
-        validators.Required(),
+        validators.DataRequired(),
         validators.EqualTo('confirm_password', message='Hesla se musí shodovat')
     ])
-    confirm_password = PasswordField('Heslo znovu', [validators.required()])
-    email = TextField('Email', [validators.required()])
-    key = TextField('Klíč', [validators.required()])
+    confirm_password = PasswordField('Heslo znovu', required=True)
+    email = TextField('Email', required=True)
+    key = TextField('Klíč', required=True)
     submit = SubmitField('Zaregistrovat se')
 
 @app.route("/register", methods="GET POST".split())

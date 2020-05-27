@@ -14,10 +14,11 @@ diffhtml = "*"
 unidecode = "*"
 flask-sqlalchemy = "*"
 flask-bcrypt = "*"
-psycopg2 = "*"
+psycopg2-binary = "*"
 gunicorn = "*"
 
 [dev-packages]
+pylint = "*"
 
 [requires]
-python_version = "3.6"
+python_version = "3.8"
