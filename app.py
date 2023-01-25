@@ -444,4 +444,4 @@ create_admin()
 if __name__ == "__main__":
     app.debug = True
     toolbar = DebugToolbarExtension(app)
-    app.run(host="", port=8004, debug=True, threaded=True)
+    app.run(host="0.0.0.0", port=8004, debug=True, threaded=True)

@@ -13,7 +13,7 @@
         {% if category.hidden %}
             <span class="badge badge-default">skrytá kategorie</span>
         {% endif %}
-        {% if current_user.admin %}
+        {% if current_user.is_authenticated and current_user.admin %}
             <a href="{{url_for('category.edit_view', id=category.id, url=category.url)}}" class="btn btn-default btn-sm">
                 <span class="glyphicon glyphicon-edit"></span>
             </a>

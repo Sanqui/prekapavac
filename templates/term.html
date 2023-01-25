@@ -61,7 +61,7 @@
                         <td>{{ term.label or "(None)" }}</td>
                     </tr>
                 {% endif %}
-                {% if current_user.admin %}
+                {% if current_user.is_authenticated and current_user.admin %}
                     <tr>
                         <td colspan="2">
                             <div class="row">

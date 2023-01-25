@@ -251,7 +251,7 @@ class Category(Base, WithIdentifier):
             return "???" + '/' + self.identifier
 
 class ReferenceType(enum.Enum):
-    reference = 0
+    #reference = 0
     mention = 1
     speaker = 2
     location = 3
