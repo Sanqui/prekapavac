@@ -426,7 +426,7 @@ def create_admin():
             return redirect(url_for('login', next=request.url))
     
     class UserView(RestrictedModelView):
-        form_excluded_fields = ['password']
+        form_excluded_columns = ['password', 'suggestions', 'comments', 'votes']
         form_extra_fields = {
             'new_password': TextField('New password')
         }
