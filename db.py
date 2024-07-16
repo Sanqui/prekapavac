@@ -355,7 +355,7 @@ class Term(Base, WithIdentifier):
         return session.query(Suggestion, func.sum(Vote.vote).label('score')) \
             .filter(Suggestion.term==self, \
             Suggestion.HAS_GOOD_STATUS) \
-            .outerjoin(Vote).group_by(Suggestion).order_by(Suggestion.revision.desc(), Suggestion.created.desc(), Suggestion.id.desc())
+            .outerjoin(Vote).group_by(Suggestion).order_by(Suggestion.revision.desc(), Suggestion.created.desc())
     
     @property
     def final_suggestion(self):
@@ -494,7 +494,8 @@ class Suggestion(Base):
     
     @property
     def conflicts(self):
-        return session.query(Suggestion).filter(
+        return session.query(Suggestion).join(Term).join(Category).filter(
+            Category.project == self.term.category.project,
             Suggestion.id != self.id,
             Suggestion.text == self.text,
             Suggestion.HAS_GOOD_STATUS
