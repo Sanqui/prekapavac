@@ -93,7 +93,7 @@ class User(Base):
             raise ValueError("unknown password format")
     
     def set_password(self, password):
-        self.password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+        self.password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
     
     @property
     def is_authenticated(self): return True

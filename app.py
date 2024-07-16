@@ -350,10 +350,14 @@ def login():
     form = LoginForm(request.form)
     failed = False
     if request.method == 'POST' and form.validate():
-        user = db.session.query(db.User).filter(db.User.username == form.username.data.lower()).scalar()
+        user: db.User = db.session.query(db.User).filter(db.User.username == form.username.data.lower()).scalar()
         if not user: failed = True
         else:
-            password_matches = user.verify_password(form.password.data)
+            try:
+                password_matches = user.verify_password(form.password.data)
+            except ValueError:
+                flash("Vaše heslo je v nesprávném formátu, požádajete prosím Sankyho o opravu.", 'error')
+                return redirect(url_for('index'))
             if password_matches:
                 if user.active:
                     login_user(user, remember=True)
