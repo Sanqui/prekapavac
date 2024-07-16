@@ -1,3 +1,4 @@
+import typing
 from sqlalchemy import or_, and_, not_, asc, desc, func
 from sqlalchemy.orm.exc import MultipleResultsFound
 from datetime import datetime, timedelta
@@ -412,6 +413,35 @@ def register():
         flash_errors(form)
     
     return render_template("register.html", form=form)
+
+@app.route("/generate/ladx")
+def generate_ladx():
+    terms: typing.List[db.Term] = db.session.query(db.Term).join(db.Category, db.Project)\
+        .filter(
+            db.Project.identifier == "ladx",
+            db.Term.dialogue == True
+        )\
+        .order_by(db.Term.number)\
+        .all()
+    
+    out = ""
+    for term in terms:
+        suggestion = term.latest_revision
+        out += f"Dialog{term.number:03X}::\n"
+        if suggestion:
+            text = suggestion.text
+        else:
+            text = term.text_en
+
+        # remove all newlines from text
+        text = text.replace("\r", " ").replace("\n", " ")
+
+        out += f"db \"{text}@\"\n"
+        out += "\n"
+    
+    response = make_response(out)
+    response.mimetype = "text/plain"
+    return response
 
 @app.route("/logout")
 @login_required
