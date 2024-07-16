@@ -255,7 +255,7 @@ def recent():
 
 @app.route("/users")
 def users():
-    users = db.session.query(db.User).filter(db.User.active == True).all()
+    users = db.session.query(db.User).filter(db.User.active == True).order_by(db.User.id).all()
     projects = db.session.query(db.Project).order_by(db.Project.position.asc()).all()
     
     return render_template("users.html", users=users, projects=projects)
