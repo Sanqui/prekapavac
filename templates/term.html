@@ -349,7 +349,7 @@
                         <div class="panel-heading">
                             <h3 class="panel-title">
                                 Přidat revizi
-                                {% if term.latest_revision.revision %}
+                                {% if term.latest_revision and term.latest_revision.revision %}
                                     #{{term.latest_revision.revision + 1}}
                                 {% else %}
                                     #1
@@ -450,7 +450,7 @@
                                             <span class=\"glyphicon placeholder\">*</span>
                                         ".strip()|safe) -}}
                                     </div>
-                                    {% if loop.nextitem %}
+                                    {% if not loop.last %}
                                         <div class=" diff dialogue-suggestion-diff" id="suggestion-{{suggestion.id}}-diff">
                                             {{ "<br>".join(diffhtml.ndiff(loop.nextitem[0].text.splitlines(), suggestion.text.splitlines(), cutoff=0.1)) | safe }}
                                         </div>

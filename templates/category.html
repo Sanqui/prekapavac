@@ -71,7 +71,13 @@
                                         {% endfor %}
                                     </li>
                                 {% else %}
-                                    <span>{{ term.latest_revision.text }}</span>
+                                    <span>
+                                        {% if term.latest_revision %}
+                                            {{ term.latest_revision.text }}
+                                        {% else %}
+                                            
+                                        {% endif %}
+                                    </span>
                                 {% endif %}
                             {% endif %}
                         </td>

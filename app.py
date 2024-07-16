@@ -30,6 +30,7 @@ Markdown(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = "login"
+login_manager.anonymous_user = db.AnonymousUser
 
 @app.context_processor
 def new_template_globals():
@@ -191,8 +192,11 @@ def term(project_identifier, category_identifier, term_identifier):
                     description=suggestion_form.description.data if suggestion_form.description else None,
                     status=db.SuggestionStatus.approved)
                 if term.dialogue:
-                    if term.latest_revision and term.latest_revision.revision:
-                        suggestion.revision = term.latest_revision.revision + 1
+                    if term.latest_revision:
+                        if term.latest_revision.revision is None:
+                            suggestion.revision = 2
+                        else:
+                            suggestion.revision = term.latest_revision.revision + 1
                     else:
                         suggestion.revision = 1
                 

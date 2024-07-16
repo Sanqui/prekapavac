@@ -39,6 +39,14 @@ class WithIdentifier():
     def from_identifier(cls, identifier, **params):
         return session.query(cls).filter(cls.identifier==identifier).filter_by(**params).scalar()
 
+class AnonymousUser():
+    is_authenticated = False
+    is_active = False
+    is_anonymous = False
+    admin = False
+    active = False
+
+
 class User(Base):
     __tablename__ = 'users'
     
@@ -298,7 +306,7 @@ class Term(Base, WithIdentifier):
     
     def references_of_type(self, of_type=None):
         if of_type == None:
-            of_type = or_(Reference.type == ReferenceType.reference, Reference.type == None)
+            of_type = or_(Reference.type == None)
         else:
             of_type = (Reference.type == getattr(ReferenceType, of_type))
         return session.query(Reference).filter( \
@@ -312,7 +320,7 @@ class Term(Base, WithIdentifier):
             
     def referenced_of_type(self, of_type=None):
         if of_type == None:
-            of_type = or_(Reference.type == ReferenceType.reference, Reference.type == None)
+            of_type = or_(Reference.type == None)
         else:
             of_type = (Reference.type == getattr(ReferenceType, of_type))
         return session.query(Reference).filter( \
@@ -347,7 +355,7 @@ class Term(Base, WithIdentifier):
         return session.query(Suggestion, func.sum(Vote.vote).label('score')) \
             .filter(Suggestion.term==self, \
             Suggestion.HAS_GOOD_STATUS) \
-            .outerjoin(Vote).group_by(Suggestion).order_by(text('revision DESC'))
+            .outerjoin(Vote).group_by(Suggestion).order_by(Suggestion.revision.desc(), Suggestion.created.desc())
     
     @property
     def final_suggestion(self):
@@ -359,7 +367,7 @@ class Term(Base, WithIdentifier):
     def latest_revision(self):
         rev = session.query(Suggestion) \
             .filter(Suggestion.term==self) \
-            .outerjoin(Vote).group_by(Suggestion).order_by(text('revision DESC')).first()
+            .outerjoin(Vote).group_by(Suggestion).order_by(Suggestion.revision.desc(), Suggestion.created.desc()).first()
         return rev
     
     @property
@@ -518,7 +526,10 @@ class Suggestion(Base):
         return self.term.url
     
     def __str__(self):
-        return "from {}, suggestion {}".format(self.user, self.text)
+        if self.term.dialogue:
+            return "from {}, revision #{}".format(self.user, self.revision)
+        else:
+            return "from {}, suggestion {}".format(self.user, self.text)
 
 class Comment(Base):
     __tablename__ = 'comments'
