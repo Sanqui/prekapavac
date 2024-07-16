@@ -355,7 +355,7 @@ class Term(Base, WithIdentifier):
         return session.query(Suggestion, func.sum(Vote.vote).label('score')) \
             .filter(Suggestion.term==self, \
             Suggestion.HAS_GOOD_STATUS) \
-            .outerjoin(Vote).group_by(Suggestion).order_by(Suggestion.revision.desc(), Suggestion.created.desc())
+            .outerjoin(Vote).group_by(Suggestion).order_by(Suggestion.revision.desc(), Suggestion.created.desc(), Suggestion.id.desc())
     
     @property
     def final_suggestion(self):

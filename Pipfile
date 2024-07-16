@@ -16,6 +16,7 @@ flask-sqlalchemy = "*"
 flask-bcrypt = "*"
 psycopg2-binary = "*"
 gunicorn = "*"
+tqdm = "*"
 
 [dev-packages]
 pylint = "*"
