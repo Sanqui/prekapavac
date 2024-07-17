@@ -1,3 +1,4 @@
+import textwrap
 import typing
 from sqlalchemy import or_, and_, not_, asc, desc, func
 from sqlalchemy.orm.exc import MultipleResultsFound
@@ -433,10 +434,12 @@ def generate_ladx():
         else:
             text = term.text_en
 
-        # remove all newlines from text
-        text = text.replace("\r", " ").replace("\n", " ")
-
-        out += f"db \"{text}@\"\n"
+        LINE_LENGTH = 16
+        wrapped = textwrap.wrap(text, width=LINE_LENGTH)
+        last = wrapped.pop()
+        for line in wrapped:
+            out += f"    db \"{line.ljust(LINE_LENGTH)}\"\n"
+        out += f"    db \"{last}@\"\n"
         out += "\n"
     
     response = make_response(out)
