@@ -413,7 +413,7 @@ def register():
     else:
         flash_errors(form)
     
-    return render_template("register.html", form=form)
+    return render_template("register.html", form=form, failed=failed)
 
 @app.route("/generate/ladx")
 def generate_ladx():
