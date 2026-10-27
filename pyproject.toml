@@ -4,23 +4,23 @@ version = "0.0.0"
 description = "Collaborative translation of terminology"
 readme = "README.md"
 license = "ISC"
-requires-python = ">=3.8"
+requires-python = ">=3.13"
 dependencies = [
-    "bcrypt<4",
+    "bcrypt",
     "diffhtml",
-    "flask<2",
-    "flask-admin<1.6",
-    "flask-bcrypt<0.8",
-    "flask-debugtoolbar<0.12",
-    "flask-login<0.6",
-    "flask-markdown",
-    "flask-sqlalchemy<3",
+    "flask",
+    "flask-admin",
+    "flask-bcrypt",
+    "flask-debugtoolbar",
+    "flask-login",
+    "flask-sqlalchemy",
     "gunicorn",
-    "psycopg2-binary<3",
-    "sqlalchemy<1.4",
+    "markdown",
+    "psycopg2-binary",
+    "sqlalchemy",
     "tqdm",
-    "unidecode<2",
-    "wtforms<3",
+    "unidecode",
+    "wtforms",
 ]
 
 [dependency-groups]
@@ -28,6 +28,3 @@ dev = [
     "pylint",
 ]
 
-[tool.uv]
-# Jinja2 2.x (required by Flask 1.x) uses markupsafe.soft_unicode, removed in MarkupSafe 2.1
-constraint-dependencies = ["markupsafe<2.1"]

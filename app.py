@@ -1,3 +1,4 @@
+import os
 import textwrap
 import typing
 from sqlalchemy import or_, and_, not_, asc, desc, func
@@ -14,20 +15,26 @@ from flask_login import LoginManager, login_required, login_user, logout_user, c
 from flask_debugtoolbar import DebugToolbarExtension
 
 import jinja2
-from flaskext.markdown import Markdown
+import markdown
+from markupsafe import Markup
 
-from wtforms import Form, BooleanField, TextField, TextAreaField, PasswordField, RadioField, SelectField, SelectMultipleField, BooleanField, IntegerField, HiddenField, SubmitField, validators, ValidationError, widgets
+from wtforms import Form, BooleanField, StringField, TextAreaField, PasswordField, RadioField, SelectField, SelectMultipleField, BooleanField, IntegerField, HiddenField, SubmitField, validators, ValidationError, widgets
 
 import diffhtml
 
 import db
 
-app = Flask('translator')
+# flask-sqlalchemy resolves relative sqlite paths against the instance path;
+# keep them relative to the working directory
+app = Flask('translator', instance_path=os.getcwd())
 app.config.from_pyfile("config.py")
 app.config['SQLALCHEMY_DATABASE_URI'] = app.config['DATABASE']
 app.jinja_env.undefined = jinja2.StrictUndefined
 db.db.init_app(app)
-Markdown(app)
+
+@app.template_filter('markdown')
+def markdown_filter(text):
+    return Markup(markdown.markdown(text))
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -92,7 +99,7 @@ def shutdown_session(exception=None):
 
 @login_manager.user_loader
 def load_user(user_id):
-    return db.session.query(db.User).get(user_id)
+    return db.session.get(db.User, user_id)
 
 @app.route("/")
 def index():
@@ -114,8 +121,8 @@ def category(project_identifier, category_identifier):
         terms=terms)
 
 class SuggestionForm(Form):
-    text = TextField('Návrh', [validators.DataRequired()])
-    description = TextField('Popis')
+    text = StringField('Návrh', [validators.DataRequired()])
+    description = StringField('Popis')
     submit = SubmitField('Přidat návrh')
 
 class RevisionForm(Form):
@@ -265,7 +272,7 @@ def users():
 @app.route("/vote", methods=["POST"])
 @login_required
 def vote():
-    suggestion = db.session.query(db.Suggestion).get(request.form['suggestion_id'])
+    suggestion = db.session.get(db.Suggestion, request.form['suggestion_id'])
     if not suggestion: abort(404)
     if suggestion.term.locked: abort(403)
     if suggestion.status not in db.Suggestion.GOOD_STATUSES:
@@ -284,7 +291,7 @@ def vote():
     db.session.add(vote)
     db.session.commit()
     
-    if not request.is_xhr:
+    if request.headers.get('X-Requested-With') != 'XMLHttpRequest':
         return redirect(suggestion.url)
     else:
         return "OK"
@@ -293,8 +300,8 @@ def vote():
 @login_required
 def make_reference():
     if not current_user.admin: abort(403)
-    term0 = db.session.query(db.Term).get(request.form['term0_id'])
-    term1 = db.session.query(db.Term).get(request.form['term1_id'])
+    term0 = db.session.get(db.Term, request.form['term0_id'])
+    term1 = db.session.get(db.Term, request.form['term1_id'])
     valid = True if request.form['valid']=="1" else False
     
     reference = db.Reference(suggestion=suggestion, user=current_user, vote=vote_num,
@@ -306,7 +313,7 @@ def make_reference():
 @app.route("/suggestion", methods=["POST"])
 @login_required
 def suggestion():
-    suggestion = db.session.query(db.Suggestion).get(request.form['suggestion_id'])
+    suggestion = db.session.get(db.Suggestion, request.form['suggestion_id'])
     if not suggestion: abort(404)
     if suggestion.term.locked: abort(403)
     action = request.form['action']
@@ -343,7 +350,7 @@ def suggestion():
     return redirect(suggestion.url)
 
 class LoginForm(Form):
-    username = TextField('Username', [validators.DataRequired()])
+    username = StringField('Username', [validators.DataRequired()])
     password = PasswordField('Heslo', [validators.DataRequired()])
     submit = SubmitField('Přihlásit se')
 
@@ -373,14 +380,14 @@ def login():
     return render_template("login.html", form=form, failed=failed)
 
 class RegisterForm(Form):
-    username = TextField('Username', [validators.DataRequired()])
+    username = StringField('Username', [validators.DataRequired()])
     password = PasswordField('Heslo', [
         validators.DataRequired(),
         validators.EqualTo('confirm_password', message='Hesla se musí shodovat')
     ])
     confirm_password = PasswordField('Heslo znovu', [validators.DataRequired()])
-    email = TextField('Email', [validators.DataRequired()])
-    key = TextField('Klíč', [validators.DataRequired()])
+    email = StringField('Email', [validators.DataRequired()])
+    key = StringField('Klíč', [validators.DataRequired()])
     submit = SubmitField('Zaregistrovat se')
 
 @app.route("/register", methods="GET POST".split())
@@ -417,7 +424,7 @@ def register():
 
 @app.route("/generate/ladx")
 def generate_ladx():
-    terms: typing.List[db.Term] = db.session.query(db.Term).join(db.Category, db.Project)\
+    terms: typing.List[db.Term] = db.session.query(db.Term).join(db.Category).join(db.Project)\
         .filter(
             db.Project.identifier == "ladx",
             db.Term.dialogue == True
@@ -465,7 +472,7 @@ def create_admin():
     class UserView(RestrictedModelView):
         form_excluded_columns = ['password', 'suggestions', 'comments', 'votes']
         form_extra_fields = {
-            'new_password': TextField('New password')
+            'new_password': StringField('New password')
         }
 
         def on_model_change(self, form, model, is_created):
@@ -474,10 +481,10 @@ def create_admin():
 
 
     
-    admin.add_view(UserView(db.User, db.session))
+    admin.add_view(UserView(db.User, db.db))
 
     for table in (db.Project, db.Category, db.Term, db.Reference, db.Suggestion, db.Comment, db.Outlink):
-        admin.add_view(RestrictedModelView(table, db.session))
+        admin.add_view(RestrictedModelView(table, db.db))
 
 
 create_admin()

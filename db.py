@@ -4,8 +4,7 @@ import enum
 
 from unidecode import unidecode
 
-from sqlalchemy import create_engine, func, and_, or_, case, text
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import create_engine, func, and_, or_, case, text, true
 from sqlalchemy.orm import scoped_session, sessionmaker, relationship, backref
 from sqlalchemy.schema import Column, ForeignKey, Table
 from sqlalchemy.types import DateTime, Integer, String, Enum, Text, Boolean, TypeDecorator
@@ -23,10 +22,10 @@ from flask import Flask, url_for
 #QUALITY_MIN = app.config.get("QUALITY_MIN", 1)
 
 if 'mysql' in config.DATABASE:
-    engine = create_engine(config.DATABASE, encoding="utf8", pool_size = 100, pool_recycle=4200, echo=config.DEBUG) # XXX
+    engine = create_engine(config.DATABASE, pool_size = 100, pool_recycle=4200, echo=config.DEBUG) # XXX
     # pool_recycle is to prevent "server has gone away"
 else:
-    engine = create_engine(config.DATABASE, encoding="utf8", echo=config.DEBUG)
+    engine = create_engine(config.DATABASE, echo=config.DEBUG)
 
 db = SQLAlchemy()
 
@@ -70,9 +69,9 @@ class User(Base):
             Suggestion.HAS_GOOD_STATUS
         )
         
-        rated_count = session.query("Vote") \
+        rated_count = session.query(Vote) \
             .select_from(Suggestion) \
-            .join("votes") \
+            .join(Suggestion.votes) \
             .join(Term) \
             .filter(
                 Vote.user == self,
@@ -125,9 +124,9 @@ def count_global_suggestions(rated_by=None):
         ).count()
     
     else:
-        count = session.query("Vote") \
+        count = session.query(Vote) \
             .select_from(Suggestion) \
-            .join("votes") \
+            .join(Suggestion.votes) \
             .join(Term) \
             .filter(
                 Vote.user == rated_by,
@@ -146,7 +145,7 @@ class Project(Base, WithIdentifier):
     description = Column(Text, default='')
     position = Column(Integer)
     
-    categories = relationship("Category", order_by="Category.position")
+    categories = relationship("Category", order_by="Category.position", back_populates="project")
     
     def count_suggestions(self, rated_by=None):
         suggestion_conditions = (
@@ -165,9 +164,9 @@ class Project(Base, WithIdentifier):
             ).count()
         
         else:
-            count = session.query("Vote") \
+            count = session.query(Vote) \
                 .select_from(Suggestion) \
-                .join("votes") \
+                .join(Suggestion.votes) \
                 .join(Term) \
                 .join(Category) \
                 .filter(
@@ -197,7 +196,7 @@ class Category(Base, WithIdentifier):
     hidden = Column(Boolean, nullable=False, default=False)
     project_id = Column(Integer, ForeignKey('projects.id'))
     
-    project = relationship("Project", order_by=position)
+    project = relationship("Project", order_by=position, back_populates="categories")
     
     @property
     def link_outlinks(self):
@@ -240,9 +239,9 @@ class Category(Base, WithIdentifier):
             ).count()
         
         else:
-            count = session.query("Vote") \
+            count = session.query(Vote) \
                 .select_from(Suggestion) \
-                .join("votes") \
+                .join(Suggestion.votes) \
                 .join(Term) \
                 .filter(
                     Vote.user == rated_by,
@@ -302,7 +301,7 @@ class Term(Base, WithIdentifier):
     
     #references = relationship("Reference", foreign_keys=[Reference.term0_id], order_by="Reference.id")
     
-    comments = relationship("Comment", order_by="Comment.created")
+    comments = relationship("Comment", order_by="Comment.created", back_populates="term")
     
     def references_of_type(self, of_type=None):
         if of_type == None:
@@ -337,9 +336,9 @@ class Term(Base, WithIdentifier):
             return self.revisions_w_score.all()
         return session.query(Suggestion, func.sum(Vote.vote).label('score')) \
             .filter(Suggestion.term==self, \
-            Suggestion.HAS_GOOD_STATUS if has_good else "") \
+            Suggestion.HAS_GOOD_STATUS if has_good else true()) \
             .outerjoin(Vote).group_by(Suggestion) \
-            .order_by(case(value=Suggestion.status, whens=Suggestion.STATUS_ORDERING).desc(),
+            .order_by(case(Suggestion.STATUS_ORDERING, value=Suggestion.status).desc(),
             text('score DESC')).all()
     
     @property
@@ -454,9 +453,6 @@ class Suggestion(Base):
     user = relationship("User", backref='suggestions')
     
     GOOD_STATUSES = [SuggestionStatus.approved, SuggestionStatus.candidate, SuggestionStatus.final]
-    HAS_GOOD_STATUS = or_(status == SuggestionStatus.approved,
-        status == SuggestionStatus.candidate,
-        status == SuggestionStatus.final)
     STATUS_ORDERING = {
         'deleted': 0, 
         'hidden': 1, 'withdrawn': 1,
@@ -472,7 +468,7 @@ class Suggestion(Base):
             .filter(Vote.suggestion == self,
                 Vote.valid == True) \
             .order_by(
-                case(value=Vote.user_id, whens={self.user_id: 1}).desc(),
+                case({self.user_id: 1}, value=Vote.user_id).desc(),
                 Vote.vote.desc(),
                 Vote.changed.desc()
             ).all()
@@ -532,6 +528,11 @@ class Suggestion(Base):
         else:
             return "from {}, suggestion {}".format(self.user, self.text)
 
+# Assigned outside the class body so declarative doesn't try to map it
+Suggestion.HAS_GOOD_STATUS = or_(Suggestion.status == SuggestionStatus.approved,
+    Suggestion.status == SuggestionStatus.candidate,
+    Suggestion.status == SuggestionStatus.final)
+
 class Comment(Base):
     __tablename__ = 'comments'
     
@@ -543,7 +544,7 @@ class Comment(Base):
     term_id = Column(Integer, ForeignKey('terms.id'))
     user_id = Column(Integer, ForeignKey('users.id'))
     
-    term = relationship("Term")
+    term = relationship("Term", back_populates="comments")
     user = relationship("User", backref='comments')
     
     def __str__(self):
