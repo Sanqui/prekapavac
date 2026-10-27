@@ -6,11 +6,12 @@ Překapávač is licenced under the ISC license.
 
 ## Set up a dev version
 
-Here's a quick way to set up Překapávač.
+Here's a quick way to set up Překapávač.  You'll need [uv](https://docs.astral.sh/uv/).
 
 ```
     git clone https://github.com/Sanqui/prekapavac
-    pipenv shell
+    cd prekapavac
+    uv sync
     ./download_static.sh
 ```
 
@@ -29,8 +30,8 @@ Open config.py and put the following dev config in:
     REGISTER_KEY = "test"
 ```
 
-Run `python db.py` to generate an empty database.
+Run `uv run python db.py` to generate an empty database.
 
-Start the server with `python app.py`.  Register a new user account.  Use the "test" key while registering.  The first user account will be made administrator.
+Start the server with `uv run python app.py`.  Register a new user account.  Use the "test" key while registering.  The first user account will be made administrator.
 
 Now you should be up to speed.

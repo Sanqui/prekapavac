@@ -4,6 +4,7 @@ ssh -t sanqui.net "\
     cd /var/www/prekapavac/prekapavac && \
     sudo chown -R sanqui: . && \
     git pull --ff-only && \
+    uv sync --locked --no-dev && \
     sudo chown -R www-data: . && \
     sudo systemctl restart www_prekapavac \
 "
