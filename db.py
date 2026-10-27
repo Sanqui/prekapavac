@@ -338,7 +338,8 @@ class Term(Base, WithIdentifier):
             .filter(Suggestion.term==self, \
             Suggestion.HAS_GOOD_STATUS if has_good else true()) \
             .outerjoin(Vote).group_by(Suggestion) \
-            .order_by(case(Suggestion.STATUS_ORDERING, value=Suggestion.status).desc(),
+            .order_by(case(*((Suggestion.status == SuggestionStatus[status], order)
+                for status, order in Suggestion.STATUS_ORDERING.items())).desc(),
             text('score DESC')).all()
     
     @property
